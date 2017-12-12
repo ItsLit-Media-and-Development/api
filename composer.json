@@ -1,0 +1,26 @@
+{
+  "name": "Design-Develop-Realize/API",
+  "type": "project",
+  "description": "API for Itslit.co.uk",
+  "homepage": "https://github.com/Design-Develop-Realize/API",
+  "license": "MTI",
+  "authors": [
+    {
+      "name": "Marc Towler",
+      "email": "marc@marctowler.co.uk",
+      "homepage": "https://www.marctowler.co.uk",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "phpunit/phpunit": "^6.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "API\\": "",
+      "API\\Library\\": "Library",
+      "API\\Controllers\\": "Application/Controllers"
+    }
+  }
+}
