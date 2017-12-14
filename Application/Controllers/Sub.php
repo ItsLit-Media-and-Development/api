@@ -35,26 +35,65 @@ class Sub
         return json_encode($ret);
     }
 
+    public function add_reward()
+    {
+        $json    = [];
+        $chan    = $this->_params[0];
+        $reward  = $this->_params[1];
+        $desc    = $this->_params[2];
+
+        if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != '')) {
+            try {
+                $stmt = $this->_db->prepare("INSERT INTO rewards(channel, name, description) VALUES(:chan, :reward, :desc)");
+                $stmt->execute(
+                    [
+                        ':chan' => $chan,
+                        ':reward' => $reward,
+                        ':desc' => $desc
+                    ]
+                );
+
+                if ($stmt->rowCount() > 0) {
+                    $json = ['status' => 201, 'response' => "Reward $reward was added!"];
+                } else {
+                    $json = ['status' => 409, 'response' => "Reward $reward already exists for $chan"];
+                }
+            } catch (\PDOException $e) {
+                $json = ["status" => 400, "response" => $e->getMessage()];
+            }
+        } else {
+            $json = ["status" => 500, "response" => "Something was missing, check and try again"];
+        }
+        return json_encode($json);
+    }
+
     public function redeem()
     {
         $json    = [];
-        $user    = $this->_params[0];
-        $reward  = $this->_params[1];
+        $chan    = $this->_params[0];
+        $user    = $this->_params[1];
+        $reward  = $this->_params[2];
 
         //lets check that user and reward are set
         if((isset($user) && $user != '') && (isset($reward) && $reward != ''))
         {
             //lets check the reward actually exists or is allowed
             try {
-                $stmt = $this->_db->prepare("SELECT id FROM rewards WHERE name = :name");
-                $stmt->execute([':name' => $reward]);
+                $stmt = $this->_db->prepare("SELECT id FROM rewards WHERE name = :name AND channel = :chan");
+                $stmt->execute(
+                    [
+                        ':chan' => $chan,
+                        ':name' => $reward
+                    ]
+                );
                 $row = $stmt->fetch();
 
                 if($stmt->rowCount() > 0)
                 {
-                    $ins = $this->_db->prepare("INSERT INTO redemption(user, reward, date) VALUES(:user, :id, DATE)");
+                    $ins = $this->_db->prepare("INSERT INTO redemption(channel, user, reward, date) VALUES(:chan, :user, :id, DATE)");
                     $ins->execute(
                         [
+                            ':chan' => $chan,
                             ':user' => $user,
                             ':id'   => $row['id']
                         ]
@@ -71,11 +110,11 @@ class Sub
         } else {
             //lets assume they want to know what can be redeemed!
             try {
-                $stmt = $this->_db->prepare("SELECT name FROM rewards");
-                $stmt->execute();
+                $stmt = $this->_db->prepare("SELECT name FROM rewards WHERE channel = :chan");
+                $stmt->execute([':chan' => $chan]);
                 $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-                if(is_array($res))
+                if(count($res) > 0)
                 {
                     $json = ["status" => 200, "response" => $res];
                 } else {
