@@ -69,9 +69,18 @@ class Questions
      */
     public function showlist()
     {
+        $json = [];
         $stmt = $this->_db->prepare("SELECT user, question, date FROM questions WHERE date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
         $stmt->execute();
 
-        return json_encode(['status' => 200, 'response' => $stmt->fetchAll(\PDO::FETCH_ASSOC)]);
+        $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        //lets actually check we have results!
+        if(count($stmt) > 0)
+        {
+            $json = ['status' => 200, 'response' => $tmp];
+        } else {
+            $json = ['status' => 200, 'response' => 'There are currently no questions'];
+        }
+        return json_encode($json);
     }
 }
