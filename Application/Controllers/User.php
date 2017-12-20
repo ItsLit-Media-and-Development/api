@@ -1,5 +1,6 @@
 <?php
 
+
 namespace API\Controllers;
 
 use API\Library;
@@ -66,7 +67,7 @@ class User
                 $json = ["status" => 201, "response" => "user " . $details['name'] . " has successfully been registered"];
             }
         } catch(\PDOException $e) {
-            $json = ["status" => 400, "response" => $e->getMessage()];
+                $json = ["status" => 400, "response" => $e->getMessage()];
         }
 
         return json_encode($json);
@@ -159,6 +160,44 @@ class User
             }
         } catch(\PDOException $e) {
             $json = ["status" => 400, "response" => $e->getMessage()];
+        }
+
+        return json_encode($json);
+    }
+
+    public function add_stats()
+    {
+        $json  = [];
+
+        if(isset($_POST))
+        {
+            $stats = $_POST;
+
+            try {
+                $usr = $this->_db->prepare("SELECT ID FROM users WHERE name = :name");
+                $usr->execute([':name' => $stats['name']]);
+
+                $tmp = $usr->fetch();
+
+                $stmt = $this->_db->prepare("INSERT INTO monthly_stats (uid, date, followers, views) VALUES (:id, :date, :follow, :views)");
+                $res = $stmt->execute(
+                    [
+                        ':id'     => $tmp,
+                        ':date'   => date('Y-m-d'),
+                        ':follow' => $stats['follow'],
+                        ':views'  => $stats['views']
+                    ]
+                );
+
+                if($res)
+                {
+                    $json = ['status' => 201, 'response' => $stats['name'] . "'s has been put into the database"];
+                } else {
+                    $json = ['status' => 500, 'response' => 'Hmm somthing went wrong, an administrator has been informed'];
+                }
+            } catch(\PDOException $e) {
+                $json = ["status" => 400, "response" => $e->getMessage()];
+            }
         }
 
         return json_encode($json);
