@@ -45,6 +45,7 @@ class JWT
         }
         return $payload;
     }
+
     /**
      * @param object|array $payload PHP object or array
      * @param string       $key     The secret key
@@ -63,6 +64,7 @@ class JWT
         $segments[] = JWT::urlsafeB64Encode($signature);
         return implode('.', $segments);
     }
+
     /**
      * @param string $msg    The message to sign
      * @param string $key    The secret key
@@ -82,6 +84,7 @@ class JWT
         }
         return hash_hmac($methods[$method], $msg, $key, true);
     }
+
     /**
      * @param string $input JSON string
      *
@@ -98,6 +101,7 @@ class JWT
         }
         return $obj;
     }
+
     /**
      * @param object|array $input A PHP object or array
      *
@@ -114,6 +118,7 @@ class JWT
         }
         return $json;
     }
+
     /**
      * @param string $input A base64 encoded string
      *
@@ -128,6 +133,7 @@ class JWT
         }
         return base64_decode(strtr($input, '-_', '+/'));
     }
+
     /**
      * @param string $input Anything really
      *
@@ -137,6 +143,7 @@ class JWT
     {
         return str_replace('=', '', strtr(base64_encode($input), '+/', '-_'));
     }
+
     /**
      * @param int $errno An error number from json_last_error()
      *

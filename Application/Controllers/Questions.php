@@ -31,22 +31,24 @@ class Questions
 
     /**
      * Endpoint allows user's to add questions. Requires 2 URI parameters, 1) username 2) message
-     * Example URL https://domain.com/Questions/add/$user/$message
+     * Example URL https://domain.com/Questions/add/$channel/$user/$message
      *
      * @return string JSON encoded array
      */
     public function add()
     {
-        $user     = $this->_params[0];
-        $question = $this->_params[1];
+        $channel  = $this->_params[0];
+        $user     = $this->_params[1];
+        $question = $this->_params[2];
         $json     = '';
 
         if($user != '' && $question != '')
         {
             try {
-                $stmt = $this->_db->prepare("INSERT INTO questions (user, question) VALUES (:user, :question)");
+                $stmt = $this->_db->prepare("INSERT INTO questions (channel, user, question) VALUES (:channel, :user, :question)");
                 $stmt->execute([
-                    ':user' => $user,
+                    ':channel'  => $channel,
+                    ':user'     => $user,
                     ':question' => $question
                 ]);
 
@@ -63,19 +65,21 @@ class Questions
 
     /**
      * Endpoint allows user to see list of questions that have been asked within the past 4 hours.
-     * Example URL https://domain.com/Questions/showlist
+     * Example URL https://domain.com/Questions/showlist/$chan
      *
      * @return string
      */
     public function showlist()
     {
+        $chan = $this->_params[0];
         $json = [];
-        $stmt = $this->_db->prepare("SELECT user, question, date FROM questions WHERE date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
-        $stmt->execute();
+
+        $stmt = $this->_db->prepare("SELECT user, question, date FROM questions WHERE channel = :channel AND date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
+        $stmt->execute([':channel' => $chan]);
 
         $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         //lets actually check we have results!
-        if(count($stmt) > 0)
+        if($stmt->rowCount() > 0)
         {
             $json = ['status' => 200, 'response' => $tmp];
         } else {

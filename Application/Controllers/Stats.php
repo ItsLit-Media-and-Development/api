@@ -1,8 +1,8 @@
 <?php
 /**
- * ACL Class
+ * Stats Module
  *
- * This is what defines who everybody is and where they will go
+ * TBC
  *
  * @package		API
  * @author		Marc Towler <marc.towler@designdeveloprealize.com>
@@ -41,5 +41,12 @@ class Stats
 
         return json_encode($ret);
     }
-    
+    /**
+     * Synxiec: "How many viewers do I have for each time I play these games so I can correlate my viewership to the games I play"
+    "How many viewers are unique versus non-unique? I want to be able to determine which games are my staples and which ones tend to bring newer audiences"
+    "Can I break this down by genre as well as individual games?"
+    "Can I have a weekly, monthly, quarterly, and annual view of the above information?"(edited)
+    [21:23] Synxiec: "Can I have teams? If so, can I see this information for individuals and for the entire team?"
+    "Does this account for co-streams with other streamers?"
+     */
 }
