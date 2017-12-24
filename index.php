@@ -18,7 +18,7 @@ use API\Library;
 
 $router = new Library\Router();
 
-$con = '\\API\\Controllers\\' . $router->getController();
+$con = '\\API\\Controllers\\' . UCFirst($router->getController());
 
 $controller = new $con();
 
