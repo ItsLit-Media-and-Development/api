@@ -11,7 +11,7 @@ class User
     private $_db;
     private $_hash;
     private $_config;
-    private $_params = [];
+    private $_params;
 
     public function __construct()
     {
@@ -184,7 +184,7 @@ class User
                     [
                         ':id'     => $tmp,
                         ':date'   => date('Y-m-d'),
-                        ':follow' => $stats['follow'],
+                        ':follow' => $stats['followers'],
                         ':views'  => $stats['views']
                     ]
                 );

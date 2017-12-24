@@ -1,12 +1,17 @@
 <?php
 /**
- * API for itslit.uk
+ * Index of the API
  *
- * @copyright 2017 Marc Towler (www.marctowler.co.uk)
- * @author Marc Towler <marc@marctowler.co.uk>
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.1
+ * @filesource
  */
 namespace API;
-
+error_reporting(E_ALL);
 include_once('vendor/autoload.php');
 
 use API\Library;
