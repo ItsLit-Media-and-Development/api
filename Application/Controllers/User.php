@@ -182,7 +182,7 @@ class User
                 $stmt = $this->_db->prepare("INSERT INTO monthly_stats (uid, date, followers, views) VALUES (:id, :date, :follow, :views)");
                 $res = $stmt->execute(
                     [
-                        ':id'     => $tmp,
+                        ':id'     => $tmp["ID"],
                         ':date'   => date('Y-m-d'),
                         ':follow' => $stats['followers'],
                         ':views'  => $stats['views']
