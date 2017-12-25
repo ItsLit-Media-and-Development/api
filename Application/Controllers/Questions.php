@@ -64,6 +64,32 @@ class Questions
     }
 
     /**
+     * Endpoint allows user's to mark questions as read questions. Requires 1 URI parameter, 1) message id
+     * Example URL https://domain.com/Questions/read/$id
+     *
+     * @return string JSON encoded array
+     */
+    public function read()
+    {
+        $qid = $this->_params[0];
+        $json = [];
+
+        try {
+            $stmt = $this->_db->prepare("UPDATE questions flag = 1 WHERE qid = :qid");
+            $stmt->execute([':qid' => $qid]);
+
+            if($stmt->rowCount() > 0)
+            {
+                $json = ['status' => 200, 'response' => "Question marked as read"];
+            }
+        } catch (\PDOException $e) {
+            $json = ["status" => 400, "response" => $e->getMessage()];
+        }
+
+        return json_encode($json);
+    }
+
+    /**
      * Endpoint allows user to see list of questions that have been asked within the past 4 hours.
      * Example URL https://domain.com/Questions/showlist/$chan
      *
@@ -74,7 +100,7 @@ class Questions
         $chan = $this->_params[0];
         $json = [];
 
-        $stmt = $this->_db->prepare("SELECT user, question, date FROM questions WHERE channel = :channel AND date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
+        $stmt = $this->_db->prepare("SELECT qid, user, question, date FROM questions WHERE channel = :channel AND flag = 0 AND date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
         $stmt->execute([':channel' => $chan]);
 
         $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
