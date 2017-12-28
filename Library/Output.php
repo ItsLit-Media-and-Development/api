@@ -18,7 +18,7 @@ namespace API\Library;
 
 class Output
 {
-    private $_output = 'json';
+    private $_output = '';
     private $_types  = ['json', 'xml', 'html'];
 
     public function __construct()
@@ -28,14 +28,54 @@ class Output
     public function setOutput($type)
     {
         $type = strtolower($type);
-        if(in_array($type, $this->_types, true))
+            if(in_array($type, $this->_types, true))
+            {
+                $this->_output = $type;
+            }
+        }
+
+        public function getOutput()
+    {
+        return $this->_output;
+    }
+
+        protected function output($code, $response)
+    {
+        if($this->_output == '')
         {
-            $this->_output = $type;
+            throw new \Exception("You haven't used Output::setOutput() to specify output type");
+        } else {
+            if($code > 300)
+            {
+                $this->_outputError($code, $response);
+            }
+
+            switch ($this->_output)
+            {
+                case 'json':
+                    header('Content-Type: application/json');
+                    break;
+                case 'xml':
+                    header('Content-Type: text/xml');
+                    break;
+                case 'html':
+
+                    break;
+                default:
+
+            }
         }
     }
 
-    public function getOutput()
+    private function _outputError($code, $response)
     {
-        return $this->_output;
+        if(is_int($code))
+        {
+            header('HTTP/1.1 ' . $code . ' ' . $response);
+        } else {
+            throw new \Exception('$code was not set as an integer... Lets get it right!');
+        }
+
+        return $response;
     }
 }
