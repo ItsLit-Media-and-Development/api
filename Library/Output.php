@@ -19,7 +19,7 @@ namespace API\Library;
 class Output
 {
     private $_output = '';
-    private $_types  = ['json', 'xml', 'html'];
+    private $_types = ['json', 'xml', 'html'];
 
     public function __construct()
     {
@@ -28,19 +28,22 @@ class Output
     public function setOutput($type)
     {
         $type = strtolower($type);
-            if(in_array($type, $this->_types, true))
-            {
-                $this->_output = $type;
-            }
+        if (in_array($type, $this->_types, true))
+        {
+            $this->_output = $type;
         }
+    }
 
-        public function getOutput()
+
+    public function getOutput()
     {
         return $this->_output;
     }
 
-        protected function output($code, $response)
+    protected function output($code, $response, $bot = true)
     {
+        $out = [];
+
         if($this->_output == '')
         {
             throw new \Exception("You haven't used Output::setOutput() to specify output type");
@@ -54,6 +57,14 @@ class Output
             {
                 case 'json':
                     header('Content-Type: application/json');
+
+                    if($bot)
+                    {
+                        $out = $response;
+                    } else {
+                        $out = ['status' => $code, 'response' => $response];
+                    }
+
                     break;
                 case 'xml':
                     header('Content-Type: text/xml');
@@ -65,6 +76,8 @@ class Output
 
             }
         }
+
+        return $out;
     }
 
     private function _outputError($code, $response)
