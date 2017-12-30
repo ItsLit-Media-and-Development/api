@@ -12,6 +12,7 @@ class User
     private $_hash;
     private $_config;
     private $_params;
+    private $_output;
 
     public function __construct()
     {
@@ -20,7 +21,7 @@ class User
         $this->_hash   = new Library\Password();
         $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
-
+        $this->_output = new Library\Output();
     }
 
     public function __destruct()
@@ -30,25 +31,26 @@ class User
 
     public function index()
     {
-        $ret = ['status' => 501, 'response' => 'function not implemented'];
-
-        return json_encode($ret);
+        return $this->_output->output(501, "Function not implemented", false);
     }
 
     //POST
 
     /**
      *
-     * @return string
      */
     public function register()
     {
-        $json    = [];
         $details = [];
 
         if(isset($_POST))
         {
             $details = $_POST;
+        }
+
+        if(isset($details['return_output']))
+        {
+            $this->_output->setOutput($details['return_output']);
         }
 
         try {
@@ -64,13 +66,13 @@ class User
                     ':status' => $details['status']
                 ]);
 
-                $json = ["status" => 201, "response" => "user " . $details['name'] . " has successfully been registered"];
+                //$json = ["status" => 201, "response" => "user " . $details['name'] . " has successfully been registered"];
+                return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
             }
         } catch(\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+            //$json = ["status" => 400, "response" => $e->getMessage()];
+            $this->_output->output(400, $e->getMessage(), false);
         }
-
-        return json_encode($json);
     }
 
     //PUT
@@ -78,7 +80,17 @@ class User
     {
         $user = $this->_params[0];
         $key  = $this->_params[1];
-        $json = [];
+        $bot  = false;
+
+        if(isset($this->_params[2]))
+        {
+            $bot = $this->_params[2];
+        }
+
+        if(isset($this->_params[3]))
+        {
+            $this->_output->setOutput($this->_params[3]);
+        }
 
         try {
             if(isset($user) && is_string($user))
@@ -100,19 +112,21 @@ class User
                         //update status flag
 
                         //return 200
-                        $json = ["status" => 200, "response" => "User " . $user . " successfully activated!"];
+                        //$json = ["status" => 200, "response" => "User " . $user . " successfully activated!"];
+                        return $this->_output->output(200, "User " . $user . " successfully activated!", $bot);
                     } else {
-                        $json = ["status" => 400, "response" => "Unable to activate, invalid key"];
+                        //$json = ["status" => 400, "response" => "Unable to activate, invalid key"];
+                        return $this->_output->output(400, "Unable to activate, invalid key", $bot);
                     }
                 }
             } else {
-                $json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
+                //$json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
+                return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
             }
         } catch(\PDOException $e) {
-            $json = ["status" => 400, "response" => $e->getMessage()];
+            //$json = ["status" => 400, "response" => $e->getMessage()];
+            return $this->_output->output(400, $e->getMessage(), $bot);
         }
-
-        return json_encode($json);
     }
 
     //GET
@@ -120,8 +134,18 @@ class User
     {
         $user = $this->_params[0];
         $mode = (isset($this->_params[1])) ? $this->_params[1] : "all";
-        $json = [];
         $sql  = '';
+        $bot  = false;
+
+        if(isset($this->_params[2]))
+        {
+            $bot = $this->_params[2];
+        }
+
+        if(isset($this->_params[3]))
+        {
+            $this->_output->setOutput($this->_params[3]);
+        }
 
         try {
             //check that $user is a string and not blank then pull from db
@@ -151,27 +175,32 @@ class User
 
                 if($stmt->rowCount() > 0)
                 {
-                    $json = ["status" => 200, "response" => $stmt->fetchAll(\PDO::FETCH_ASSOC)];
+                    //$json = ["status" => 200, "response" => $stmt->fetchAll(\PDO::FETCH_ASSOC)];
+                    return $this->_output->output(200, $stmt->fetchAll(\PDO::FETCH_ASSOC), $bot);
                 } else {
-                    $json = ["status" => 404, "response" => "User not found"];
+                    //$json = ["status" => 404, "response" => "User not found"];
+                    return $this->_output->output(404, "User $user not found", $bot);
                 }
             } else {
-                $json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
+                //$json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
+                return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
             }
         } catch(\PDOException $e) {
-            $json = ["status" => 400, "response" => $e->getMessage()];
+            //$json = ["status" => 400, "response" => $e->getMessage()];
+            return $this->_output->output(400, $e->getMessage(), $bot);
         }
-
-        return json_encode($json);
     }
 
     public function add_stats()
     {
-        $json  = [];
-
         if(isset($_POST))
         {
             $stats = $_POST;
+
+            if(isset($details['return_output']))
+            {
+                $this->_output->setOutput($stats['return_output']);
+            }
 
             try {
                 $usr = $this->_db->prepare("SELECT ID FROM users WHERE name = :name");
@@ -191,15 +220,16 @@ class User
 
                 if($res)
                 {
-                    $json = ['status' => 201, 'response' => $stats['name'] . "'s has been put into the database"];
+                    //$json = ['status' => 201, 'response' => $stats['name'] . "'s has been put into the database"];
+                    return $this->_output->output(201, $stats['name'] . "'s stats has been put into the database", false);
                 } else {
-                    $json = ['status' => 500, 'response' => 'Hmm somthing went wrong, an administrator has been informed'];
+                    //$json = ['status' => 500, 'response' => 'Hmm somthing went wrong, an administrator has been informed'];
+                    return $this->_output->output(500,'Hmm something went wrong, an administrator has been informed', false);
                 }
             } catch(\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+                //$json = ["status" => 400, "response" => $e->getMessage()];
+                return $this->_output->output(400, $e->getMessage(), false);
             }
         }
-
-        return json_encode($json);
     }
 }

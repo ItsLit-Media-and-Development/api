@@ -15,6 +15,8 @@ class Questions
 {
     private $_db;
     private $_config;
+    private $_params;
+    private $_output;
 
     public function __construct()
     {
@@ -22,11 +24,17 @@ class Questions
         $this->_config = new Library\Config();
         $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
+        $this->_output = new Library\Output();
     }
 
     public function __destruct()
     {
         // TODO: Implement __destruct() method.
+    }
+
+    public function index()
+    {
+        return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**
@@ -40,7 +48,11 @@ class Questions
         $channel  = $this->_params[0];
         $user     = $this->_params[1];
         $question = $this->_params[2];
-        $json     = '';
+
+        if(isset($this->_params[3]) && $this->_params[3] != '')
+        {
+            $this->_output->setOutput($this->_params[3]);
+        }
 
         if($user != '' && $question != '')
         {
@@ -53,26 +65,30 @@ class Questions
                 ]);
 
                 if ($stmt->rowCount() > 0) {
-                    $json = ['status' => 200, 'response' => "Question added"];
+                    //$json = ['status' => 200, 'response' => "Question added"];
+                    return $this->_output->output(200, "Question Added");
                 }
             } catch (\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+                //$json = ["status" => 400, "response" => $e->getMessage()];
+                return $this->_output->output(400, $e->getMessage());
             }
+        } else {
+            return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Questions/add/channel/username/question");
         }
-
-        return json_encode($json);
     }
 
     /**
      * Endpoint allows user's to mark questions as read questions. Requires 1 URI parameter, 1) message id
      * Example URL https://domain.com/Questions/read/$id
-     *
-     * @return string JSON encoded array
      */
     public function read()
     {
         $qid = $this->_params[0];
-        $json = [];
+
+        if(isset($this->_params[1]) && $this->_params[1] != '')
+        {
+            $this->_output->setOutput($this->_params[1]);
+        }
 
         try {
             $stmt = $this->_db->prepare("UPDATE questions flag = 1 WHERE qid = :qid");
@@ -80,13 +96,13 @@ class Questions
 
             if($stmt->rowCount() > 0)
             {
-                $json = ['status' => 200, 'response' => "Question marked as read"];
+                //$json = ['status' => 200, 'response' => "Question marked as read"];
+                return $this->_output->output(200, "Question is marked as read", false);
             }
         } catch (\PDOException $e) {
-            $json = ["status" => 400, "response" => $e->getMessage()];
+            //$json = ["status" => 400, "response" => $e->getMessage()];
+            return $this->_output->output(400, $e->getMessage(), false);
         }
-
-        return json_encode($json);
     }
 
     /**
@@ -98,7 +114,18 @@ class Questions
     public function showlist()
     {
         $chan = $this->_params[0];
-        $json = [];
+        $bot = false;
+
+        if(isset($this->_params[2]) && $this->_params[2] != '')
+        {
+            $this->_output->setOutput($this->_params[2]);
+        }
+
+        //are we saying that the response is not going to a bot
+        if(isset($this->_params[1]) && $this->_params[1] != '')
+        {
+            $bot = $this->_params[1];
+        }
 
         $stmt = $this->_db->prepare("SELECT qid, user, question, date FROM questions WHERE channel = :channel AND flag = 0 AND date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
         $stmt->execute([':channel' => $chan]);
@@ -107,10 +134,11 @@ class Questions
         //lets actually check we have results!
         if($stmt->rowCount() > 0)
         {
-            $json = ['status' => 200, 'response' => $tmp];
+            //$json = ['status' => 200, 'response' => $tmp];
+            return $this->_output->output(200, $tmp, $bot);
         } else {
-            $json = ['status' => 200, 'response' => 'There are currently no questions'];
+            //$json = ['status' => 200, 'response' => 'There are currently no questions'];
+            return $this->_output->output(200, "There are currently no questions");
         }
-        return json_encode($json);
     }
 }
