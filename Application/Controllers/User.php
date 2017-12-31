@@ -66,11 +66,9 @@ class User
                     ':status' => $details['status']
                 ]);
 
-                //$json = ["status" => 201, "response" => "user " . $details['name'] . " has successfully been registered"];
                 return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
             }
         } catch(\PDOException $e) {
-            //$json = ["status" => 400, "response" => $e->getMessage()];
             $this->_output->output(400, $e->getMessage(), false);
         }
     }
@@ -111,20 +109,15 @@ class User
 
                         //update status flag
 
-                        //return 200
-                        //$json = ["status" => 200, "response" => "User " . $user . " successfully activated!"];
                         return $this->_output->output(200, "User " . $user . " successfully activated!", $bot);
                     } else {
-                        //$json = ["status" => 400, "response" => "Unable to activate, invalid key"];
                         return $this->_output->output(400, "Unable to activate, invalid key", $bot);
                     }
                 }
             } else {
-                //$json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
                 return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
             }
         } catch(\PDOException $e) {
-            //$json = ["status" => 400, "response" => $e->getMessage()];
             return $this->_output->output(400, $e->getMessage(), $bot);
         }
     }
@@ -175,18 +168,14 @@ class User
 
                 if($stmt->rowCount() > 0)
                 {
-                    //$json = ["status" => 200, "response" => $stmt->fetchAll(\PDO::FETCH_ASSOC)];
                     return $this->_output->output(200, $stmt->fetchAll(\PDO::FETCH_ASSOC), $bot);
                 } else {
-                    //$json = ["status" => 404, "response" => "User not found"];
                     return $this->_output->output(404, "User $user not found", $bot);
                 }
             } else {
-                //$json = ["status" => 400, "response" => "The key 'user' must be defined as a string"];
                 return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
             }
         } catch(\PDOException $e) {
-            //$json = ["status" => 400, "response" => $e->getMessage()];
             return $this->_output->output(400, $e->getMessage(), $bot);
         }
     }
@@ -220,14 +209,11 @@ class User
 
                 if($res)
                 {
-                    //$json = ['status' => 201, 'response' => $stats['name'] . "'s has been put into the database"];
                     return $this->_output->output(201, $stats['name'] . "'s stats has been put into the database", false);
                 } else {
-                    //$json = ['status' => 500, 'response' => 'Hmm somthing went wrong, an administrator has been informed'];
                     return $this->_output->output(500,'Hmm something went wrong, an administrator has been informed', false);
                 }
             } catch(\PDOException $e) {
-                //$json = ["status" => 400, "response" => $e->getMessage()];
                 return $this->_output->output(400, $e->getMessage(), false);
             }
         }

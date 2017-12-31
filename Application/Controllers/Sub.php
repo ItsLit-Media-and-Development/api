@@ -14,6 +14,8 @@ class Sub
 {
     private $_db;
     private $_config;
+    private $_params;
+    private $_output;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class Sub
         $this->_config = new Library\Config();
         $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
+        $this->_output = new Library\Output();
     }
 
     public function __destruct()
@@ -30,17 +33,20 @@ class Sub
 
     public function index()
     {
-        $ret = array('status' => 501, 'response' => 'function not implemented');
-
-        return json_encode($ret);
+        return $this->_output->output(501, "Function not implemented", false);
     }
 
     public function add_reward()
     {
-        $json    = [];
         $chan    = $this->_params[0];
         $reward  = $this->_params[1];
         $desc    = $this->_params[2];
+        $bot     = (isset($this->_params[3])) ? $this->_params[3] : true;
+
+        if(isset($this->_params[4]))
+        {
+            $this->_output->setOutput($this->_params[4]);
+        }
 
         if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != '')) {
             try {
@@ -54,25 +60,29 @@ class Sub
                 );
 
                 if ($stmt->rowCount() > 0) {
-                    $json = ['status' => 201, 'response' => "Reward $reward was added!"];
+                    return $this->_output->output(201, "Reward was added", $bot);
                 } else {
-                    $json = ['status' => 409, 'response' => "Reward $reward already exists for $chan"];
+                    return $this->_output->output(409, "Reward $reward already exists for $chan", $bot);
                 }
             } catch (\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+                return $this->_output->output(400, $e->getMessage(), $bot);
             }
         } else {
-            $json = ["status" => 500, "response" => "Something was missing, check and try again"];
+            return $this->_output->output(500, "Something was missing, check and try again", $bot);
         }
-        return json_encode($json);
     }
 
     public function redeem()
     {
-        $json    = [];
         $chan    = $this->_params[0];
         $user    = $this->_params[1];
         $reward  = $this->_params[2];
+        $bot     = (isset($this->_params[3])) ? $this->_params[3] : false;
+
+        if(isset($this->_params[4]))
+        {
+            $this->_output->setOutput($this->_params[4]);
+        }
 
         //lets check that user and reward are set
         if((isset($user) && $user != '') && (isset($reward) && $reward != ''))
@@ -101,11 +111,11 @@ class Sub
 
                     if($ins->rowCount() > 0)
                     {
-                        $json = ["status" => 201, "response" => "Redemption of " . $reward . " confirmed"];
+                        return $this->_output->output(201, "Redemption of " . $reward . " confirmed", $bot);
                     }
                 }
             } catch (\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+                return $this->_output->output(400, $e->getMessage(), $bot);
             }
         } else {
             //lets assume they want to know what can be redeemed!
@@ -116,20 +126,18 @@ class Sub
 
                 if(count($res) > 0)
                 {
-                    $json = ["status" => 200, "response" => $res];
+                    return $this->_output->output(200, $res, $bot);
                 } else {
-                    $json = ["status" => 204, "response" => "OOPS! No rewards have been loaded!"];
+                    return $this->_output->output(204, "OOPS! No rewards have been loaded!", $bot);
                 }
             } catch(\PDOException $e) {
-                $json = ["status" => 400, "response" => $e->getMessage()];
+                return $this->_output->output(400, $e->getMessage(), $bot);
             }
         }
-
-        return json_encode($json);
     }
 
     public function tier($user = '')
     {
-        return json_encode($user);
+        return $this->_output->output(501, "Function not implemented", false);
     }
 }

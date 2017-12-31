@@ -91,27 +91,4 @@ class Config
 
         return $this->db;
     }
-
-    /**
-     * Outputs to browser/whatever is connecting to the api
-     * this allows us to choose output format too
-     *
-     * @param int HTTP code
-     * @param string Server response
-     * @param string Output format, default is JSON
-     *
-     * @return varied either JSON or XML output
-     */
-    public function output($code, $info, $type = "json")
-    {
-        switch($type)
-        {
-            case 'json':
-                break;
-            case 'xml':
-                break;
-            default:
-
-        }
-    }
 }

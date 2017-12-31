@@ -21,6 +21,8 @@ class Stats
 {
     private $_db;
     private $_config;
+    private $_params;
+    private $_output;
 
     public function __construct()
     {
@@ -28,6 +30,7 @@ class Stats
         $this->_config = new Library\Config();
         $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
+        $this->_output = new Library\Output();
     }
 
     public function __destruct()
@@ -37,9 +40,7 @@ class Stats
 
     public function index()
     {
-        $ret = array('status' => 501, 'response' => 'function not implemented');
-
-        return json_encode($ret);
+        return $this->_output->output(501, "Function not implemented", false);
     }
     /**
      * Synxiec: "How many viewers do I have for each time I play these games so I can correlate my viewership to the games I play"

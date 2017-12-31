@@ -65,11 +65,9 @@ class Questions
                 ]);
 
                 if ($stmt->rowCount() > 0) {
-                    //$json = ['status' => 200, 'response' => "Question added"];
                     return $this->_output->output(200, "Question Added");
                 }
             } catch (\PDOException $e) {
-                //$json = ["status" => 400, "response" => $e->getMessage()];
                 return $this->_output->output(400, $e->getMessage());
             }
         } else {
@@ -96,11 +94,9 @@ class Questions
 
             if($stmt->rowCount() > 0)
             {
-                //$json = ['status' => 200, 'response' => "Question marked as read"];
                 return $this->_output->output(200, "Question is marked as read", false);
             }
         } catch (\PDOException $e) {
-            //$json = ["status" => 400, "response" => $e->getMessage()];
             return $this->_output->output(400, $e->getMessage(), false);
         }
     }
@@ -108,8 +104,6 @@ class Questions
     /**
      * Endpoint allows user to see list of questions that have been asked within the past 4 hours.
      * Example URL https://domain.com/Questions/showlist/$chan
-     *
-     * @return string
      */
     public function showlist()
     {
@@ -131,13 +125,12 @@ class Questions
         $stmt->execute([':channel' => $chan]);
 
         $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
         //lets actually check we have results!
         if($stmt->rowCount() > 0)
         {
-            //$json = ['status' => 200, 'response' => $tmp];
             return $this->_output->output(200, $tmp, $bot);
         } else {
-            //$json = ['status' => 200, 'response' => 'There are currently no questions'];
             return $this->_output->output(200, "There are currently no questions");
         }
     }
