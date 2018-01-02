@@ -69,7 +69,7 @@ class User
                 return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
             }
         } catch(\PDOException $e) {
-            $this->_output->output(400, $e->getMessage(), false);
+            return $this->_output->output(400, $e->getMessage(), false);
         }
     }
 
