@@ -16,6 +16,7 @@
 namespace API\Library;
 
 
+
 class Output
 {
     private $_output = 'json';
@@ -25,6 +26,10 @@ class Output
     {
     }
 
+    /**
+     * @param $type String What is the output type?
+     * @throws \Exception
+     */
     public function setOutput($type)
     {
         $type = strtolower($type);
@@ -42,6 +47,13 @@ class Output
         return $this->_output;
     }
 
+    /**
+     * @param $code
+     * @param $response
+     * @param bool $bot
+     * @return array|string
+     * @throws \Exception
+     */
     public function output($code, $response, $bot = true)
     {
         $out = [];
@@ -128,6 +140,12 @@ class Output
         return $out;
     }
 
+    /**
+     * @param $code
+     * @param $response
+     * @return array|string
+     * @throws \Exception
+     */
     private function _outputError($code, $response)
     {
         $out = [];

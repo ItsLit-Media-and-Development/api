@@ -32,12 +32,12 @@ class Router
 
     public function getController()
     {
-        return (isset($this->segments[0])) ? $this->segments[0] : 'index';
+        return ((isset($this->segments[0]) && $this->segments[0] != '')) ? $this->segments[0] : 'Index';
     }
 
     public function getMethod()
     {
-        return (isset($this->segments[1])) ? $this->segments[1] : 'index';
+        return ((isset($this->segments[1]) && $this->segments[1] != '')) ? $this->segments[1] : 'main';
     }
 
     private function getParameters()

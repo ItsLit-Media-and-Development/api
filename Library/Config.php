@@ -65,12 +65,10 @@ class Config
 
     /**
      * Connects to the database
-     *
      * @param string $override Optional allows temporary settings change
-     * @return \PDO The database connection object
+     * @return object|\PDO The database connection object
      * @throws \Exception on missing settings
      */
-
     public function database($override = '')
     {
         if(!is_object($this->db))

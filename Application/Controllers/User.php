@@ -29,6 +29,10 @@ class User
         // TODO: Implement __destruct() method.
     }
 
+    /**
+     * @return array|string
+     * @throws \Exception
+     */
     public function index()
     {
         return $this->_output->output(501, "Function not implemented", false);
@@ -37,7 +41,8 @@ class User
     //POST
 
     /**
-     *
+     * @return array|string
+     * @throws \Exception
      */
     public function register()
     {
@@ -73,7 +78,10 @@ class User
         }
     }
 
-    //PUT
+    /**
+     * @return array|string
+     * @throws \Exception
+     */
     public function activate()
     {
         $user = $this->_params[0];
@@ -122,7 +130,10 @@ class User
         }
     }
 
-    //GET
+    /**
+     * @return array|string
+     * @throws \Exception
+     */
     public function profile()
     {
         $user = $this->_params[0];
@@ -180,6 +191,10 @@ class User
         }
     }
 
+    /**
+     * @return array|string
+     * @throws \Exception
+     */
     public function add_stats()
     {
         if(isset($_POST))
