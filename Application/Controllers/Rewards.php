@@ -64,24 +64,19 @@ class Rewards
             $this->_output->setOutput($this->_params[4]);
         }
 
-        if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != '')) {
-            try {
-                $stmt = $this->_db->prepare("INSERT INTO rewards(channel, name, description) VALUES(:chan, :reward, :desc)");
-                $stmt->execute(
-                    [
-                        ':chan' => $chan,
-                        ':reward' => $reward,
-                        ':desc' => $desc
-                    ]
-                );
+        if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != ''))
+        {
+            $query = $this->_db->add_reward($chan, $reward, $desc);
 
-                if ($stmt->rowCount() > 0) {
-                    return $this->_output->output(201, "Reward was added", $bot);
-                } else {
-                    return $this->_output->output(409, "Reward $reward already exists for $chan", $bot);
-                }
-            } catch (\PDOException $e) {
-                return $this->_output->output(400, $e->getMessage(), $bot);
+            if($query === true)
+            {
+                return $this->_output->output(201, "Reward was added", $bot);
+            }
+            elseif($query === false)
+            {
+                return $this->_output->output(409, "Reward $reward already exists for $chan", $bot);
+            } else {
+                return $this->_output->output(400, $query, $bot);
             }
         } else {
             return $this->_output->output(500, "Something was missing, check and try again", $bot);
@@ -111,56 +106,26 @@ class Rewards
         {
             if($reward != 'code')
             {
-                //lets check the reward actually exists or is allowed
-                try
-                {
-                    $stmt = $this->_db->prepare("SELECT id FROM rewards WHERE name = :name AND channel = :chan");
-                    $stmt->execute(
-                        [
-                            ':chan' => $chan,
-                            ':name' => $reward
-                        ]
-                    );
-                    $row = $stmt->fetch();
+                $query = $this->_db->redeem_reward($chan, $reward, $user);
 
-                    if($stmt->rowCount() > 0)
-                    {
-                        $ins = $this->_db->prepare("INSERT INTO redemption(channel, user, reward, date) VALUES(:chan, :user, :id, DATE)");
-                        $ins->execute(
-                            [
-                                ':chan' => $chan,
-                                ':user' => $user,
-                                ':id' => $row['id']
-                            ]
-                        );
-
-                        if($ins->rowCount() > 0)
-                        {
-                            return $this->_output->output(201, "Redemption of " . $reward . " confirmed", $bot);
-                        }
-                    }
-                } catch(\PDOException $e)
+                if($query === true)
                 {
-                    return $this->_output->output(400, $e->getMessage(), $bot);
+                    return $this->_output->output(201, "Redemption of " . $reward . " confirmed", $bot);
+                } else {
+                    return $this->_output->output(400, $query, $bot);
                 }
             } else {
                 return $this->redeem_code();
             }
         } else {
             //lets assume they want to know what can be redeemed!
-            try {
-                $stmt = $this->_db->prepare("SELECT name FROM rewards WHERE channel = :chan");
-                $stmt->execute([':chan' => $chan]);
-                $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $query = $this->_db->list_reward($chan);
 
-                if(count($res) > 0)
-                {
-                    return $this->_output->output(200, $res, $bot);
-                } else {
-                    return $this->_output->output(204, "OOPS! No rewards have been loaded!", $bot);
-                }
-            } catch(\PDOException $e) {
-                return $this->_output->output(400, $e->getMessage(), $bot);
+            if($query != false)
+            {
+                return $this->_output->output(200, $query, $bot);
+            } else {
+                return $this->_output->output(204, "OOPS! No rewards have been loaded!", $bot);
             }
         }
     }
@@ -197,26 +162,13 @@ class Rewards
                 //lets strip out any hyphens to keep it consistent in the output
                 $code = str_replace('-', '', $code);
 
-                try
-                {
-                    $stmt = $this->_db->prepare("INSERT INTO codes(title, code, platform, expiration) VALUES(:title, :code, :platform, :expiration)");
-                    $stmt->execute(
-                        [
-                            ':title' => $title,
-                            ':code' => $code,
-                            ':platform' => $platform,
-                            ':expiration' => $expires
-                        ]
-                    );
+                $query = $this->_db->add_code($title, $code, $platform, $expires);
 
-                    if($stmt->rowCount() > 0)
-                    {
-                        return $this->_output->output(201, "Addition of $title code confirmed");
-                    }
-
-                } catch(\PDOException $e)
+                if($query === true)
                 {
-                    return $this->_output->output(400, $e->getMessage());
+                    return $this->_output->output(201, "Addition of $title code confirmed");
+                } else {
+                    return $this->_output->output(400, $query);
                 }
             } else {
                 return $this->_output->output(400, "The platform $platform is not accepted, please check the documentation for accepted platforms");
@@ -243,31 +195,13 @@ class Rewards
         $reward = $this->_params[2];
 
         //lets see if we have any codes available
-        try {
-            $stmt = $this->_db->prepare("SELECT id, code FROM codes WHERE title = :title AND redeemed_by = NULL LIMIT 1");
-            $stmt->execute([':title' => $reward]);
+        $query = $this->_db->redeem_code($reward, $user);
 
-            $result = $stmt->fetch();
-
-            if(empty($result))
-            {
-                return $this->_output->output(503, "Sorry there are no codes left for $reward", false);
-            }
-
-            $ins = $this->_db->prepare("UPDATE codes SET redeemed_by = :user WHERE id = :id");
-            $stmt->execute(
-                [
-                    ':user' => $user,
-                    ':id'   => $result['id']
-                ]
-            );
-
-            if($ins->rowCount() > 0)
-            {
-                return $this->_output->output(200, "Congratulations on successfully redeeming your code for $reward, the code is " . $result['code'], false);
-            }
-        } catch(\PDOException $e) {
-            return $this->_output->output(400, $e->getMessage(), false);
+        if($query != false)
+        {
+            return $this->_output->output(200, "Congratulations on successfully redeeming your code for $reward, the code is " . $querycode, false);
+        } else {
+            return $this->_output->output(400, "OOPS! Something went wrong", false);
         }
     }
 
@@ -284,23 +218,13 @@ class Rewards
             $this->_output->setOutput($this->_params[1]);
         }
 
-        try
+        $query = $this->_db->list_code();
+
+        if($query != false)
         {
-            $stmt = $this->_db->prepare("SELECT title, platform FROM codes WHERE redeemed_by = NULL AND expiration > CURRENT_TIMESTAMP ORDER BY expiration ASC");
-            $stmt->execute();
-
-            $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-            //lets actually check we have results!
-            if($stmt->rowCount() > 0)
-            {
-                return $this->_output->output(200, $tmp, false);
-            } else
-            {
-                return $this->_output->output(200, "There are currently no questions", false);
-            }
-        } catch(\PDOException $e) {
-            return $this->_output->output(400, $e->getMessage(), false);
+            return $this->_output->output(200, $query, false);
+        } else {
+            return $this->_output->output(200, "There are currently no questions", false);
         }
     }
 }

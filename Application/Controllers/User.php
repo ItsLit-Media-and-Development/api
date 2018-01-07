@@ -15,11 +15,12 @@ namespace API\Controllers;
 
 use API\Library;
 
+use API\Model;
+
 
 class User
 {
     private $_db;
-    private $_hash;
     private $_config;
     private $_params;
     private $_output;
@@ -28,8 +29,7 @@ class User
     {
         $tmp           = new Library\Router();
         $this->_config = new Library\Config();
-        $this->_hash   = new Library\Password();
-        $this->_db     = $this->_config->database();
+        $this->_db     = new Model\UserModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
     }
@@ -71,23 +71,13 @@ class User
             $this->_output->setOutput($details['return_output']);
         }
 
-        try {
-            if(isset($details['password']) && $details['password'] != '')
-            {
-                $details['password'] = $this->_hash->password_hash($details['password'], PASSWORD_BCRYPT);
+        $query = $this->_db->register($details['name'], $details['password'], $details['email'], $details['status']);
 
-                $stmt = $this->_db->prepare("INSERT INTO users(name, email, password, status) VALUES (:name, :pass, :email, :status)");
-                $stmt->execute([
-                    ':name'   => $details['name'],
-                    ':pass'   => $details['password'],
-                    ':email'  => $details['email'],
-                    ':status' => $details['status']
-                ]);
-
-                return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
-            }
-        } catch(\PDOException $e) {
-            return $this->_output->output(400, $e->getMessage(), false);
+        if($query == true)
+        {
+            return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
+        } else {
+            return $this->_output->output(400, $query, false);
         }
     }
 
@@ -113,35 +103,23 @@ class User
             $this->_output->setOutput($this->_params[3]);
         }
 
-        try {
-            if(isset($user) && is_string($user))
+        if(isset($user) && is_string($user))
+        {
+            //there is a user specified, lets see if it is in the activation table
+            $query = $this->_db->activate($user, $key);
+
+            if($query == true)
             {
-                //there is a user specified, lets see if it is in the activation table
-                $stmt = $this->_db->prepare("SELECT key FROM activation WHERE name = :name");
-                $stmt->execute([':name' => $user]);
-                $row = $stmt->fetch();
-
-                //is there a result? If so, check the retrieved key against what we have
-                if(is_array($row))
-                {
-                    if($row['key'] == $key)
-                    {
-                        //remove the key
-                        $stmt2 = $this->_db->prepare("DELETE key FROM activation WHERE name = :name");
-                        $stmt2->execute([':name' => $user]);
-
-                        //update status flag
-
-                        return $this->_output->output(200, "User " . $user . " successfully activated!", $bot);
-                    } else {
-                        return $this->_output->output(400, "Unable to activate, invalid key", $bot);
-                    }
-                }
-            } else {
-                return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
+                return $this->_output->output(200, "User " . $user . " successfully activated!", $bot);
             }
-        } catch(\PDOException $e) {
-            return $this->_output->output(400, $e->getMessage(), $bot);
+            elseif($query == false)
+            {
+                return $this->_output->output(400, "Unable to activate, invalid key", $bot);
+            } else {
+                return $this->_output->output(400, $query, $bot);
+            }
+        } else {
+            return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
         }
     }
 
@@ -153,10 +131,10 @@ class User
      */
     public function profile()
     {
-        $user = $this->_params[0];
-        $mode = (isset($this->_params[1])) ? $this->_params[1] : "all";
-        $sql  = '';
-        $bot  = false;
+        $user  = $this->_params[0];
+        $mode  = (isset($this->_params[1])) ? $this->_params[1] : "all";
+        $query = '';
+        $bot   = false;
 
         if(isset($this->_params[2]))
         {
@@ -168,43 +146,36 @@ class User
             $this->_output->setOutput($this->_params[3]);
         }
 
-        try {
-            //check that $user is a string and not blank then pull from db
-            if (isset($user) && is_string($user)) {
+        //check that $user is a string and not blank then pull from db
+        if (isset($user) && is_string($user)) {
 
-                //lets check the mode
-                switch($mode)
-                {
-                    case "all":
-                        $sql ="SELECT u.name, u.email, s.date, s.followers, s.views FROM users u INNER JOIN monthly_stats s ON u.id = s.uid WHERE name = :name";
+            //lets check the mode
+            switch($mode)
+            {
+                case "all":
+                    $query = $this->_db->profile_all($user);
 
-                        break;
+                    break;
+                case "followers":
+                    $query = $this->_db->profile_follow($user);
 
-                    case "followers":
-                        $sql ="SELECT u.name, u.email, s.date, s.followers FROM users u INNER JOIN monthly_stats s ON u.id = s.uid WHERE name = :name";
+                    break;
+                case "views":
+                    $query = $this->_db->profile_views($user);
 
-                        break;
-
-                    case "views":
-                        $sql = "SELECT u.name, u.email, s.date, s.views FROM users u INNER JOIN monthly_stats s ON u.id = s.uid WHERE name = :name";
-
-                        break;
-                }
-
-                $stmt = $this->_db->prepare($sql);
-                $stmt->execute([':name' => $user]);
-
-                if($stmt->rowCount() > 0)
-                {
-                    return $this->_output->output(200, $stmt->fetchAll(\PDO::FETCH_ASSOC), $bot);
-                } else {
-                    return $this->_output->output(404, "User $user not found", $bot);
-                }
-            } else {
-                return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
+                    break;
             }
-        } catch(\PDOException $e) {
-            return $this->_output->output(400, $e->getMessage(), $bot);
+
+            if(is_array($query))
+            {
+                return $this->_output->output(200, $query, $bot);
+            } elseif(empty($query)) {
+                return $this->_output->output(404, "User $user not found", $bot);
+            } else {
+                return $this->_output->output(400, $query, $bot);
+            }
+        } else {
+            return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
         }
     }
 
@@ -220,35 +191,22 @@ class User
         {
             $stats = $_POST;
 
-            if(isset($details['return_output']))
+            if(isset($stats['return_output']))
             {
                 $this->_output->setOutput($stats['return_output']);
             }
 
-            try {
-                $usr = $this->_db->prepare("SELECT ID FROM users WHERE name = :name");
-                $usr->execute([':name' => $stats['name']]);
+            $query = $this->_db->add_stats($stats['name'], $stats['followers'], $stats['views']);
 
-                $tmp = $usr->fetch();
-
-                $stmt = $this->_db->prepare("INSERT INTO monthly_stats (uid, date, followers, views) VALUES (:id, :date, :follow, :views)");
-                $res = $stmt->execute(
-                    [
-                        ':id'     => $tmp["ID"],
-                        ':date'   => date('Y-m-d'),
-                        ':follow' => $stats['followers'],
-                        ':views'  => $stats['views']
-                    ]
-                );
-
-                if($res)
-                {
-                    return $this->_output->output(201, $stats['name'] . "'s stats has been put into the database", false);
-                } else {
-                    return $this->_output->output(500,'Hmm something went wrong, an administrator has been informed', false);
-                }
-            } catch(\PDOException $e) {
-                return $this->_output->output(400, $e->getMessage(), false);
+            if($query == true)
+            {
+                return $this->_output->output(201, $stats['name'] . "'s stats has been put into the database", false);
+            }
+            elseif($query === false)
+            {
+                return $this->_output->output(500,'Hmm something went wrong, an administrator has been informed', false);
+            } else {
+                return $this->_output->output(400, $query, false);
             }
         }
     }

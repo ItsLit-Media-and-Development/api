@@ -98,7 +98,7 @@ class Questions
         {
             return $this->_output->output(200, "Question is marked as read", false);
         } else {
-            return $this->_output->output(400, $e->getMessage(), false);
+            return $this->_output->output(400, "OOPS! There was an error", false);
         }
     }
 
