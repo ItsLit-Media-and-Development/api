@@ -15,8 +15,6 @@
 
 namespace API\Library;
 
-
-
 class Output
 {
     private $_output = 'json';
@@ -76,6 +74,8 @@ class Output
             {
                 return $this->_outputError($code, $response);
             }
+
+            header("Access-Control-Allow-Origin: *");
 
             switch ($this->_output)
             {
@@ -159,11 +159,10 @@ class Output
      */
     private function _outputError($code, $response)
     {
-        $out = [];
-
         if(is_int($code))
         {
             header('HTTP/1.1 ' . $code . ' ' . $response);
+            header("Access-Control-Allow-Origin: *");
 
             switch($this->_output)
             {

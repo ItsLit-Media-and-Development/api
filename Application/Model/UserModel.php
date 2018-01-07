@@ -64,7 +64,7 @@ class UserModel
     {
         try
         {
-            $stmt = $this->_db->prepare("SELECT KEY FROM activation WHERE NAME = :NAME");
+            $stmt = $this->_db->prepare("SELECT act_key FROM activation WHERE NAME = :NAME");
             $stmt->execute([':name' => $user]);
             $row = $stmt->fetch();
 
@@ -74,7 +74,7 @@ class UserModel
                 if($row['key'] == $key)
                 {
                     //remove the key
-                    $stmt2 = $this->_db->prepare("DELETE key FROM activation WHERE name = :name");
+                    $stmt2 = $this->_db->prepare("DELETE FROM activation WHERE name = :name");
                     $stmt2->execute([':name' => $user]);
                 }
 

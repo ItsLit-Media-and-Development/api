@@ -179,33 +179,6 @@ class Rewards
     }
 
     /**
-     * Redeems a code
-     *
-     * @return array|string Output confirmation and the code received or an error
-     * @throws \Exception
-     */
-    private function redeem_code()
-    {
-        if(isset($this->_params[3]))
-        {
-            return $this->_output->output(403, "Endpoint /Rewards/redeem cannot be used to redeem codes via a bot or Twitch chat for securite of the code");
-        }
-
-        $user   = $this->_params[1];
-        $reward = $this->_params[2];
-
-        //lets see if we have any codes available
-        $query = $this->_db->redeem_code($reward, $user);
-
-        if($query != false)
-        {
-            return $this->_output->output(200, "Congratulations on successfully redeeming your code for $reward, the code is " . $querycode, false);
-        } else {
-            return $this->_output->output(400, "OOPS! Something went wrong", false);
-        }
-    }
-
-    /**
      * Lists all available titles (with their platforms) that are still valid
      *
      * @return array|string Output list of titles and platforms or error
@@ -225,6 +198,95 @@ class Rewards
             return $this->_output->output(200, $query, false);
         } else {
             return $this->_output->output(200, "There are currently no questions", false);
+        }
+    }
+
+    /**
+     * Removes selected reward from a channel
+     *
+     * @return array|string Output either confirming the removal or an error
+     * @throws \Exception
+     */
+    public function remove_reward()
+    {
+        $chan = $this->_params[0];
+        $reward = $this->_params[1];
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+        if(isset($this->_params[3]))
+        {
+            $this->_output->setOutput($this->_params[3]);
+        }
+
+        $query = $this->_db->delete_reward($chan, $reward);
+
+        if($query === true)
+        {
+            return $this->_output->output(200, "Reward $reward has been removed", $bot);
+        } elseif($query === false)
+        {
+            return $this->_output->output(400, "Reward $reward could not be found, are you sure it is correct?", $bot);
+        } else
+        {
+            return $this->_output->output(400, $query, $bot);
+        }
+    }
+
+    /**
+     * Removes selected code
+     *
+     * @return array|string Output either confirming the removal or an error
+     * @throws \Exception
+     */
+    public function remove_code()
+    {
+        $code = $this->_params[0];
+        $bot = (isset($this->_params[1])) ? $this->_params[1] : false;
+
+        if(isset($this->_params[2]))
+        {
+            $this->_output->setOutput($this->_params[2]);
+        }
+
+        $query = $this->_db->delete_reward($code);
+
+        if($query === true)
+        {
+            return $this->_output->output(200, "The code $code has been removed", $bot);
+        } elseif($query === false)
+        {
+            return $this->_output->output(400, "The code $code could not be found, are you sure it is correct?", $bot);
+        } else
+        {
+            return $this->_output->output(400, $query, $bot);
+        }
+    }
+
+    /**
+     * Redeems a code
+     *
+     * @return array|string Output confirmation and the code received or an error
+     * @throws \Exception
+     */
+    private function redeem_code()
+    {
+        if(isset($this->_params[3]))
+        {
+            return $this->_output->output(403, "Endpoint /Rewards/redeem cannot be used to redeem codes via a bot or Twitch chat for securite of the code");
+        }
+
+        $user = $this->_params[1];
+        $reward = $this->_params[2];
+
+        //lets see if we have any codes available
+        $query = $this->_db->redeem_code($reward, $user);
+
+        if($query != false)
+        {
+            return $this->_output->output(200, "Congratulations on successfully redeeming your code for $reward, the code is " . $query['code'], false);
+        } else
+        {
+            return $this->_output->output(400, "OOPS! Something went wrong", false);
         }
     }
 }

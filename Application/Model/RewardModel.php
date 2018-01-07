@@ -186,4 +186,37 @@ class RewardModel
 
         return $this->_output;
     }
+
+    public function delete_reward($chan, $reward)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("DELETE FROM rewards WHERE channel = :chan AND name = :reward");
+            $this->_output = $stmt->execute(
+                [
+                    ':chan' => $chan,
+                    ':reward' => $reward
+                ]
+            );
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
+    public function delete_code($title)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("DELETE FROM codes WHERE title = :title");
+            $this->_output = $stmt->execute([":title" => $title]);
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }
