@@ -1,5 +1,15 @@
 <?php
-
+/**
+ * User Endpoint
+ *
+ * @package		API
+ * @author		Marc Towler <marc.towler@designdeveloprealize.com>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.1
+ * @filesource
+ */
 
 namespace API\Controllers;
 
@@ -30,6 +40,8 @@ class User
     }
 
     /**
+     * Covers the router's default method incase a part of the URL was missed
+     *
      * @return array|string
      * @throws \Exception
      */
@@ -38,10 +50,11 @@ class User
         return $this->_output->output(501, "Function not implemented", false);
     }
 
-    //POST
 
     /**
-     * @return array|string
+     * POST - adds user's to the system
+     *
+     * @return array|string Outputs either confirmation of registration or error
      * @throws \Exception
      */
     public function register()
@@ -79,7 +92,9 @@ class User
     }
 
     /**
-     * @return array|string
+     * PUT - Allows a user to activate their account
+     *
+     * @return array|string Output either confirming activation was successful or an error
      * @throws \Exception
      */
     public function activate()
@@ -131,7 +146,9 @@ class User
     }
 
     /**
-     * @return array|string
+     * GET - Returns a user's profile (username, email, view and follow counts)
+     *
+     * @return array|string Outputs either the returned data or an error
      * @throws \Exception
      */
     public function profile()
@@ -192,7 +209,9 @@ class User
     }
 
     /**
-     * @return array|string
+     * PUT - Adds new Twitch stats to user
+     *
+     * @return array|string Output either confirming successful addition of details or error
      * @throws \Exception
      */
     public function add_stats()

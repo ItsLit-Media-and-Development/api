@@ -1,10 +1,17 @@
 <?php
 /**
- * JSON Web Token implementation
+ * JSON Web Token Library
  *
  * Minimum implementation used by Realtime auth, based on this spec:
  * http://self-issued.info/docs/draft-jones-json-web-token-01.html.
  *
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.1
+ * @filesource
  */
 
 namespace API\Library;

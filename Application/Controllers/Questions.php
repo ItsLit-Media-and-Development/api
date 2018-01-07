@@ -1,9 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 06/12/2017
- * Time: 20:15
+ * Questions Endpoint
+ *
+ * @package		API
+ * @author		Marc Towler <marc.towler@designdeveloprealize.com>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.1
+ * @filesource
  */
 
 namespace API\Controllers;
@@ -32,16 +37,22 @@ class Questions
         // TODO: Implement __destruct() method.
     }
 
+    /**
+     * Covers the router's default method incase a part of the URL was missed
+     *
+     * @return array|string
+     * @throws \Exception
+     */
     public function index()
     {
         return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**
-     * Endpoint allows user's to add questions. Requires 2 URI parameters, 1) username 2) message
-     * Example URL https://domain.com/Questions/add/$channel/$user/$message
+     * Adds questions to the system
      *
-     * @return string JSON encoded array
+     * @return array|string Output either confirming submission or returning an error
+     * @throws \Exception
      */
     public function add()
     {
@@ -76,8 +87,10 @@ class Questions
     }
 
     /**
-     * Endpoint allows user's to mark questions as read questions. Requires 1 URI parameter, 1) message id
-     * Example URL https://domain.com/Questions/read/$id
+     * Marks a question as read
+     *
+     * @return array|string Output either confirming question marked as read or an error
+     * @throws \Exception
      */
     public function read()
     {
@@ -102,8 +115,10 @@ class Questions
     }
 
     /**
-     * Endpoint allows user to see list of questions that have been asked within the past 4 hours.
-     * Example URL https://domain.com/Questions/showlist/$chan
+     * Reutrns all questions in the queue for the current user that was submitted in the past 4 hours
+     *
+     * @return array|string The output of the questions
+     * @throws \Exception
      */
     public function showlist()
     {
@@ -131,7 +146,7 @@ class Questions
         {
             return $this->_output->output(200, $tmp, $bot);
         } else {
-            return $this->_output->output(200, "There are currently no questions");
+            return $this->_output->output(200, "There are currently no questions", $bot);
         }
     }
 }

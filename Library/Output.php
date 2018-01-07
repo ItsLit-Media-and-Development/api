@@ -9,7 +9,7 @@
  * @copyright	Copyright (c) 2017 Marc Towler
  * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link		https://api.itslit.uk
- * @since		Version 0.1
+ * @since		Version 0.2
  * @filesource
  */
 
@@ -27,8 +27,10 @@ class Output
     }
 
     /**
+     * setOutput() function is used to define what format the output to the end user will be.
+     *
      * @param $type String What is the output type?
-     * @throws \Exception
+     * @throws \Exception String
      */
     public function setOutput($type)
     {
@@ -42,16 +44,24 @@ class Output
     }
 
 
+    /**
+     * Query what the output type is set to
+     *
+     * @return string
+     */
     public function getOutput()
     {
         return $this->_output;
     }
 
     /**
-     * @param $code
-     * @param $response
-     * @param bool $bot
-     * @return array|string
+     * The main output function, this is where the output is passed to for converting and
+     * returning in the appropriate manner.
+     *
+     * @param integer $code The HTTP code to be passed back to the user.
+     * @param String $response The text to send to the user
+     * @param bool $bot Whether or not the output is to be designed for a bot
+     * @return array|string The converted output to send to the user.
      * @throws \Exception
      */
     public function output($code, $response, $bot = true)
@@ -141,9 +151,10 @@ class Output
     }
 
     /**
-     * @param $code
-     * @param $response
-     * @return array|string
+     * The error function, works similar to output() except it only handles errors
+     * @param integer $code
+     * @param String $response The response to return to the user
+     * @return array|string The converted output for the end user
      * @throws \Exception
      */
     private function _outputError($code, $response)

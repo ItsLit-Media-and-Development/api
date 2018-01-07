@@ -1,9 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 10/12/2017
- * Time: 10:38
+ * Router Library
+ *
+ * Parses the URL to define parameters for Endpoints
+ *
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.2
+ * @filesource
  */
 
 namespace API\Library;

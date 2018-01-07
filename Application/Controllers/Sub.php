@@ -1,9 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 29/10/2017
- * Time: 15:57
+ * Subscriber Endpoint
+ *
+ * @package		API
+ * @author		Marc Towler <marc.towler@designdeveloprealize.com>
+ * @copyright	Copyright (c) 2017 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 0.1
+ * @filesource
  */
 
 namespace API\Controllers;
@@ -32,6 +37,8 @@ class Sub
     }
 
     /**
+     * Covers the router's default method incase a part of the URL was missed
+     *
      * @return array|string
      * @throws \Exception
      */
@@ -41,6 +48,7 @@ class Sub
     }
 
     /**
+     * @TODO Implement the actual functionality
      * @param string $user
      * @return array|string
      * @throws \Exception

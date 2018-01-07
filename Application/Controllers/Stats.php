@@ -1,8 +1,6 @@
 <?php
 /**
- * Stats Module
- *
- * TBC
+ * Statistics Endpoint
  *
  * @package		API
  * @author		Marc Towler <marc.towler@designdeveloprealize.com>
@@ -38,6 +36,12 @@ class Stats
         // TODO: Implement __destruct() method.
     }
 
+    /**
+     * Covers the router's default method incase a part of the URL was missed
+     *
+     * @return array|string
+     * @throws \Exception
+     */
     public function index()
     {
         return $this->_output->output(501, "Function not implemented", false);
