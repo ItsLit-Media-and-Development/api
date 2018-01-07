@@ -14,21 +14,20 @@
 namespace API\Controllers;
 
 use API\Library;
+use API\Model;
 
 class Sub
 {
-    private $_db;
-    private $_config;
     private $_params;
     private $_output;
+    private $_db;
 
     public function __construct()
     {
         $tmp           = new Library\Router();
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
+        $this->_db     = new Model\SubModel();
     }
 
     public function __destruct()

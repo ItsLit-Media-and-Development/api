@@ -13,21 +13,19 @@
 
 namespace API\Controllers;
 
-error_reporting(E_ALL);
 use API\Library;
+use API\Model;
 
 class Questions
 {
     private $_db;
-    private $_config;
     private $_params;
     private $_output;
 
     public function __construct()
     {
         $tmp           = new Library\Router();
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
+        $this->_db     = new Model\QuestionModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
     }
@@ -67,19 +65,12 @@ class Questions
 
         if($user != '' && $question != '')
         {
-            try {
-                $stmt = $this->_db->prepare("INSERT INTO questions (channel, user, question) VALUES (:channel, :user, :question)");
-                $stmt->execute([
-                    ':channel'  => $channel,
-                    ':user'     => $user,
-                    ':question' => $question
-                ]);
-
-                if ($stmt->rowCount() > 0) {
-                    return $this->_output->output(200, "Question Added");
-                }
-            } catch (\PDOException $e) {
-                return $this->_output->output(400, $e->getMessage());
+            $query = $this->_db->add_question($channel, $user, $question);
+            if(!is_string($query) && $query == true)
+            {
+                return $this->_output->output(200, "Question Added");
+            } else {
+                return $this->_output->output(400, $query);
             }
         } else {
             return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Questions/add/channel/username/question");
@@ -101,15 +92,12 @@ class Questions
             $this->_output->setOutput($this->_params[1]);
         }
 
-        try {
-            $stmt = $this->_db->prepare("UPDATE questions flag = 1 WHERE qid = :qid");
-            $stmt->execute([':qid' => $qid]);
+        $query = $this->_db->mark_read($qid);
 
-            if($stmt->rowCount() > 0)
-            {
-                return $this->_output->output(200, "Question is marked as read", false);
-            }
-        } catch (\PDOException $e) {
+        if($query)
+        {
+            return $this->_output->output(200, "Question is marked as read", false);
+        } else {
             return $this->_output->output(400, $e->getMessage(), false);
         }
     }
@@ -136,15 +124,12 @@ class Questions
             $bot = $this->_params[1];
         }
 
-        $stmt = $this->_db->prepare("SELECT qid, user, question, date FROM questions WHERE channel = :channel AND flag = 0 AND date > SUBDATE( CURRENT_TIMESTAMP, INTERVAL 4 HOUR ) ORDER BY date ASC");
-        $stmt->execute([':channel' => $chan]);
-
-        $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $query = $this->_db->list_questions($chan);
 
         //lets actually check we have results!
-        if($stmt->rowCount() > 0)
+        if(is_array($query))
         {
-            return $this->_output->output(200, $tmp, $bot);
+            return $this->_output->output(200, $query, $bot);
         } else {
             return $this->_output->output(200, "There are currently no questions", $bot);
         }

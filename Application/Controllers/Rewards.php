@@ -14,19 +14,18 @@
 namespace API\Controllers;
 
 use API\Library;
+use API\Model;
 
 class Rewards
 {
     private $_db;
-    private $_config;
     private $_params;
     private $_output;
 
     public function __construct()
     {
         $tmp           = new Library\Router();
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
+        $this->_db     = new Model\RewardModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
     }
