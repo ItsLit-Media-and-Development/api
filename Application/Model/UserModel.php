@@ -45,13 +45,14 @@ class UserModel
                     ':email' => $email,
                     ':status' => $status
                 ]);
-            }
 
-            if($stmt->rowCount() > 0)
-            {
-                $this->_output = true;
-            } else {
-                $this->_output = false;
+                if($stmt->rowCount() > 0)
+                {
+                    $this->_output = true;
+                } else
+                {
+                    $this->_output = false;
+                }
             }
         } catch(\PDOException $e) {
             $this->_output = $e->getMessage();
@@ -95,12 +96,21 @@ class UserModel
     {
         try
         {
-            $stmt = $this->_db->prepare("SELECT u.name, u.email, s.date, s.followers, s.views FROM users u INNER JOIN monthly_stats s ON u.id = s.uid WHERE name = :name");
+            //$stmt = $this->_db->prepare("SELECT u.name, u.email, u.twitter, u.facebook, u.youtube, u.timezone, u.rank, s.date, s.followers, s.views FROM users u INNER JOIN monthly_stats s ON u.id = s.uid WHERE name = :name");
+            $stmt = $this->_db->prepare("SELECT id, name, email, twitter, facebook, youtube, timezone, rank FROM users WHERE name = :name");
             $stmt->execute([':name' => $user]);
 
             if($stmt->rowCount() > 0)
             {
-                $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                $tmp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+                $sec = $this->_db->prepare("SELECT date, followers, views FROM monthly_stats WHERE uid = :id");
+                $sec->execute(([':id' => $tmp[0]['id']]));
+
+                if($sec->rowCount() > 0)
+                {
+                    $this->_output = array_merge($tmp, $sec->fetchAll(\PDO::FETCH_ASSOC));
+                }
             } else
             {
                 $this->_output = false;

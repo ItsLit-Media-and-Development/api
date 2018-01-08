@@ -248,7 +248,7 @@ class Rewards
             $this->_output->setOutput($this->_params[2]);
         }
 
-        $query = $this->_db->delete_reward($code);
+        $query = $this->_db->delete_code($code);
 
         if($query === true)
         {
