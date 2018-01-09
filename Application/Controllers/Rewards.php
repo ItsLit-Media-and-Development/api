@@ -94,7 +94,7 @@ class Rewards
         $chan    = $this->_params[0];
         $user    = $this->_params[1];
         $reward  = $this->_params[2];
-        $bot     = (isset($this->_params[3])) ? $this->_params[3] : false;
+        $bot = (isset($this->_params[3])) ? $this->_params[3] : true;
 
         if(isset($this->_params[4]))
         {

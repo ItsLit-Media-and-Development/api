@@ -56,4 +56,14 @@ class Sub
     {
         return $this->_output->output(501, "Function not implemented", false);
     }
+
+    public function listgames()
+    {
+        return $this->_output->output(501, "Function not implemented", false);
+    }
+
+    public function queuegame()
+    {
+        return $this->_output->output(501, "Function not implemented", false);
+    }
 }
