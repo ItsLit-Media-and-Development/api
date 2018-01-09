@@ -77,6 +77,12 @@ class Output
 
             header("Access-Control-Allow-Origin: *");
 
+            //Bots can't handle anything more then plain text so lets change the output as such.
+            if($bot == true)
+            {
+                $this->_output = "plain";
+            }
+
             switch ($this->_output)
             {
                 case 'json':
@@ -133,6 +139,13 @@ class Output
                         $conv .= "</tr></table>";
                         $out = $conv;
                     }
+
+                    break;
+                case 'plain':
+                    header('Content-Type: text/plain');
+
+                    //bots generally cant handle more then a line at a time as response so lets stringify it
+                    $out = (is_array($response)) ? implode(", ", $response) : $response;
 
                     break;
                 default:
