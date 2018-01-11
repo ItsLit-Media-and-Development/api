@@ -81,4 +81,9 @@ class Admin
             return $this->_output->output(500, $tmp, false);
         }
     }
+
+    public function getLogs()
+    {
+        return $this->_output->output(501, "Function not implemented", false);
+    }
 }

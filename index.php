@@ -16,6 +16,10 @@ include_once('vendor/autoload.php');
 
 use API\Library;
 
+$timer = new Library\Logger();
+
+$timer->start();
+
 $router = new Library\Router();
 
 $con = '\\API\\Controllers\\' . UCFirst($router->getController());
@@ -24,3 +28,5 @@ $controller = new $con();
 
 
 echo $controller->{$router->getMethod()}();
+
+$timer->end();
