@@ -21,6 +21,14 @@ class Logger
 {
     private $_start;
     private $_end;
+    private $_db;
+    private $_message = [];
+
+    public function __construct()
+    {
+        $tmp = new Config();
+        $this->_db = $tmp->database();
+    }
 
     public function start()
     {
@@ -37,8 +45,26 @@ class Logger
         return $this->_end - $this->_start;
     }
 
-    public function write($message, $level)
+    public function set_message($message, $level)
     {
-        
+        $this->_message = ['level' => $level, 'message' => $message];
+
+        return $this->_message;
+    }
+
+    public function saveMessage()
+    {
+        if(empty($this->_message))
+        {
+            $this->_message = ['level' => 'Error', 'message' => 'Tried to call Logger::saveMessage() without setting the message'];
+        }
+
+        $stmt = $this->_db->prepare("INSERT INTO logs (err_level, msg, date) VALUES (:level, :msg)");
+        $stmt->execute(
+            [
+                ':level' => $this->_message['level'],
+                ':msg' => $this->_message['message']
+            ]
+        );
     }
 }
