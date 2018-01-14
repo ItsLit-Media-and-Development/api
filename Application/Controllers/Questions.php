@@ -21,6 +21,7 @@ class Questions
     private $_db;
     private $_params;
     private $_output;
+    private $_log;
 
     public function __construct()
     {
@@ -28,11 +29,12 @@ class Questions
         $this->_db     = new Model\QuestionModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
+        $this->_log = new Library\Logger();
     }
 
     public function __destruct()
     {
-        // TODO: Implement __destruct() method.
+        $this->_log->saveMessage();
     }
 
     /**
@@ -41,8 +43,10 @@ class Questions
      * @return array|string
      * @throws \Exception
      */
-    public function index()
+    public function main()
     {
+        $this->_log->set_message("Questions::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
 
@@ -54,6 +58,8 @@ class Questions
      */
     public function add()
     {
+        $this->_log->set_message("Questions::add() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $channel  = $this->_params[0];
         $user     = $this->_params[1];
         $question = $this->_params[2];
@@ -70,9 +76,13 @@ class Questions
             {
                 return $this->_output->output(200, "Question Added");
             } else {
+                $this->_log->set_message("Something went wrong, PDO error: $query", "ERROR");
+
                 return $this->_output->output(400, $query);
             }
         } else {
+            $this->_log->set_message("URI is missing parameters, we have: $channel, $user, $question", "WARNING");
+
             return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Questions/add/channel/username/question");
         }
     }
@@ -85,6 +95,8 @@ class Questions
      */
     public function read()
     {
+        $this->_log->set_message("Questions::read() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $qid = $this->_params[0];
 
         if(isset($this->_params[1]) && $this->_params[1] != '')
@@ -98,6 +110,8 @@ class Questions
         {
             return $this->_output->output(200, "Question is marked as read", false);
         } else {
+            $this->_log->set_message("Something went wrong", "WARNING");
+
             return $this->_output->output(400, "OOPS! There was an error", false);
         }
     }
@@ -110,6 +124,8 @@ class Questions
      */
     public function showlist()
     {
+        $this->_log->set_message("Questions::showlist() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $chan = $this->_params[0];
         $bot = false;
 

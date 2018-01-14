@@ -23,6 +23,7 @@ class Admin
     private $_output;
     private $_token;
     private $_config;
+    private $_log;
 
     public function __construct()
     {
@@ -32,11 +33,12 @@ class Admin
         $this->_output = new Library\Output();
         $this->_token = new Library\JWT();
         $this->_config = new Library\Config();
+        $this->_log = new Library\Logger();
     }
 
     public function __destruct()
     {
-        // TODO: Implement __destruct() method.
+        $this->_log->saveMessage();
     }
 
     /**
@@ -45,8 +47,10 @@ class Admin
      * @return array|string
      * @throws \Exception
      */
-    public function index()
+    public function main()
     {
+        $this->_log->set_message("Admin::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
 
@@ -58,8 +62,12 @@ class Admin
      */
     public function create_token()
     {
+        $this->_log->set_message("Admin::create_token() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         if(!isset($this->_params[0]))
         {
+            $this->_log->set_message("No username called in Admin::create_token() returning 400", "WARNING");
+
             return $this->_output->output(400, "Missing the username! Refer to the docs", false);
         }
 
@@ -78,12 +86,22 @@ class Admin
             return $this->_output->output(500, "OOPS! Something stopped us creating the token, an admin has been notified.", false);
         } else
         {
+            $this->_log->set_message("Something went wrong, here is the PDO error $tmp", "ERROR");
+
             return $this->_output->output(500, $tmp, false);
         }
     }
 
+    /**
+     * Retrieves logs from the database
+     *
+     * @return array|string
+     * @throws \Exception
+     */
     public function getLogs()
     {
+        $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
 }

@@ -15,8 +15,6 @@
 
 namespace API\Library;
 
-use API\Library\Config;
-
 class Logger
 {
     private $_start;
@@ -47,7 +45,7 @@ class Logger
 
     public function set_message($message, $level)
     {
-        $this->_message = ['level' => $level, 'message' => $message];
+        array_push($this->_message, ['level' => $level, 'message' => $message]);
 
         return $this->_message;
     }
@@ -59,12 +57,17 @@ class Logger
             $this->_message = ['level' => 'Error', 'message' => 'Tried to call Logger::saveMessage() without setting the message'];
         }
 
-        $stmt = $this->_db->prepare("INSERT INTO logs (err_level, msg, date) VALUES (:level, :msg)");
-        $stmt->execute(
-            [
-                ':level' => $this->_message['level'],
-                ':msg' => $this->_message['message']
-            ]
-        );
+        for($i = 0; $i < count($this->_message); $i++)
+        {
+            $query = "INSERT INTO logs (err_level, msg) VALUES (:level, :msg)";
+
+            $stmt = $this->_db->prepare($query);
+            $stmt->execute(
+                [
+                    ':level' => $this->_message[$i]['level'],
+                    ':msg' => $this->_message[$i]['message']
+                ]
+            );
+        }
     }
 }

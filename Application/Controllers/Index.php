@@ -21,6 +21,7 @@ class Index
     private $_params;
     private $_output;
     private $_db;
+    private $_log;
 
     public function __construct()
     {
@@ -28,11 +29,12 @@ class Index
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
         $this->_db = new Model\IndexModel();
+        $this->_log = new Library\Logger();
     }
 
     public function __destruct()
     {
-        // TODO: Implement __destruct() method.
+        $this->_log->saveMessage();
     }
 
     /**
@@ -43,6 +45,8 @@ class Index
      */
     public function main()
     {
+        $this->_log->set_message("Index::main() called from " . $_SERVER['REMOTE_ADDR'] . ", 501 returned", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
 

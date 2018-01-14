@@ -21,6 +21,7 @@ class Stats
     private $_config;
     private $_params;
     private $_output;
+    private $_log;
 
     public function __construct()
     {
@@ -29,11 +30,12 @@ class Stats
         $this->_db     = $this->_config->database();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
+        $this->_log = new Library\Logger();
     }
 
     public function __destruct()
     {
-        // TODO: Implement __destruct() method.
+        $this->_log->saveMessage();
     }
 
     /**
@@ -42,8 +44,10 @@ class Stats
      * @return array|string
      * @throws \Exception
      */
-    public function index()
+    public function main()
     {
+        $this->_log->set_message("Stats::main() called from " . $_SERVER['REMOTE_ADDR'] . ", 501 returned", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
     /**

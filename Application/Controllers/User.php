@@ -24,6 +24,7 @@ class User
     private $_config;
     private $_params;
     private $_output;
+    private $_log;
 
     public function __construct()
     {
@@ -32,11 +33,12 @@ class User
         $this->_db     = new Model\UserModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
+        $this->_log = new Library\Logger();
     }
 
     public function __destruct()
     {
-        // TODO: Implement __destruct() method.
+        $this->_log->saveMessage();
     }
 
     /**
@@ -45,8 +47,10 @@ class User
      * @return array|string
      * @throws \Exception
      */
-    public function index()
+    public function main()
     {
+        $this->_log->set_message("User::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+
         return $this->_output->output(501, "Function not implemented", false);
     }
 
@@ -59,6 +63,7 @@ class User
      */
     public function register()
     {
+        $this->_log->set_message("User::register() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
         $details = [];
 
         if(isset($_POST))
@@ -77,6 +82,7 @@ class User
         {
             return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
         } else {
+            $this->_log->set_message("Something went wrong in User::register(), PDO error $query", "ERROR");
             return $this->_output->output(400, $query, false);
         }
     }
@@ -89,6 +95,8 @@ class User
      */
     public function activate()
     {
+        $this->_log->set_message("User::activate() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $user = $this->_params[0];
         $key  = $this->_params[1];
         $bot  = false;
@@ -116,9 +124,13 @@ class User
             {
                 return $this->_output->output(400, "Unable to activate, invalid key", $bot);
             } else {
+                $this->_log->set_message("Something went wrong in User::register(), PDO error $query", "ERROR");
+
                 return $this->_output->output(400, $query, $bot);
             }
         } else {
+            $this->_log->set_message("User::register() No uer key was definied, returning a 400", "WARNING");
+
             return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
         }
     }
@@ -131,6 +143,8 @@ class User
      */
     public function profile()
     {
+        $this->_log->set_message("User::profile() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $user  = $this->_params[0];
         $mode  = (isset($this->_params[1])) ? $this->_params[1] : "all";
         $query = '';
@@ -147,8 +161,8 @@ class User
         }
 
         //check that $user is a string and not blank then pull from db
-        if (isset($user) && is_string($user)) {
-
+        if(isset($user) && is_string($user))
+        {
             //lets check the mode
             switch($mode)
             {
@@ -172,9 +186,13 @@ class User
             } elseif(empty($query)) {
                 return $this->_output->output(404, "User $user not found", $bot);
             } else {
+                $this->_log->set_message("Something went wrong in User::profile(), PDO error $query", "ERROR");
+
                 return $this->_output->output(400, $query, $bot);
             }
         } else {
+            $this->_log->set_message("User::profile() No uer key was definied, returning a 400", "WARNING");
+
             return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
         }
     }
@@ -187,6 +205,8 @@ class User
      */
     public function add_stats()
     {
+        $this->_log->set_message("User::add_stats() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         if(isset($_POST))
         {
             $stats = $_POST;
@@ -204,8 +224,12 @@ class User
             }
             elseif($query === false)
             {
+                $this->_log->set_message("Something went wrong with adding stats, $query", "ERROR");
+
                 return $this->_output->output(500,'Hmm something went wrong, an administrator has been informed', false);
             } else {
+                $this->_log->set_message("Something went wrong in User::add_stats(), PDO error $query", "ERROR");
+
                 return $this->_output->output(400, $query, false);
             }
         }
