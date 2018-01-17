@@ -18,13 +18,15 @@ namespace API\Library;
 
 class Router
 {
-    private $segments   = array();
-    private $parameters = array();
+    private $_segments = [];
+    private $_parameters = [];
+    private $_headers = [];
 
     public function __construct()
     {
         $this->getSegments();
         $this->getParameters();
+        $this->getHeaders();
     }
 
     private function getURI()
@@ -34,24 +36,24 @@ class Router
 
     private function getSegments()
     {
-        $this->segments = explode('/', $this->getURI());
+        $this->_segments = explode('/', $this->getURI());
     }
 
     public function getController()
     {
-        return ((isset($this->segments[0]) && $this->segments[0] != '')) ? $this->segments[0] : 'Index';
+        return ((isset($this->_segments[0]) && $this->_segments[0] != '')) ? $this->_segments[0] : 'Index';
     }
 
     public function getMethod()
     {
-        return ((isset($this->segments[1]) && $this->segments[1] != '')) ? $this->segments[1] : 'main';
+        return ((isset($this->_segments[1]) && $this->_segments[1] != '')) ? $this->_segments[1] : 'main';
     }
 
     private function getParameters()
     {
-        if(is_array($this->segments))
+        if(is_array($this->_segments))
         {
-            $parameters = (count($this->segments) > 2) ? array_slice($this->segments, 2) : false;
+            $parameters = (count($this->_segments) > 2) ? array_slice($this->_segments, 2) : false;
 
             if(!$parameters)
             {
@@ -64,17 +66,30 @@ class Router
             //reindex the array
             $parameters = array_values($parameters);
 
-            $this->parameters = $parameters;
+            $this->_parameters = $parameters;
+        }
+    }
+
+    private function getHeaders()
+    {
+        foreach($_SERVER as $key => $val)
+        {
+            $this->_headers[$key] = $val;
         }
     }
 
     public function getParameter($index)
     {
-        return (is_array($this->parameters) && isset($this->parameters[$index])) ? $this->parameters[$index] : false;
+        return (is_array($this->_parameters) && isset($this->_parameters[$index])) ? $this->_parameters[$index] : false;
     }
 
     public function getAllParameters()
     {
-        return (!empty($this->parameters)) ? $this->parameters : false;
+        return (!empty($this->_parameters)) ? $this->_parameters : false;
+    }
+
+    public function getHeader($index)
+    {
+        return (is_array($this->_headers) && isset($this->_headers[$index])) ? $this->_headers[$index] : false;
     }
 }
