@@ -72,7 +72,7 @@ class Router
 
     private function getHeaders()
     {
-        foreach($_SERVER as $key => $val)
+        foreach(getallheaders() as $key => $val)
         {
             $this->_headers[$key] = $val;
         }
@@ -91,5 +91,10 @@ class Router
     public function getHeader($index)
     {
         return (is_array($this->_headers) && isset($this->_headers[$index])) ? $this->_headers[$index] : false;
+    }
+
+    public function getAllHeaders()
+    {
+        return (!empty($this->_headers)) ? $this->_headers : false;
     }
 }

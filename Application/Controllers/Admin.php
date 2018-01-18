@@ -24,6 +24,7 @@ class Admin
     private $_token;
     private $_config;
     private $_log;
+    private $_header;
 
     public function __construct()
     {
@@ -34,6 +35,7 @@ class Admin
         $this->_token = new Library\JWT();
         $this->_config = new Library\Config();
         $this->_log = new Library\Logger();
+        $this->_header = $tmp->getAllHeaders();
     }
 
     public function __destruct()
@@ -62,33 +64,39 @@ class Admin
      */
     public function create_token()
     {
-        $this->_log->set_message("Admin::create_token() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
-        if(!isset($this->_params[0]))
+        if($this->validate_token() > 0)
         {
-            $this->_log->set_message("No username called in Admin::create_token() returning 400", "WARNING");
+            $this->_log->set_message("Admin::create_token() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-            return $this->_output->output(400, "Missing the username! Refer to the docs", false);
-        }
+            if(!isset($this->_params[0]))
+            {
+                $this->_log->set_message("No username called in Admin::create_token() returning 400", "WARNING");
 
-        $user = $this->_params[0];
-        $level = (isset($this->_params[1])) ? $this->_params[1] : 1;
+                return $this->_output->output(400, "Missing the username! Refer to the docs", false);
+            }
 
-        $enc_token = $this->_token->encode(['user' => $user, 'level' => $level], $this->_config->getSettings('TOKEN'));
+            $user = $this->_params[0];
+            $level = (isset($this->_params[1])) ? $this->_params[1] : 1;
 
-        $tmp = $this->_db->generate_token($user, $enc_token, $level);
+            $enc_token = $this->_token->encode(['user' => $user, 'level' => $level], $this->_config->getSettings('TOKEN'));
 
-        if($tmp === true)
-        {
-            return $this->_output->output(200, "Successfully created a new auth token for $user, their token is $enc_token", false);
-        } elseif($tmp === false)
-        {
-            return $this->_output->output(500, "OOPS! Something stopped us creating the token, an admin has been notified.", false);
+            $tmp = $this->_db->generate_token($user, $enc_token, $level);
+
+            if($tmp === true)
+            {
+                return $this->_output->output(200, "Successfully created a new auth token for $user, their token is $enc_token", false);
+            } elseif($tmp === false)
+            {
+                return $this->_output->output(500, "OOPS! Something stopped us creating the token, an admin has been notified.", false);
+            } else
+            {
+                $this->_log->set_message("Something went wrong, here is the PDO error $tmp", "ERROR");
+
+                return $this->_output->output(500, $tmp, false);
+            }
         } else
         {
-            $this->_log->set_message("Something went wrong, here is the PDO error $tmp", "ERROR");
-
-            return $this->_output->output(500, $tmp, false);
+            return $this->_output->output(403, "Invalid auth_token");
         }
     }
 
@@ -103,5 +111,21 @@ class Admin
         $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
 
         return $this->_output->output(501, "Function not implemented", false);
+    }
+
+    /**
+     * Validated the authentication token
+     *
+     * @return int|mixed|string
+     */
+    private function validate_token()
+    {
+        if(isset($this->_header['auth_token']) && isset($this->_header['auth_user']))
+        {
+            return $this->_db->auth_token($this->_header['auth_user'], $this->_header['auth_token']);
+        } else
+        {
+            return 0;
+        }
     }
 }

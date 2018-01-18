@@ -56,4 +56,25 @@ class AdminModel
 
         return $this->_output;
     }
+
+    public function auth_token($user, $token)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT level FROM auth_token WHERE name = :name AND token = :token");
+            $stmt->execute(
+                [
+                    ':name' => $user,
+                    ':token' => $token
+                ]
+            );
+
+            $this->_output = ($stmt->rowCount() > 0) ? $stmt->fetch() : 0;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }

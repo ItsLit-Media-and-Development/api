@@ -52,7 +52,7 @@ class Logger
 
     public function saveMessage()
     {
-        if(empty($this->_message))
+        if(isset($this->_message['level']))
         {
             $this->_message = ['level' => 'Error', 'message' => 'Tried to call Logger::saveMessage() without setting the message'];
         }
