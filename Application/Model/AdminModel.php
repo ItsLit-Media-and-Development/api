@@ -77,4 +77,44 @@ class AdminModel
 
         return $this->_output;
     }
+
+    public function get_logs($log_level, $from, $to)
+    {
+        //levels are tiered, info being lowest.. warning is second but also pulls in info... error is highest pulling in everything
+        $sql = "SELECT * FROM logs WHERE date <= :to AND date >= :from ";
+
+        switch($log_level)
+        {
+            case 'INFO':
+                $sql .= "err_level = 'INFO'";
+
+                break;
+            case 'WARNING':
+                $sql .= "err_level = 'INFO' OR err_level = 'WARNING'";
+
+                break;
+            case 'ERROR':
+                $sql .= "err_level = 'INFO' OR err_level = 'WARNING' OR err_level = 'ERROR'";
+
+                break;
+        }
+
+        try
+        {
+            $stmt = $this->_db->prepare($sql);
+            $stmt->execute(
+                [
+                    ':to' => $to,
+                    ':from' => $from
+                ]
+            );
+
+            $this->_output = ($stmt->rowCount() > 0) ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : 0;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }
