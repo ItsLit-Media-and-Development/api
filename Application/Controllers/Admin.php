@@ -64,7 +64,7 @@ class Admin
      */
     public function create_token()
     {
-        if($this->validate_token() > 0)
+        if($this->validate_token() > 3)
         {
             $this->_log->set_message("Admin::create_token() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -94,7 +94,8 @@ class Admin
 
                 return $this->_output->output(500, $tmp, false);
             }
-        } else
+        }
+        else
         {
             return $this->_output->output(403, "Invalid auth_token");
         }
@@ -108,29 +109,38 @@ class Admin
      */
     public function getLogs()
     {
-        $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
-        $type = (isset($this->_params[0])) ? $this->_params[0] : false;
-        $from = (isset($this->_params[1])) ? $this->_params[1] : false;
-        $to = (isset($this->_params[2])) ? $this->_params[2] : false;
-
-        //we know if 0 isnt set then the rest wont be
-        if($type === false)
+        if($this->validate_token() > 3)
         {
-            return $this->_output->output(400, "URI is malformed, please check the documents", false);
+            $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+            $type = (isset($this->_params[0])) ? $this->_params[0] : false;
+            $from = (isset($this->_params[1])) ? $this->_params[1] : false;
+            $to = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+            //we know if 0 isnt set then the rest wont be
+            if($type === false)
+            {
+                return $this->_output->output(400, "URI is malformed, please check the documents", false);
+            }
+
+            $output = $this->_db->get_logs($type, $from, $to);
+
+            if(is_array($output))
+            {
+                return $this->_output->output(200, $output, false);
+            }
+            elseif(is_int($output))
+            {
+                return $this->_output->output(200, "There are no logs right now!", false);
+            }
+            else
+            {
+                return $this->_output->output(500, "Something went wrong, PDO error: $output", false);
+            }
         }
-
-        $output = $this->_db->get_logs($type, $from, $to);
-
-        if(is_array($output))
+        else
         {
-            return $this->_output->output(200, $output, false);
-        } elseif(is_int($output))
-        {
-            return $this->_output->output(200, "There are no logs right now!", false);
-        } else
-        {
-            return $this->_output->output(500, "Something went wrong, PDO error: $output", false);
+            return $this->_output->output(403, "Invalid auth_token");
         }
     }
 

@@ -27,7 +27,7 @@ class Output
     /**
      * setOutput() function is used to define what format the output to the end user will be.
      *
-     * @param $type String What is the output type?
+     * @param String $type What is the output type?
      * @throws \Exception String
      */
     public function setOutput($type)
@@ -57,7 +57,7 @@ class Output
      * returning in the appropriate manner.
      *
      * @param integer $code The HTTP code to be passed back to the user.
-     * @param String $response The text to send to the user
+     * @param array|String $response The text to send to the user
      * @param bool $bot Whether or not the output is to be designed for a bot
      * @return array|string The converted output to send to the user.
      * @throws \Exception
@@ -166,7 +166,7 @@ class Output
     /**
      * The error function, works similar to output() except it only handles errors
      * @param integer $code
-     * @param String $response The response to return to the user
+     * @param array|String $response The response to return to the user
      * @return array|string The converted output for the end user
      * @throws \Exception
      */

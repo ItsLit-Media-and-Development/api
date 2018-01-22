@@ -12,7 +12,7 @@
  */
 namespace API;
 error_reporting(E_ALL);
-include_once('vendor/autoload.php');
+include_once('../vendor/autoload.php');
 
 use API\Library;
 
@@ -22,7 +22,7 @@ $timer->start();
 
 $router = new Library\Router();
 
-$con = '\\API\\Controllers\\' . UCFirst($router->getController());
+$con = '\\API\\Controllers\\' . ucfirst($router->getController());
 
 $controller = new $con();
 

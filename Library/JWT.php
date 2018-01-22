@@ -33,11 +33,11 @@ class JWT
             throw new \UnexpectedValueException('Wrong number of segments');
         }
         list($headb64, $payloadb64, $cryptob64) = $tks;
-        if(NULL === ($header = $this->jsonDecode($this->urlsafeB64Decode($headb64)))
+        if(NULL == ($header = $this->jsonDecode($this->urlsafeB64Decode($headb64)))
         ) {
             throw new \UnexpectedValueException('Invalid segment encoding');
         }
-        if(NULL === $payload = $this->jsonDecode($this->urlsafeB64Decode($payloadb64))
+        if(NULL == $payload = $this->jsonDecode($this->urlsafeB64Decode($payloadb64))
         ) {
             throw new \UnexpectedValueException('Invalid segment encoding');
         }
@@ -74,8 +74,8 @@ class JWT
     }
 
     /**
-     * @param string $msg    The message to sign
-     * @param string $key    The secret key
+     * @param string $msg The message to sign
+     * @param string|null $key The secret key
      * @param string $method The signing algorithm
      *
      * @return string An encrypted message
@@ -121,7 +121,8 @@ class JWT
         if (function_exists('json_last_error') && $errno = json_last_error()) {
             $this->handleJsonError($errno);
         }
-        else if ($json === 'null' && $input !== null) {
+        else if($json == 'null' && $input != NULL)
+        {
             throw new \DomainException('Null result with non-null input');
         }
         return $json;

@@ -29,7 +29,7 @@ class Password {
      * @param int    $algo     The algorithm to use (Defined by PASSWORD_* constants)
      * @param array  $options  The options for the algorithm to use
      *
-     * @return string|false The hashed password, or false on error.
+     * @return string|null|false The hashed password, or false on error.
      */
     public function password_hash($password, $algo, array $options = array()) {
         if (!function_exists('crypt')) {
