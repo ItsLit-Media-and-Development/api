@@ -72,7 +72,7 @@ class Router
 
     private function getHeaders()
     {
-        foreach(getallheaders() as $key => $val)
+        foreach(apache_request_headers() as $key => $val)
         {
             $this->_headers[$key] = $val;
         }
