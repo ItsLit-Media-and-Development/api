@@ -109,6 +109,7 @@ class Wriggle
         {
             array_push($cards, $param);
         }
+
         $query = $this->_db->list_draw($cards);
 
         //lets actually check we have results!

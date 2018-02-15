@@ -61,7 +61,7 @@ class WriggleModel
             }
             try
             {
-                $stmt = $this->_db->prepare("SELECT user FROM wrig_draw WHERE $array ORDER BY cid ASC LIMIT 2");
+                $stmt = $this->_db->prepare("SELECT user, card FROM wrig_draw WHERE $array ORDER BY cid ASC LIMIT 2");
                 $stmt->execute();
 
                 $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -75,7 +75,7 @@ class WriggleModel
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT user FROM wrig_draw ORDER BY cid ASC LIMIT 2");
+                $stmt = $this->_db->prepare("SELECT user, card FROM wrig_draw ORDER BY cid ASC LIMIT 2");
                 $stmt->execute();
 
                 $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -88,7 +88,7 @@ class WriggleModel
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT user FROM wrig_draw WHERE card = :card ORDER BY cid ASC");
+                $stmt = $this->_db->prepare("SELECT user, card FROM wrig_draw WHERE card = :card ORDER BY cid ASC");
                 $stmt->execute([':card' => $card]);
 
                 $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
