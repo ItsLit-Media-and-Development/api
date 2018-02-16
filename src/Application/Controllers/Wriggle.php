@@ -62,6 +62,7 @@ class Wriggle
 
         $card = $this->_params[0];
         $user = $this->_params[1];
+        $victim = (isset($this->_params[3])) ? $this->_params[3] : '';
 
         if(isset($this->_params[2]) && $this->_params[2] != '')
         {
@@ -74,7 +75,35 @@ class Wriggle
 
             if(!is_string($query) && $query == true)
             {
-                return $this->_output->output(200, "$user draw a card!");
+                if($card != "steal" || $card != "swap")
+                {
+                    return $this->_output->output(200, "$user draw a card!");
+                }
+                else
+                {
+                    if($card == "steal")
+                    {
+                        if($victim == '')
+                        {
+                            return $this->_output->output(200, "$user stole caps!");
+                        }
+                        else
+                        {
+                            return $this->_output->output(200, "$user stole caps from " . $victim . "!");
+                        }
+                    }
+                    else
+                    {
+                        if($victim == '')
+                        {
+                            return $this->_output->output(200, "$user swapped caps!");
+                        }
+                        else
+                        {
+                            return $this->_output->output(200, "$user swapped caps from " . $victim . "!");
+                        }
+                    }
+                }
             }
             else
             {
