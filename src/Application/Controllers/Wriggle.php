@@ -7,7 +7,7 @@
  * @copyright    Copyright (c) 2017 Marc Towler
  * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link        https://api.itslit.uk
- * @since        Version 0.1
+ * @since        Version 0.8
  * @filesource
  */
 
@@ -116,7 +116,7 @@ class Wriggle
         {
             $this->_log->set_message("URI is missing parameters, we have: $user, $card", "WARNING");
 
-            return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Wriggle/draw/card/username");
+            return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Wriggle/draw/card/username/(optional)victim");
         }
     }
 

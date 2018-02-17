@@ -1,9 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 14/02/2018
- * Time: 18:22
+ * Wriggle Model Class
+ *
+ * All database functions regarding the Wriggle endpoint is stored here
+ *
+ * @package        API
+ * @author        Marc Towler <marc.towler@designdeveloprealize.com>
+ * @copyright    Copyright (c) 2017 Marc Towler
+ * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link        https://api.itslit.uk
+ * @since        Version 0.8
+ * @filesource
  */
 
 namespace API\Model;
