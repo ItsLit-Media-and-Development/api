@@ -29,13 +29,35 @@ class ListModel
         $this->_db = $this->_config->database();
     }
 
+    public function get_item($owner, $lName, $name)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND i.name = :name");
+
+            $stmt->execute(
+                [
+                    ':owner' => $owner,
+                    ':lName' => $lName,
+                    ':name' => $name
+                ]
+            );
+
+            $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
     public function get_list($owner, $lName, $qty)
     {
         if($qty == "all")
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lName = l.list_name WHERE l.owner = :owner AND i.lName = :lName ORDER BY i.iid ASC");
+                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.list_name WHERE l.owner = :owner AND i.lid = :lName ORDER BY i.iid ASC");
 
                 $stmt->execute(
                     [
@@ -56,7 +78,7 @@ class ListModel
             {
                 try
                 {
-                    $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lName = l.list_name WHERE l.owner = :owner AND i.lName = :lName LIMIT $qty ORDER BY i.iid ASC");
+                    $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND i.lid = :lName LIMIT $qty ORDER BY i.iid ASC");
 
                     $stmt->execute(
                         [
@@ -71,6 +93,59 @@ class ListModel
                     $this->_output = $e->getMessage();
                 }
             }
+        }
+
+        return $this->_output;
+    }
+
+    public function add_list($owner, $lName)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("INSERT INTO lists (list_name, owner) VALUES (:lName, :owner)");
+            $stmt->execute([
+                ':lName' => $lName,
+                ':owner' => $owner
+            ]);
+
+            $this->_output = ($stmt->rowCount() > 0) ? true : false;
+
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
+    //pass in owner for a check just to make sure we have the right list
+    public function add_entry($owner, $lName, $name, $info = NULL)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT lid FROM lists WHERE list_name = :lName AND owner = :owner");
+            $stmt->execute(
+                [
+                    ':lName' => $lName,
+                    ':owner' => $owner
+                ]
+            );
+
+            $lid = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            $stmt2 = $this->_db->prepare("INSERT INTO list_items(lid, name, info) VALUES(:lid, :name, :info)");
+            $stmt2->execute(
+                [
+                    ':lid' => $lid[0]['lid'],
+                    ':name' => $name,
+                    ':info' => $info
+                ]
+            );
+
+            $this->_output = ($stmt2->rowCount() > 0) ? true : false;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
         }
 
         return $this->_output;

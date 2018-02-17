@@ -93,4 +93,84 @@ class Lists
             return $this->_output->output(200, "There are currently no items in the $lName list", $bot);
         }
     }
+
+    /**
+     * Adds either a new list to the system or an item to a list
+     * As it is an add, should technically be a POST setup but as bots dont handle that we cant atm
+     *
+     * @return array|string Output either confirming submission or returning an error
+     * @throws \Exception
+     */
+    public function add()
+    {
+        $this->_log->set_message("Lists::add() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $type = $this->_params[0];
+        $owner = $this->_params[1];
+        $lName = $this->_params[2];
+
+        //First lets see if it is a list or entry then input from there as the URL will vary
+        if($type == 'newlist')
+        {
+            $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
+
+            $query = $this->_db->add_list($owner, $lName);
+
+            if(is_bool($query))
+            {
+                return $this->_output->output(200, "List $lName has been created!", $bot);
+            }
+            else
+            {
+                return $this->_output->output(400, $query, $bot);
+            }
+        }
+        elseif($type == 'addentry')
+        {
+            $name = $this->_params[3];
+            $info = $this->_params[4];
+
+            $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
+
+            $query = $this->_db->add_entry($owner, $name, $info);
+
+            if(is_bool($query))
+            {
+                return $this->_output->output(200, "$name was added to $lName!", $bot);
+            }
+            else
+            {
+                return $this->_output->output(400, $query, $bot);
+            }
+        }
+        else
+        {
+            //Something isn't right, throw an error!!!
+            return $this->_output->output(400, "The add type was incorrect, only newlist or addentry is accepted", false);
+        }
+    }
+
+    /**
+     * Returns an item out of the specified list, throws a 204 error if the info field is left empty
+     *
+     * @return array|string Output either information, a 204 confirmation or returning an error on no result
+     * @throws \Exception
+     */
+    public function getItem()
+    {
+        $owner = $this->_params[0];
+        $lName = $this->_params[1];
+        $item = $this->_params[2];
+
+        $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
+
+        if(isset($this->_params[4]))
+        {
+            $this->_output->setOutput($this->_params[4]);
+        }
+
+        $query = $this->_db->get_item($owner, $lName, $item);
+
+        return $this->_output->output(200, $query, $bot);
+    }
 }
