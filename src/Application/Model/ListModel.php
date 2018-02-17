@@ -57,7 +57,7 @@ class ListModel
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = ':owner' AND l.list_name = ':lName'");
+                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND l.list_name = :lName");
 
                 $stmt->execute(
                     [
@@ -66,7 +66,7 @@ class ListModel
                     ]
                 );
 
-                $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                $this->_output = $stmt->fetchAll();
             } catch(\PDOException $e)
             {
                 $this->_output = $e->getMessage();

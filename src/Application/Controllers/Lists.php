@@ -62,7 +62,7 @@ class Lists
 
         $owner = $this->_params[0];
         $lName = $this->_params[1];
-        $qty = $this->_params[2];
+        $qty = (isset($this->_params[2])) ? $this->_params[2] : "all";
         $bot = false;
 
         if(isset($this->_params[3]))
