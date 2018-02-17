@@ -132,6 +132,11 @@ class Lists
 
             $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
+            if(isset($this->_params[6]))
+            {
+                $this->_output->setOutput($this->_params[6]);
+            }
+
             $query = $this->_db->add_entry($owner, $lName, $name, $info);
 
             if(is_bool($query))
