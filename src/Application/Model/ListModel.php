@@ -57,7 +57,7 @@ class ListModel
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.list_name WHERE l.owner = ':owner' AND l.list_name = ':lName'");
+                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = ':owner' AND l.list_name = ':lName'");
 
                 $stmt->execute(
                     [
