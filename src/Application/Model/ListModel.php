@@ -57,7 +57,7 @@ class ListModel
         {
             try
             {
-                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.list_name WHERE l.owner = :owner AND i.lid = :lName ORDER BY i.iid ASC");
+                $stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.list_name WHERE l.owner = ':owner' AND l.list_name = ':lName'");
 
                 $stmt->execute(
                     [
@@ -131,12 +131,12 @@ class ListModel
                 ]
             );
 
-            $lid = $stmt->fetch(\PDO::FETCH_ASSOC);
+            $lid = $stmt->fetch();
 
             $stmt2 = $this->_db->prepare("INSERT INTO list_items(lid, name, info) VALUES(:lid, :name, :info)");
             $stmt2->execute(
                 [
-                    ':lid' => $lid[0]['lid'],
+                    ':lid' => $lid['lid'],
                     ':name' => $name,
                     ':info' => $info
                 ]

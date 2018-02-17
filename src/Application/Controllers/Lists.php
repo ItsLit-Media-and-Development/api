@@ -128,14 +128,15 @@ class Lists
         elseif($type == 'addentry')
         {
             $name = $this->_params[3];
-            $info = $this->_params[4];
+            $info = (isset($this->_params[4])) ? $this->_params[4] : '';
 
             $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
-            $query = $this->_db->add_entry($owner, $name, $info);
+            $query = $this->_db->add_entry($owner, $lName, $name, $info);
 
             if(is_bool($query))
             {
+                $name = str_replace("%20", " ", $name);
                 return $this->_output->output(200, "$name was added to $lName!", $bot);
             }
             else
