@@ -63,23 +63,11 @@ class Lists
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $qty = (isset($this->_params[2])) ? $this->_params[2] : "all";
-        $bot = false;
+        $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
 
-        if(isset($this->_params[3]))
+        if(isset($this->_params[4]))
         {
-            if(is_bool($this->_params[3]))
-            {
-                $bot = $this->_params[3];
-
-                if(isset($this->_params[4]))
-                {
-                    $this->_output->setOutput($this->_params[4]);
-                }
-            }
-            else
-            {
-                $this->_output->setOutput($this->_params[3]);
-            }
+            $this->_output->setOutput($this->_params[4]);
         }
 
         $query = $this->_db->get_list($owner, $lName, $qty);

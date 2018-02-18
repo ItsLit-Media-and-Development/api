@@ -18,7 +18,7 @@ namespace API\Library;
 class Output
 {
     private $_output = 'json';
-    private $_types = ['json', 'xml', 'html'];
+    private $_types = ['json', 'xml', 'html', 'plain'];
 
     public function __construct()
     {
@@ -144,8 +144,25 @@ class Output
                 case 'plain':
                     header('Content-Type: text/plain');
 
-                    //bots generally cant handle more then a line at a time as response so lets stringify it
-                    $out = (is_array($response)) ? implode(", ", $response) : $response;
+                    $out = '';
+
+                    if(is_array($response))
+                    {
+                        foreach($response as $item)
+                        {
+                            if(is_array($item))
+                            {
+                                foreach($item as $key => $val)
+                                {
+                                    $out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $out = $response;
+                    }
 
                     break;
                 default:

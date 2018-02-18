@@ -66,7 +66,7 @@ class ListModel
                     ]
                 );
 
-                $this->_output = $stmt->fetchAll();
+                $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             } catch(\PDOException $e)
             {
                 $this->_output = $e->getMessage();
