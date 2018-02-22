@@ -82,6 +82,39 @@ class Lists
         }
     }
 
+    public function remove()
+    {
+        $this->_log->set_message("Lists::remove() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $type = $this->_params[0];
+        $owner = $this->_params[1];
+        $lName = $this->_params[2];
+
+        if($type == 'item')
+        {
+            $name = $this->_params[3];
+
+            $bot = (isset($this->_params[4])) ? $this->_params[4] : false;
+
+            if(isset($this->_params[5]))
+            {
+                $this->_output->setOutput($this->_params[5]);
+            }
+
+            $query = $this->_db->delete_item($owner, $lName, $name);
+
+            if($query)
+            {
+                $name = str_replace("%20", " ", $name);
+                return $this->_output->output(200, "$name was removed from the $lName list!", $bot);
+            }
+            else
+            {
+                return $this->_output->output(400, $query, $bot);
+            }
+        }
+    }
+
     /**
      * Adds either a new list to the system or an item to a list
      * As it is an add, should technically be a POST setup but as bots dont handle that we cant atm
@@ -130,7 +163,7 @@ class Lists
             if(is_bool($query))
             {
                 $name = str_replace("%20", " ", $name);
-                return $this->_output->output(200, "$name was added to $lName!", $bot);
+                return $this->_output->output(200, "$name was added to the $lName list!", $bot);
             }
             else
             {

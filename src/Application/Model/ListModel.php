@@ -29,6 +29,37 @@ class ListModel
         $this->_db = $this->_config->database();
     }
 
+    public function delete_item($owner, $lName, $name)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT lid FROM lists WHERE list_name = :lName AND owner = :owner");
+            $stmt->execute(
+                [
+                    ':lName' => $lName,
+                    ':owner' => $owner
+                ]
+            );
+
+            $lid = $stmt->fetch();
+
+            $stmt2 = $this->_db->prepare("DELETE FROM list_items WHERE name = :name AND lid = :lid");
+            $stmt2->execute(
+                [
+                    ':lid' => $lid['lid'],
+                    ':name' => $name
+                ]
+            );
+
+            $this->_output = ($stmt2->rowCount() > 0) ? true : false;
+
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
     public function get_item($owner, $lName, $name)
     {
         try
