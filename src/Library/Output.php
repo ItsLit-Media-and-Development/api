@@ -60,7 +60,6 @@ class Output
      * @param array|String $response The text to send to the user
      * @param bool $bot Whether or not the output is to be designed for a bot
      * @return array|string The converted output to send to the user.
-     * @throws \Exception
      */
     public function output($code, $response, $bot = true)
     {
@@ -68,7 +67,7 @@ class Output
 
         if($this->_output == '')
         {
-            throw new \Exception("Output type is not a valid type!");
+            return $this->_outputError(400, "Output type is not a valid type!");
         } else {
             if($code >= 400)
             {
@@ -185,7 +184,6 @@ class Output
      * @param integer $code
      * @param array|String $response The response to return to the user
      * @return array|string The converted output for the end user
-     * @throws \Exception
      */
     private function _outputError($code, $response)
     {
@@ -211,13 +209,19 @@ class Output
 
                     $out = '<table id="rsp-stat-fail"><tr><td>Error Code: ' . $code . '</td><td>Response: ' . $response . '</td></tr></table>';
                     break;
+                case 'plain':
+                    header('Content-Type: text/plain');
+
+                    //This is generally only going to be used for chat bots so lets make it muggle readable
+                    $out = "An error occured: $response";
+                    break;
                 default:
                     header('Content-Type: application/json');
 
                     $out = json_encode(['status' => $code, 'response' => $response]);
             }
         } else {
-            throw new \Exception('$code was not set as an integer... Lets get it right!');
+            return $this->_outputError(500, '$code was not set as an integer... Lets get it right!');
         }
 
         return $out;

@@ -185,6 +185,8 @@ class Lists
      */
     public function getItem()
     {
+        $this->_log->set_message("Lists::getItem() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $item = $this->_params[2];
@@ -197,6 +199,25 @@ class Lists
         }
 
         $query = $this->_db->get_item($owner, $lName, $item);
+
+        return $this->_output->output(200, $query, $bot);
+    }
+
+    public function randItem()
+    {
+        $this->_log->set_message("Lists::randItem() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $owner = $this->_params[0];
+        $lName = $this->_params[1];
+
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+        if(isset($this->_params[3]))
+        {
+            $this->_output->setOutput($this->_params[3]);
+        }
+
+        $query = $this->_db->get_random_item($owner, $lName);
 
         return $this->_output->output(200, $query, $bot);
     }

@@ -60,6 +60,7 @@ class ListModel
 
         return $this->_output;
     }
+
     public function get_item($owner, $lName, $name)
     {
         try
@@ -82,6 +83,29 @@ class ListModel
 
         return $this->_output;
     }
+
+    public function get_random_item($owner, $lName)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) ORDER BY iid LIMIT 1");
+
+            $stmt->execute(
+                [
+                    ':owner' => $owner,
+                    ':lName' => $lName
+                ]
+            );
+
+            $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
     public function get_list($owner, $lName, $qty)
     {
         if($qty == "all")
