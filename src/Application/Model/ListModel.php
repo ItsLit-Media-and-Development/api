@@ -84,6 +84,29 @@ class ListModel
         return $this->_output;
     }
 
+    public function get_item_by_info($owner, $lName, $info)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND i.info = :info");
+
+            $stmt->execute(
+                [
+                    ':owner' => $owner,
+                    ':lName' => $lName,
+                    ':info' => $info
+                ]
+            );
+
+            $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
     public function get_random_item($owner, $lName)
     {
         try

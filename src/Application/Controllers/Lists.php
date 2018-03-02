@@ -203,6 +203,12 @@ class Lists
         return $this->_output->output(200, $query, $bot);
     }
 
+    /**
+     * Get a random item from the specified list
+     *
+     * @return array The item specified
+     * @throws \Exception
+     */
     public function randItem()
     {
         $this->_log->set_message("Lists::randItem() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
@@ -218,6 +224,32 @@ class Lists
         }
 
         $query = $this->_db->get_random_item($owner, $lName);
+
+        return $this->_output->output(200, $query, $bot);
+    }
+
+    /**
+     * Allows a list to be searched by what is stored in it's info column
+     *
+     * @return array|string
+     * @throws \Exception
+     */
+    public function getItemByInfo()
+    {
+        $this->_log->set_message("Lists::getItemByInfo() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $owner = $this->_params[0];
+        $lName = $this->_params[1];
+        $info = $this->_params[2];
+
+        $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
+
+        if(isset($this->_params[4]))
+        {
+            $this->_output->setOutput($this->_params[4]);
+        }
+
+        $query = $this->_db->get_item_by_info($owner, $lName, $info);
 
         return $this->_output->output(200, $query, $bot);
     }
