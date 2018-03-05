@@ -308,7 +308,7 @@ class Rewards
     {
         $this->_log->set_message("Rewards::redeem_code() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-        if(isset($this->_params[3]))
+        if((!isset($this->_params[3])) && ($this->_params[3] == true))
         {
             $this->_log->set_message("An attempt to redeem a code via a bot was made, returning a 403", "WARNING");
 
@@ -316,19 +316,27 @@ class Rewards
         }
 
         $user = $this->_params[1];
-        $reward = $this->_params[2];
+        $title = (isset($this->_params[5])) ? $this->_params[5] : false;
 
         //lets see if we have any codes available
-        $query = $this->_db->redeem_code($reward, $user);
+        $query = $this->_db->redeem_code($title, $user);
 
         if($query != false)
         {
-            return $this->_output->output(200, "Congratulations on successfully redeeming your code for $reward, the code is " . $query['code'], false);
-        } else
+            if($query == "Sorry there are no codes left for $title")
+            {
+                return $this->_output->output(503, "Sorry there are no codes left for $title", false);
+            }
+            else
+            {
+                return $this->_output->output(200, "Congratulations on successfully redeeming your code for $title, the code is " . $query, false);
+            }
+        }
+        else
         {
             $this->_log->set_message("Something went wrong", "WARNING");
 
-            return $this->_output->output(400, "OOPS! Something went wrong", false);
+            return $this->_output->output(400, "Sorry but there was no code available", false);
         }
     }
 }

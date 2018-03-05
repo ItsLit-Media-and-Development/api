@@ -119,18 +119,18 @@ class RewardModel
     public function redeem_code($reward, $user)
     {
         try {
-            $stmt = $this->_db->prepare("SELECT id, code FROM codes WHERE title = :title AND redeemed_by = NULL LIMIT 1");
+            $stmt = $this->_db->prepare("SELECT id, code FROM codes WHERE title = :title AND ISNULL(redeemed_by) LIMIT 1");
             $stmt->execute([':title' => $reward]);
 
-            $result = $stmt->fetch();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if(empty($result))
             {
-                return $this->_output->output(503, "Sorry there are no codes left for $reward", false);
+                $this->_output = "Sorry there are no codes left for $reward";
             }
 
             $ins = $this->_db->prepare("UPDATE codes SET redeemed_by = :user WHERE id = :id");
-            $stmt->execute(
+            $ins->execute(
                 [
                     ':user' => $user,
                     ':id'   => $result['id']
@@ -140,6 +140,10 @@ class RewardModel
             if($ins->rowCount() > 0)
             {
                 $this->_output = $result['code'];
+            }
+            else
+            {
+                $this->_output = false;
             }
         } catch(\PDOException $e) {
             $this->_output = false;
