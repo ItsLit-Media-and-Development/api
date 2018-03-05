@@ -138,6 +138,11 @@ class Output
                         $conv .= "</tr></table>";
                         $out = $conv;
                     }
+                    else
+                    {
+                        $conv .= "<td id='$code'>$response</td></tr></table>";
+                        $out = $conv;
+                    }
 
                     break;
                 case 'plain':
@@ -207,7 +212,7 @@ class Output
                 case 'html':
                     header('Content-Type: text/html');
 
-                    $out = '<table id="rsp-stat-fail"><tr><td>Error Code: ' . $code . '</td><td>Response: ' . $response . '</td></tr></table>';
+                    $out = '<table id="rsp-stat-fail"><tr><td id="' . $code . '">Error: ' . $response . '</td></tr></table>';
                     break;
                 case 'plain':
                     header('Content-Type: text/plain');
