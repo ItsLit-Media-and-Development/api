@@ -76,7 +76,7 @@ class Streamelements
     /**
      * Pulls the points of the specified user from the channel
      *
-     * @param $username
+     * @param string $username
      * @param int $channelID
      * @return bool|mixed
      */
