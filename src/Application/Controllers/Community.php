@@ -58,6 +58,9 @@ class Community
             case 'streamelements':
                 $this->service = new Library\Streamelements();
                 break;
+            case 'streamlabs':
+                $this->service = new Library\Streamlabs();
+                break;
         }
 
         $this->service->set_channel_id($channel);

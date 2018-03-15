@@ -76,4 +76,13 @@ class Twitch
 
         return true;
     }
+
+    protected function sendRequest($method, $endpoint, $params = [], $accessToken = null)
+    {
+        $client = $this->getNewHttpClient($method, $params, $accessToken);
+        $response = $client->request($method, $endpoint);
+        $responseBody = $response->getBody()->getContents();
+        
+        return $this->getReturnJson() ? $responseBody : json_decode($responseBody, true);
+    }
 }
