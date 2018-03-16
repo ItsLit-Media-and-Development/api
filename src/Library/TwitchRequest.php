@@ -50,7 +50,7 @@ class TwitchRequest
      * @param string $endpoint
      * @param array $params
      * @param bool $accessToken
-     * @return array|json
+     * @return array
      */
     protected function get($endpoint, $params = [], $accessToken = NULL)
     {
@@ -89,8 +89,8 @@ class TwitchRequest
             'base_uri' => $this->baseUri,
             'timeout' => $this->getTimeout(),
             'headers' => [
-                'Client-ID' => $this->getClientId(),
-                'Accept' => sprintf('application/vnd.twitchtv.v%d+json', $this->getApiVersion()),
+                //'Client-ID' => $this->getClientId(),
+                //'Accept' => sprintf('application/vnd.twitchtv.v%d+json', $this->getApiVersion()),
                 'User-Agent' => ($this->getUserAgent() !== NULL) ? $this->getUserAgent() : GuzzleHttp\default_user_agent(),
             ],
         ];
@@ -142,7 +142,7 @@ class TwitchRequest
      */
     public function setTimeout($timeout)
     {
-        $this->timeout = (float)$timeout;
+        $this->timeout = $timeout;
     }
 
     /**
@@ -191,7 +191,7 @@ class TwitchRequest
      * @param string $endpoint
      * @param array $params
      * @param bool $accessToken
-     * @return array|json
+     * @return array
      */
     protected function post($endpoint, $params = [], $accessToken = NULL)
     {
@@ -204,7 +204,7 @@ class TwitchRequest
      * @param string $endpoint
      * @param array $params
      * @param bool $accessToken
-     * @return array|json
+     * @return array
      */
     protected function put($endpoint, $params = [], $accessToken = NULL)
     {
@@ -217,7 +217,7 @@ class TwitchRequest
      * @param string $endpoint
      * @param array $params
      * @param bool $accessToken
-     * @return null|array|json
+     * @return null|array
      */
     protected function delete($endpoint, $params = [], $accessToken = NULL)
     {
