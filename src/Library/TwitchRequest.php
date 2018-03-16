@@ -91,7 +91,7 @@ class TwitchRequest
             'headers' => [
                 //'Client-ID' => $this->getClientId(),
                 //'Accept' => sprintf('application/vnd.twitchtv.v%d+json', $this->getApiVersion()),
-                'User-Agent' => ($this->getUserAgent() !== NULL) ? $this->getUserAgent() : GuzzleHttp\default_user_agent(),
+                'User-Agent' => ($this->getUserAgent() != NULL) ? $this->getUserAgent() : GuzzleHttp\default_user_agent(),
             ],
         ];
         if($accessToken)
@@ -162,7 +162,7 @@ class TwitchRequest
      */
     public function setUserAgent($userAgent)
     {
-        $this->userAgent = (string)$userAgent;
+        $this->userAgent = $userAgent;
     }
 
     /**

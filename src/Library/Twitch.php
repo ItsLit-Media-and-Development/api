@@ -16,6 +16,8 @@
 
 namespace API\Library;
 
+use Nette\Neon\Exception;
+
 class Twitch extends TwitchRequest
 {
     /**
@@ -64,7 +66,8 @@ class Twitch extends TwitchRequest
     {
         if(!isset($options['client_id']))
         {
-            throw new ClientIdRequiredException();
+            //throw new ClientIdRequiredException();
+            throw new Exception();
         }
         $this->setClientId($options['client_id']);
         $this->setClientSecret(isset($options['client_secret']) ? $options['client_secret'] : NULL);
@@ -94,13 +97,11 @@ class Twitch extends TwitchRequest
     }
 
     /**
-     * Set client ID
-     *
-     * @param string
+     * @param $clientId
      */
     public function setClientId($clientId)
     {
-        $this->clientId = (string)$clientId;
+        $this->clientId = $clientId;
     }
 
     /**
@@ -120,7 +121,7 @@ class Twitch extends TwitchRequest
      */
     public function setClientSecret($clientSecret)
     {
-        $this->clientSecret = (string)$clientSecret;
+        $this->clientSecret = $clientSecret;
     }
 
     /**
@@ -137,13 +138,14 @@ class Twitch extends TwitchRequest
      * Set API version
      *
      * @param string|int $apiVersion
-     * @throws UnsupportedApiVersionException
+     * @throws Exception
      */
     public function setApiVersion($apiVersion)
     {
         if(!in_array($apiVersion = intval($apiVersion), $this->getSupportedApiVersions()))
         {
-            throw new UnsupportedApiVersionException();
+            //throw new UnsupportedApiVersionException();
+            throw new Exception();
         }
         $this->apiVersion = $apiVersion;
     }
@@ -165,7 +167,7 @@ class Twitch extends TwitchRequest
      */
     public function setRedirectUri($redirectUri)
     {
-        $this->redirectUri = (string)$redirectUri;
+        $this->redirectUri = $redirectUri;
     }
 
     /**
@@ -182,13 +184,14 @@ class Twitch extends TwitchRequest
      * Set scope
      *
      * @param array $scope
-     * @throws InvalidTypeException
+     * @throws Exception
      */
     public function setScope($scope)
     {
         if(!is_array($scope))
         {
-            throw new InvalidTypeException('Scope', 'array', gettype($scope));
+            // throw new InvalidTypeException('Scope', 'array', gettype($scope));
+            throw new Exception();
         }
         $this->scope = $scope;
     }
