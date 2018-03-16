@@ -97,7 +97,7 @@ class Twitch extends TwitchRequest
     }
 
     /**
-     * @param $clientId
+     * @param String $clientId
      */
     public function setClientId($clientId)
     {
