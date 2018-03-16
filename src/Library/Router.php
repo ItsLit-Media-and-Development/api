@@ -68,6 +68,8 @@ class Router
 
             $this->_parameters = $parameters;
         }
+
+        return true;
     }
 
     private function getHeaders()
