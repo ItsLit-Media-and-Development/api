@@ -58,7 +58,7 @@ class Sub
      */
     public function tier($user = '')
     {
-        $this->_log->set_message("Sub::tier() called from " . $_SERVER['REMOTE_ADDR'] . ", 501 returned", "INFO");
+        $this->_log->set_message("Sub::tier() called from " . $_SERVER['REMOTE_ADDR'] . " for $user, 501 returned", "INFO");
 
         return $this->_output->output(501, "Function not implemented", false);
     }

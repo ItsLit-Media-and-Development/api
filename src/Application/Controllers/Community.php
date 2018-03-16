@@ -50,10 +50,16 @@ class Community
 
         if(isset($this->_params[5]))
         {
-            $this->_output->setOutput($this->_params[5]);
+            try
+            {
+                $this->_output->setOutput($this->_params[5]);
+            } catch(\Exception $e)
+            {
+                $this->_log->set_message("Unhandled Error when setting output: " . $e->getMessage(), "ERROR");
+            }
         }
 
-        switch($bot)
+        switch($botService)
         {
             case 'streamelements':
                 $this->service = new Library\Streamelements();
