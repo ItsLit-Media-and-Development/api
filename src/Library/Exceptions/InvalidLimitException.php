@@ -15,7 +15,7 @@
 namespace API\Exceptions;
 
 
-class InvalidLimitException
+class InvalidLimitException extends APIException
 {
     public function __construct()
     {

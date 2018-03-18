@@ -15,7 +15,7 @@
 namespace API\Exceptions;
 
 
-class InvalidIdentifierException
+class InvalidIdentifierException extends APIException
 {
     public function __construct($type)
     {
