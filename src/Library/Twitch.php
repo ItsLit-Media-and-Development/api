@@ -23,47 +23,23 @@ use API\Exceptions\UnsupportedApiVersionException;
 
 class Twitch extends TwitchRequest
 {
-    /**
-     * @var int
-     */
     protected $defaultApiVersion = 5;
-    /**
-     * @var array
-     */
     protected $supportedApiVersions = [3, 5];
-    /**
-     * @var string
-     */
     protected $clientId;
-    /**
-     * @var string
-     */
     protected $clientSecret;
-    /**
-     * @var int
-     */
     protected $apiVersion;
-    /**
-     * @var string
-     */
     protected $redirectUri;
-    /**
-     * @var array
-     */
     protected $scope;
-    /**
-     * @var string
-     */
     protected $state;
-    /**
-     * @var string
-     */
     protected $accessToken;
 
     /**
      * Instantiate a new TwitchApi instance
      *
      * @param array $options
+     * @throws ClientIdRequiredException string
+     * @throws UnsupportedApiVersionException
+     * @throws InvalidTypeException
      */
     public function __construct(array $options)
     {
@@ -140,7 +116,7 @@ class Twitch extends TwitchRequest
      * Set API version
      *
      * @param string|int $apiVersion
-     * @throws Exception
+     * @throws UnsupportedApiVersionException
      */
     public function setApiVersion($apiVersion)
     {
@@ -185,7 +161,7 @@ class Twitch extends TwitchRequest
      * Set scope
      *
      * @param array $scope
-     * @throws Exception
+     * @throws InvalidTypeException
      */
     public function setScope($scope)
     {

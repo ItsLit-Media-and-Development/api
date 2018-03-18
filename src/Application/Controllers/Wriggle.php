@@ -83,25 +83,11 @@ class Wriggle
                 {
                     if($card == "steal")
                     {
-                        if($victim == '')
-                        {
-                            return $this->_output->output(200, "$user stole caps!");
-                        }
-                        else
-                        {
-                            return $this->_output->output(200, "$user stole caps from " . $victim . "!");
-                        }
+                        return ($victim == '') ? $this->_output->output(200, "$user stole caps!") : $this->_output->output(200, "$user stole caps from " . $victim . "!");
                     }
                     else
                     {
-                        if($victim == '')
-                        {
-                            return $this->_output->output(200, "$user swapped caps!");
-                        }
-                        else
-                        {
-                            return $this->_output->output(200, "$user swapped caps from " . $victim . "!");
-                        }
+                        return ($victim == '') ? $this->_output->output(200, "$user swapped caps!") : $this->_output->output(200, "$user swapped caps from " . $victim . "!");
                     }
                 }
             }
@@ -114,7 +100,7 @@ class Wriggle
         }
         else
         {
-            $this->_log->set_message("URI is missing parameters, we have: $user, $card", "WARNING");
+            $this->_log->set_message("URI is missing parameters, we have: $user, $card", "ERROR");
 
             return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Wriggle/draw/card/username/(optional)victim");
         }

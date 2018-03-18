@@ -1,6 +1,6 @@
 <?php
 /**
- * Invalid Email Address Exception
+ * Invalid Identifier Exception
  *
  *
  * @package       API
@@ -15,10 +15,10 @@
 namespace API\Exceptions;
 
 
-class InvalidEmailAddressException extends APIException
+class InvalidIdentifierException
 {
-    public function __construct()
+    public function __construct($type)
     {
-        parent::__construct('Invalid email address provied.');
+        parent::__construct(sprintf('Invalid %s identifier provided.', $type));
     }
 }

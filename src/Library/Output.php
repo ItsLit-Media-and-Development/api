@@ -85,88 +85,19 @@ class Output
             switch ($this->_output)
             {
                 case 'json':
-                    header('Content-Type: application/json');
-
-                    if($bot)
-                    {
-                        $out = json_encode($response);
-                    } else {
-                        $out = json_encode(['status' => $code, 'response' => $response]);
-                    }
+                    $out = $this->json_output($response, $bot, $code);
 
                     break;
                 case 'xml':
-                    header('Content-Type: text/xml');
-
-                    $conv = '';
-
-                    if(is_array($response))
-                    {
-                        foreach ($response as $item)
-                        {
-                            if (is_array($item))
-                            {
-                                foreach ($item as $key => $val)
-                                {
-                                    $conv .= "<$key>$val</$key>";
-                                }
-                            }
-                        }
-                        $response = $conv;
-                    }
-
-                    $out = '<rsp stat="ok">' . $response . '</rsp>';
+                    $out = $this->xml_output($response);
+                    
                     break;
                 case 'html':
-                    header('Content-Type: text/html');
-
-                    $conv = '<table id="rsp-stat-ok"><tr>';
-
-                    if(is_array($response))
-                    {
-                        foreach($response as $item)
-                        {
-                            if (is_array($item))
-                            {
-                                foreach ($item as $key => $val)
-                                {
-                                    $conv .= "<td id='$key'>$val</td>";
-                                }
-                            }
-                        }
-
-                        $conv .= "</tr></table>";
-                        $out = $conv;
-                    }
-                    else
-                    {
-                        $conv .= "<td id='$code'>$response</td></tr></table>";
-                        $out = $conv;
-                    }
+                    $out = $this->html_output($response, $code);
 
                     break;
                 case 'plain':
-                    header('Content-Type: text/plain');
-
-                    $out = '';
-
-                    if(is_array($response))
-                    {
-                        foreach($response as $item)
-                        {
-                            if(is_array($item))
-                            {
-                                foreach($item as $key => $val)
-                                {
-                                    $out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        $out = $response;
-                    }
+                    $out = $this->plain_output($response);
 
                     break;
                 default:
@@ -179,6 +110,95 @@ class Output
                         $out = json_encode(['status' => $code, 'response' => $response]);
                     }
             }
+        }
+
+        return $out;
+    }
+
+    private function json_output($input, $bot, $code)
+    {
+        header('Content-Type: application/json');
+
+        return ($bot == true) ? json_encode($input) : json_encode(['status' => $code, 'response' => $input]);
+    }
+
+    private function xml_output($input)
+    {
+        header('Content-Type: text/xml');
+
+        $conv = '';
+
+        if(is_array($input))
+        {
+            foreach($input as $item)
+            {
+                if(is_array($item))
+                {
+                    foreach($item as $key => $val)
+                    {
+                        $conv .= "<$key>$val</$key>";
+                    }
+                }
+            }
+            $input = $conv;
+        }
+
+        return '<rsp stat="ok">' . $input . '</rsp>';
+    }
+
+    private function html_output($input, $code)
+    {
+        header('Content-Type: text/html');
+
+        $conv = '<table id="rsp-stat-ok"><tr>';
+
+        if(is_array($input))
+        {
+            foreach($input as $item)
+            {
+                if(is_array($item))
+                {
+                    foreach($item as $key => $val)
+                    {
+                        $conv .= "<td id='$key'>$val</td>";
+                    }
+                }
+            }
+
+            $conv .= "</tr></table>";
+            $out = $conv;
+        }
+        else
+        {
+            $conv .= "<td id='$code'>$input</td></tr></table>";
+            $out = $conv;
+        }
+
+        return $out;
+    }
+
+    private function plain_output($input)
+    {
+        header('Content-Type: text/plain');
+
+        $out = '';
+
+        if(is_array($input))
+        {
+            foreach($input as $item)
+            {
+                if(is_array($item))
+                {
+                    foreach($item as $key => $val)
+                    {
+                        $out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+                    }
+                }
+            }
+        }
+        else
+        {
+            $out = $input;
         }
 
         return $out;

@@ -17,9 +17,6 @@ namespace API\Exceptions;
 
 class EndpointNotSupportedByApiVersionException extends APIException
 {
-    /**
-     * @var string $endpoint
-     */
     public function __construct()
     {
         parent::__construct('This endpoint is not supported by the set API version.');

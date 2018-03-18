@@ -50,13 +50,7 @@ class Community
 
         if(isset($this->_params[5]))
         {
-            try
-            {
-                $this->_output->setOutput($this->_params[5]);
-            } catch(\Exception $e)
-            {
-                $this->_log->set_message("Unhandled Error when setting output: " . $e->getMessage(), "ERROR");
-            }
+            $this->_output->setOutput($this->_params[5]);
         }
 
         switch($botService)
@@ -71,33 +65,8 @@ class Community
 
         $this->service->set_channel_id($channel);
 
-        if($type == 'channel')
-        {
-            $output = $this->service->get_channel_points($qParam);
+        $output = ($type == 'channel') ? $this->service->get_channel_points($qParam) : $this->service->get_user_points($qParam);
 
-            if($output != false)
-            {
-                return $this->_output->output(400, "Unable to retrieve data, is the channel ID correct?", $bot);
-            }
-            else
-            {
-                return $this->_output->output(200, $output, $bot);
-            }
-        }
-        elseif($type == 'user')
-        {
-            $output = $this->service->get_user_points($qParam);
-
-            if($output != false)
-            {
-                return $this->_output->output(400, "Unable to retrieve data, is the channel ID correct?", $bot);
-            }
-            else
-            {
-                return $this->_output->output(200, $output, $bot);
-            }
-        }
-
-        return $this->_output->output(400, "URL is malformed", $bot);
+        return ($output == false) ? $this->_output->output(400, "Unable to retrieve data, is the channel ID correct?", $bot) : $this->_output->output(200, $output, $bot);
     }
 }

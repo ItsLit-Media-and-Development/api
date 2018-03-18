@@ -23,25 +23,11 @@ class TwitchRequest
     const PUT_METHOD = 'PUT';
     const POST_METHOD = 'POST';
     const DELETE_METHOD = 'DELETE';
-    /**
-     * @var string
-     */
+
     protected $baseUri = 'https://api.twitch.tv/kraken/';
-    /**
-     * @var float
-     */
     protected $timeout = 5.0;
-    /**
-     * @var string
-     */
     protected $userAgent;
-    /**
-     * @var bool
-     */
     protected $httpErrors = false;
-    /**
-     * @var bool
-     */
     protected $returnJson = false;
 
     /**
