@@ -16,7 +16,10 @@
 
 namespace API\Library;
 
-use Nette\Neon\Exception;
+use API\Exceptions\ClientIdRequiredException;
+use API\Exceptions\InvalidTypeException;
+use API\Exceptions\UnsupportedApiVersionException;
+
 
 class Twitch extends TwitchRequest
 {
@@ -66,8 +69,7 @@ class Twitch extends TwitchRequest
     {
         if(!isset($options['client_id']))
         {
-            //throw new ClientIdRequiredException();
-            throw new Exception();
+            throw new ClientIdRequiredException();
         }
         $this->setClientId($options['client_id']);
         $this->setClientSecret(isset($options['client_secret']) ? $options['client_secret'] : NULL);
@@ -144,8 +146,7 @@ class Twitch extends TwitchRequest
     {
         if(!in_array($apiVersion = intval($apiVersion), $this->getSupportedApiVersions()))
         {
-            //throw new UnsupportedApiVersionException();
-            throw new Exception();
+            throw new UnsupportedApiVersionException();
         }
         $this->apiVersion = $apiVersion;
     }
@@ -190,8 +191,7 @@ class Twitch extends TwitchRequest
     {
         if(!is_array($scope))
         {
-            // throw new InvalidTypeException('Scope', 'array', gettype($scope));
-            throw new Exception();
+            throw new InvalidTypeException('Scope', 'array', gettype($scope));
         }
         $this->scope = $scope;
     }

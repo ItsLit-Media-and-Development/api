@@ -1,6 +1,6 @@
 <?php
 /**
- * Unsupported API Version Exception
+ * Invalid Type Exception
  *
  *
  * @package       API
@@ -15,10 +15,15 @@
 namespace API\Exceptions;
 
 
-class UnsupportedApiVersionException extends APIException
+class InvalidTypeException extends APIException
 {
-    public function __construct()
+    /**
+     * @var string $name
+     * @var string $expects
+     * @var string $given
+     */
+    public function __construct($name, $expects, $given)
     {
-        parent::__construct('Unsupported Twitch API Version');
+        parent::__construct(sprintf('%s expects to be of type \'%s\', \'%s\' given instead.', $name, $expects, $given));
     }
 }
