@@ -25,7 +25,8 @@
       "API\\": "",
       "API\\Library\\": "src/Library",
       "API\\Controllers\\": "src/Application/Controllers",
-      "API\\Model\\": "src/Application/Model"
+      "API\\Model\\": "src/Application/Model",
+      "API\\Exceptions\\": "src/Library/Exceptions"
     }
   },
   "autoload-dev": {
