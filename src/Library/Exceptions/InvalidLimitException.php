@@ -1,6 +1,6 @@
 <?php
 /**
- * Invalid Email Address Exception
+ * Invalid Limit Exception
  *
  *
  * @package       API
@@ -15,10 +15,10 @@
 namespace API\Exceptions;
 
 
-class InvalidEmailAddressException extends APIException
+class InvalidLimitException extends APIException
 {
     public function __construct()
     {
-        parent::__construct('Invalid email address provied.');
+        parent::__construct('Invalid \'limit\' provided. Limit must be a numeric value greater than 0.');
     }
 }

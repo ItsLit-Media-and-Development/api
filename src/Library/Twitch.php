@@ -16,58 +16,36 @@
 
 namespace API\Library;
 
-use Nette\Neon\Exception;
+use API\Exceptions\ClientIdRequiredException;
+use API\Exceptions\InvalidTypeException;
+use API\Exceptions\UnsupportedApiVersionException;
+
 
 class Twitch extends TwitchRequest
 {
-    /**
-     * @var int
-     */
     protected $defaultApiVersion = 5;
-    /**
-     * @var array
-     */
     protected $supportedApiVersions = [3, 5];
-    /**
-     * @var string
-     */
     protected $clientId;
-    /**
-     * @var string
-     */
     protected $clientSecret;
-    /**
-     * @var int
-     */
     protected $apiVersion;
-    /**
-     * @var string
-     */
     protected $redirectUri;
-    /**
-     * @var array
-     */
     protected $scope;
-    /**
-     * @var string
-     */
     protected $state;
-    /**
-     * @var string
-     */
     protected $accessToken;
 
     /**
      * Instantiate a new TwitchApi instance
      *
      * @param array $options
+     * @throws ClientIdRequiredException string
+     * @throws UnsupportedApiVersionException
+     * @throws InvalidTypeException
      */
     public function __construct(array $options)
     {
         if(!isset($options['client_id']))
         {
-            //throw new ClientIdRequiredException();
-            throw new Exception();
+            throw new ClientIdRequiredException();
         }
         $this->setClientId($options['client_id']);
         $this->setClientSecret(isset($options['client_secret']) ? $options['client_secret'] : NULL);
@@ -138,14 +116,13 @@ class Twitch extends TwitchRequest
      * Set API version
      *
      * @param string|int $apiVersion
-     * @throws Exception
+     * @throws UnsupportedApiVersionException
      */
     public function setApiVersion($apiVersion)
     {
         if(!in_array($apiVersion = intval($apiVersion), $this->getSupportedApiVersions()))
         {
-            //throw new UnsupportedApiVersionException();
-            throw new Exception();
+            throw new UnsupportedApiVersionException();
         }
         $this->apiVersion = $apiVersion;
     }
@@ -184,14 +161,13 @@ class Twitch extends TwitchRequest
      * Set scope
      *
      * @param array $scope
-     * @throws Exception
+     * @throws InvalidTypeException
      */
     public function setScope($scope)
     {
         if(!is_array($scope))
         {
-            // throw new InvalidTypeException('Scope', 'array', gettype($scope));
-            throw new Exception();
+            throw new InvalidTypeException('Scope', 'array', gettype($scope));
         }
         $this->scope = $scope;
     }
