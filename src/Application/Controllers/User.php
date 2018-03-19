@@ -14,7 +14,6 @@
 namespace API\Controllers;
 
 use API\Library;
-
 use API\Model;
 
 
@@ -64,12 +63,8 @@ class User
     public function register()
     {
         $this->_log->set_message("User::register() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-        $details = [];
 
-        if(isset($_POST))
-        {
-            $details = $_POST;
-        }
+        $details = isset($_POST) ? $_POST : [];
 
         if(isset($details['return_output']))
         {
@@ -78,13 +73,7 @@ class User
 
         $query = $this->_db->register($details['name'], $details['password'], $details['email'], $details['status']);
 
-        if($query == true)
-        {
-            return $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false);
-        } else {
-            $this->_log->set_message("Something went wrong in User::register(), PDO error $query", "ERROR");
-            return $this->_output->output(400, $query, false);
-        }
+        return ($query == true) ? $this->_output->output(201, "user " . $details['name'] . " has successfully been registered", false) : $this->_output->output(400, $query, false);
     }
 
     /**
@@ -99,17 +88,9 @@ class User
 
         $user = $this->_params[0];
         $key  = $this->_params[1];
-        $bot  = false;
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
 
-        if(isset($this->_params[2]))
-        {
-            $bot = $this->_params[2];
-        }
-
-        if(isset($this->_params[3]))
-        {
-            $this->_output->setOutput($this->_params[3]);
-        }
+        $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
         if(isset($user) && is_string($user))
         {
@@ -148,17 +129,9 @@ class User
         $user  = $this->_params[0];
         $mode  = (isset($this->_params[1])) ? $this->_params[1] : "all";
         $query = '';
-        $bot   = false;
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
 
-        if(isset($this->_params[2]))
-        {
-            $bot = $this->_params[2];
-        }
-
-        if(isset($this->_params[3]))
-        {
-            $this->_output->setOutput($this->_params[3]);
-        }
+        $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
         //check that $user is a string and not blank then pull from db
         if(isset($user) && is_string($user))
@@ -211,10 +184,7 @@ class User
         {
             $stats = $_POST;
 
-            if(isset($stats['return_output']))
-            {
-                $this->_output->setOutput($stats['return_output']);
-            }
+            $this->_output->setOutput((isset($stats['return_output'])) ? $stats['return_output'] : NULL);
 
             $query = $this->_db->add_stats($stats['name'], $stats['followers'], $stats['views']);
 

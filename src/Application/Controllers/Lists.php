@@ -96,22 +96,11 @@ class Lists
 
             $bot = (isset($this->_params[4])) ? $this->_params[4] : false;
 
-            if(isset($this->_params[5]))
-            {
-                $this->_output->setOutput($this->_params[5]);
-            }
+            $this->_output->setOutput((isset($this->_params[5])) ? $this->_params[5] : NULL);
 
             $query = $this->_db->delete_item($owner, $lName, $name);
 
-            if($query)
-            {
-                $name = str_replace("%20", " ", $name);
-                return $this->_output->output(200, "$name was removed from the $lName list!", $bot);
-            }
-            else
-            {
-                return $this->_output->output(400, $query, $bot);
-            }
+            return ($query != NULL) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was removed from the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
         }
     }
 
@@ -137,38 +126,19 @@ class Lists
 
             $query = $this->_db->add_list($owner, $lName);
 
-            if(is_bool($query))
-            {
-                return $this->_output->output(200, "List $lName has been created!", $bot);
-            }
-            else
-            {
-                return $this->_output->output(400, $query, $bot);
-            }
+            return (is_bool($query)) ? $this->_output->output(200, "List $lName has been created!", $bot) : $this->_output->output(400, $query, $bot);
         }
         elseif($type == 'addentry')
         {
             $name = $this->_params[3];
             $info = (isset($this->_params[4])) ? $this->_params[4] : '';
-
             $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
-            if(isset($this->_params[6]))
-            {
-                $this->_output->setOutput($this->_params[6]);
-            }
+            $this->_output->setOutput((isset($this->_params[6])) ? $this->_params[6] : NULL);
 
             $query = $this->_db->add_entry($owner, $lName, $name, $info);
 
-            if(is_bool($query))
-            {
-                $name = str_replace("%20", " ", $name);
-                return $this->_output->output(200, "$name was added to the $lName list!", $bot);
-            }
-            else
-            {
-                return $this->_output->output(400, $query, $bot);
-            }
+            return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
         }
         else
         {
@@ -190,17 +160,11 @@ class Lists
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $item = $this->_params[2];
-
         $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
 
-        if(isset($this->_params[4]))
-        {
-            $this->_output->setOutput($this->_params[4]);
-        }
+        $this->_output->setOutput((isset($this->_params[4])) ? $this->_params[4] : NULL);
 
-        $query = $this->_db->get_item($owner, $lName, $item);
-
-        return $this->_output->output(200, $query, $bot);
+        return $this->_output->output(200, $this->_db->get_item($owner, $lName, $item), $bot);
     }
 
     /**
@@ -215,17 +179,11 @@ class Lists
 
         $owner = $this->_params[0];
         $lName = $this->_params[1];
-
         $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
 
-        if(isset($this->_params[3]))
-        {
-            $this->_output->setOutput($this->_params[3]);
-        }
+        $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
-        $query = $this->_db->get_random_item($owner, $lName);
-
-        return $this->_output->output(200, $query, $bot);
+        return $this->_output->output(200, $this->_db->get_random_item($owner, $lName), $bot);
     }
 
     /**
@@ -241,16 +199,10 @@ class Lists
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $info = $this->_params[2];
-
         $bot = (isset($this->_params[3])) ? $this->_params[3] : false;
 
-        if(isset($this->_params[4]))
-        {
-            $this->_output->setOutput($this->_params[4]);
-        }
+        $this->_output->setOutput((isset($this->_params[4])) ? $this->_params[4] : NULL);
 
-        $query = $this->_db->get_item_by_info($owner, $lName, $info);
-
-        return $this->_output->output(200, $query, $bot);
+        return $this->_output->output(200, $this->_db->get_item_by_info($owner, $lName, $info), $bot);
     }
 }

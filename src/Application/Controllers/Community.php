@@ -48,10 +48,7 @@ class Community
         $qParam = $this->_params[3];
         $bot = (isset($this->_params[4])) ? $this->_params[4] : true;
 
-        if(isset($this->_params[5]))
-        {
-            $this->_output->setOutput($this->_params[5]);
-        }
+        $this->_output->setOutput((isset($this->_params[5])) ? $this->_params[5] : NULL);
 
         switch($botService)
         {
