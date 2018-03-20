@@ -64,11 +64,7 @@ class Rewards
         $reward  = $this->_params[1];
         $desc    = $this->_params[2];
         $bot     = (isset($this->_params[3])) ? $this->_params[3] : true;
-
-        if(isset($this->_params[4]))
-        {
-            $this->_output->setOutput($this->_params[4]);
-        }
+        $this->_output->setOutput((isset($this->_params[4])) ? $this->_params[4] : NULL);
 
         if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != ''))
         {
@@ -120,14 +116,7 @@ class Rewards
             {
                 $query = $this->_db->redeem_reward($chan, $reward, $user);
 
-                if($query === true)
-                {
-                    return $this->_output->output(201, "Redemption of " . $reward . " confirmed", $bot);
-                } else {
-                    $this->_log->set_message("Something went wrong redeeming a non-code reward, PDO Error: $query", "ERROR");
-
-                    return $this->_output->output(400, $query, $bot);
-                }
+                return ($query === true) ? $this->_output->output(201, "Redemption of " . $reward . " confirmed", $bot) : $this->_output->output(400, $query, $bot);
             } else {
                 return $this->redeem_code();
             }
@@ -135,12 +124,7 @@ class Rewards
             //lets assume they want to know what can be redeemed!
             $query = $this->_db->list_reward($chan);
 
-            if($query != false)
-            {
-                return $this->_output->output(200, $query, $bot);
-            } else {
-                return $this->_output->output(204, "OOPS! No rewards have been loaded!", $bot);
-            }
+            return ($query != false) ? $this->_output->output(200, $query, $bot) : $this->_output->output(204, "OOPS! No rewards have been loaded!", $bot);
         }
     }
 
@@ -155,11 +139,6 @@ class Rewards
         $this->_log->set_message("Rewards::add_code() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
         $accepted = ['playstation', 'xbox', 'steam', 'gog', 'other'];
-
-        if(isset($this->_params[1]))
-        {
-            $this->_output->setOutput($this->_params[1]);
-        }
 
         if(isset($_POST))
         {
@@ -177,17 +156,9 @@ class Rewards
 
             if(in_array($platform, $accepted))
             {
-                //lets strip out any hyphens to keep it consistent in the output
-                $code = str_replace('-', '', $code);
+                $query = $this->_db->add_code($title, str_replace('-', '', $code), $platform, $expires);
 
-                $query = $this->_db->add_code($title, $code, $platform, $expires);
-
-                if($query === true)
-                {
-                    return $this->_output->output(201, "Addition of $title code confirmed");
-                } else {
-                    return $this->_output->output(400, $query);
-                }
+                return ($query === true) ? $this->_output->output(201, "Addition of $title code confirmed") : $this->_output->output(400, $query);
             } else {
                 $this->_log->set_message("An invalid platform was passed: $platform", "WARNING");
 

@@ -33,11 +33,17 @@ class Output
     public function setOutput($type)
     {
         $type = strtolower($type);
-        if (in_array($type, $this->_types, true))
+
+        if($type != NULL)
         {
-            $this->_output = $type;
-        } else {
-            throw new \Exception("Output type " . $type . " is not a valid type!");
+            if(in_array($type, $this->_types, true))
+            {
+                $this->_output = $type;
+            }
+            else
+            {
+                throw new \Exception("Output type " . $type . " is not a valid type!");
+            }
         }
     }
 
@@ -63,8 +69,6 @@ class Output
      */
     public function output($code, $response, $bot = true)
     {
-        $out = [];
-
         if($this->_output == '')
         {
             return $this->_outputError(400, "Output type is not a valid type!");
@@ -103,12 +107,7 @@ class Output
                 default:
                     header('Content-Type: application/json');
 
-                    if($bot)
-                    {
-                        $out = json_encode($response);
-                    } else {
-                        $out = json_encode(['status' => $code, 'response' => $response]);
-                    }
+                    $out = $this->json_output($response, $bot, $code);
             }
         }
 
@@ -140,10 +139,9 @@ class Output
                     }
                 }
             }
-            $input = $conv;
         }
 
-        return '<rsp stat="ok">' . $input . '</rsp>';
+        return '<rsp stat="ok">' . $conv . '</rsp>';
     }
 
     private function html_output($input, $code)
@@ -166,15 +164,13 @@ class Output
             }
 
             $conv .= "</tr></table>";
-            $out = $conv;
         }
         else
         {
             $conv .= "<td id='$code'>$input</td></tr></table>";
-            $out = $conv;
         }
 
-        return $out;
+        return $conv;
     }
 
     private function plain_output($input)
@@ -238,7 +234,7 @@ class Output
                     header('Content-Type: text/plain');
 
                     //This is generally only going to be used for chat bots so lets make it muggle readable
-                    $out = "An error occured: $response";
+                    $out = "An error occurred: $response";
                     break;
                 default:
                     header('Content-Type: application/json');

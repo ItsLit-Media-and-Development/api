@@ -63,11 +63,7 @@ class Wriggle
         $card = $this->_params[0];
         $user = $this->_params[1];
         $victim = (isset($this->_params[3])) ? $this->_params[3] : '';
-
-        if(isset($this->_params[2]) && $this->_params[2] != '')
-        {
-            $this->_output->setOutput($this->_params[2]);
-        }
+        $this->_output->setOutput((isset($this->_params[2])) ? $this->_params[2] : NULL);
 
         if($user != '' && $card != '')
         {

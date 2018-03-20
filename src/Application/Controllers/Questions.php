@@ -64,10 +64,7 @@ class Questions
         $user     = $this->_params[1];
         $question = $this->_params[2];
 
-        if(isset($this->_params[3]) && $this->_params[3] != '')
-        {
-            $this->_output->setOutput($this->_params[3]);
-        }
+        $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
         if($user != '' && $question != '')
         {
@@ -99,10 +96,7 @@ class Questions
 
         $qid = $this->_params[0];
 
-        if(isset($this->_params[1]) && $this->_params[1] != '')
-        {
-            $this->_output->setOutput($this->_params[1]);
-        }
+        $this->_output->setOutput((isset($this->_params[1])) ? $this->_params[1] : NULL);
 
         $query = $this->_db->mark_read($qid);
 
@@ -127,18 +121,9 @@ class Questions
         $this->_log->set_message("Questions::showlist() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
         $chan = $this->_params[0];
-        $bot = false;
+        $bot = (isset($this->_params[1])) ? $this->_params[1] : false;
 
-        if(isset($this->_params[2]) && $this->_params[2] != '')
-        {
-            $this->_output->setOutput($this->_params[2]);
-        }
-
-        //are we saying that the response is not going to a bot
-        if(isset($this->_params[1]) && $this->_params[1] != '')
-        {
-            $bot = $this->_params[1];
-        }
+        $this->_output->setOutput((isset($this->_params[2])) ? $this->_params[2] : NULL);
 
         $query = $this->_db->list_questions($chan);
 
