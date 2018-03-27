@@ -132,7 +132,7 @@ class Admin
 
             $this->_output->setOutput((isset($this->_params[1]) ? $this->_params[1] : NULL));
 
-            $query = $this->revoke_token($user);
+            $query = $this->_db->revoke_token($user);
 
             return (is_integer($query) && $query > 0) ? $this->_output->output(201, "Token revoked", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
         }
