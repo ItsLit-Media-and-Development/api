@@ -117,4 +117,47 @@ class AdminModel
 
         return $this->_output;
     }
+
+    public function add_api_user(array $user_details)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("INSERT INTO api_users (username, email, token, ip, last_access) VALUES(:username, :email, :tid, :ip, NOW())");
+
+            $stmt->execute(
+                [
+                    ':username' => $user_details['username'],
+                    ':email' => $user_details['email'],
+                    ':token' => $user_details['token'],
+                    ':ip' => $user_details['ip']
+                ]
+            );
+
+            $this->_output = ($stmt->rowCount() > 0) ? $stmt->fetch() : 0;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
+    public function revoke_token($user)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("DELETE FROM api_users WHERE username = :user");
+            $stmt->execute(['user' => $user]);
+
+            $stmt2 = $this->_db->prepare("DELETE FROM auth_token WHERE user = :user");
+            $stmt2->execute(['user' => $user]);
+
+            $this->_output = ($stmt->rowCount() > 0 && $stmt2->rowCount() > 0) ? true : false;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }
