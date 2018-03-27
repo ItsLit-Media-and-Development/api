@@ -141,4 +141,23 @@ class AdminModel
 
         return $this->_output;
     }
+
+    public function revoke_token($user)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("DELETE FROM api_users WHERE username = :user");
+            $stmt->execute(['user' => $user]);
+
+            $stmt2 = $this->_db->prepare("DELETE FROM auth_token WHERE user = :user");
+            $stmt2->execute(['user' => $user]);
+
+            $this->_output = ($stmt->rowCount() > 0 && $stmt2->rowCount() > 0) ? true : false;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }
