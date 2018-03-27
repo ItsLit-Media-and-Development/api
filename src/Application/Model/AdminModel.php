@@ -117,4 +117,28 @@ class AdminModel
 
         return $this->_output;
     }
+
+    public function add_api_user(array $user_details)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("INSERT INTO api_users (username, email, token, ip, last_access) VALUES(:username, :email, :tid, :ip, NOW())");
+
+            $stmt->execute(
+                [
+                    ':username' => $user_details['username'],
+                    ':email' => $user_details['email'],
+                    ':token' => $user_details['token'],
+                    ':ip' => $user_details['ip']
+                ]
+            );
+
+            $this->_output = ($stmt->rowCount() > 0) ? $stmt->fetch() : 0;
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }

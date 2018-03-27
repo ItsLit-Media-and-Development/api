@@ -159,4 +159,25 @@ class Admin
             return 0;
         }
     }
+
+    public function registerAPIuser()
+    {
+        if(isset($_POST))
+        {
+            $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+            $user_info = $_POST;
+
+            $this->_output->setOutput((isset($user_info['return_output'])) ? $user_info['return_output'] : NULL);
+
+            $user_info['token'] = $this->create_token();
+
+            $query = $this->_db->add_api_user($user_info);
+
+            //Lets see if it worked or not
+            return (is_integer($query) && $query > 0) ? $this->_output->output(201, "API User was created, pending approval", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
+        }
+
+        return $this->_output->output(400, "Resource can only be accessed via POST", false);
+    }
 }
