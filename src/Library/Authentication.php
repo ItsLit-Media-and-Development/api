@@ -2,13 +2,18 @@
 /**
  * Authentication Library
  *
- * Allows the end user to specify different types of output i.e. HTML, JSON (default), XML
+ * Creates and authenticates JWT tokens as an authentication method
+ * Level 1 = bot only token
+ * Level 2 = web token
+ * Level 3 = admin token
  *
- * @package        API
- * @author        Marc Towler <marc@marctowler.co.uk>
+ * Each token can be used for the level it is issued at and below
+ *
+ * @package      API
+ * @author       Marc Towler <marc@marctowler.co.uk>
  * @copyright    Copyright (c) 2017 Marc Towler
- * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link        https://api.itslit.uk
+ * @license      https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link         https://api.itslit.uk
  * @since        Version 1.0
  * @filesource
  */
@@ -18,7 +23,6 @@ namespace API\Library;
 
 class Authentication
 {
-    private $_token;
     private $_config;
     private $_db;
     private $_log;

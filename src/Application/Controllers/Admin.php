@@ -66,7 +66,7 @@ class Admin
      */
     public function getLogs()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) > 3)
+        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) == 3)
         {
             $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -124,7 +124,7 @@ class Admin
 
     public function revokeToken()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) > 3)
+        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) == 3)
         {
             $this->_log->set_message("Admin::revokeToken() Called from " . $_SERVER['REMOTE_ADDR'] . " by " . $this->_header['auth_user'], "INFO");
 
