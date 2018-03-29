@@ -69,14 +69,8 @@ class Questions
         if($user != '' && $question != '')
         {
             $query = $this->_db->add_question($channel, $user, $question);
-            if(!is_string($query) && $query == true)
-            {
-                return $this->_output->output(200, "Question Added");
-            } else {
-                $this->_log->set_message("Something went wrong, PDO error: $query", "ERROR");
 
-                return $this->_output->output(400, $query);
-            }
+            return (!is_string($query) && $query == true) ? $this->_output->output(200, "Question Added") : $this->_output->output(400, $query);
         } else {
             $this->_log->set_message("URI is missing parameters, we have: $channel, $user, $question", "WARNING");
 

@@ -82,18 +82,7 @@ class Admin
 
             $output = $this->_db->get_logs($type, $from, $to);
 
-            if(is_array($output))
-            {
-                return $this->_output->output(200, $output, false);
-            }
-            elseif(is_int($output))
-            {
-                return $this->_output->output(200, "There are no logs right now!", false);
-            }
-            else
-            {
-                return $this->_output->output(500, "Something went wrong, PDO error: $output", false);
-            }
+            return (is_array($output)) ? $this->_output->output(200, $output, false) : (is_int($output)) ? $this->_output->output(200, "There are no logs right now!", false) : $this->_output->output(500, "Something went wrong, PDO error: $output", false);
         }
         else
         {
