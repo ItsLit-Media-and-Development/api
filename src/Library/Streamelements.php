@@ -104,4 +104,32 @@ class Streamelements
 
         return $this->data;
     }
+
+    /**
+     * Shows all active giveaways for channel specified by channelID
+     * @param int $channelID
+     * @return bool|array
+     */
+    public function get_giveaways($channelID = 0)
+    {
+        if($channelID == 0)
+        {
+            return false;
+        }
+
+        $this->set_channel_id($channelID);
+
+        $this->_url .= '/giveaways/' . $this->_channelID;
+
+        $data = file_get_contents($this->_url);
+
+        $this->data = json_decode($data, true);
+
+        return $this->data;
+    }
+
+    public function check_entry_giveaway($channelID = 0, $giveawayID = 0)
+    {
+        //@TODO: work out how I want to store/use the JWT for SE
+    }
 }
