@@ -101,7 +101,8 @@ class JWT
     public function jsonDecode($input)
     {
         $obj = json_decode($input);
-        if (function_exists('json_last_error') && $errno = json_last_error()) {
+        if($errno = json_last_error())
+        {
             $this->handleJsonError($errno);
         }
         else if ($obj === null && $input !== 'null') {

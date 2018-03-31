@@ -66,7 +66,8 @@ class Questions
 
         $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
-        if($user != '' && $question != '')
+        //if question is filled in then user is!
+        if($question != '')
         {
             $query = $this->_db->add_question($channel, $user, $question);
 

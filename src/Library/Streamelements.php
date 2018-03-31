@@ -21,9 +21,11 @@ class Streamelements
     public $data;
     private $_url = 'https://api.streamelements.com/kappa/v2';
     private $_channelID = '';
+    private $_JWT;
 
-    public function __construct()
+    public function __construct($token)
     {
+        $this->_JWT = $token;
     }
 
     /**
