@@ -66,44 +66,32 @@ class Admin
      */
     public function getLogs()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) > 3)
-        {
-            $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
-            $type = (isset($this->_params[0])) ? $this->_params[0] : false;
-            $from = (isset($this->_params[1])) ? $this->_params[1] : false;
-            $to = (isset($this->_params[2])) ? $this->_params[2] : false;
-
-            //we know if 0 isnt set then the rest wont be
-            if($type === false)
-            {
-                return $this->_output->output(400, "URI is malformed, please check the documents", false);
-            }
-
-            $output = $this->_db->get_logs($type, $from, $to);
-
-            if(is_array($output))
-            {
-                return $this->_output->output(200, $output, false);
-            }
-            elseif(is_int($output))
-            {
-                return $this->_output->output(200, "There are no logs right now!", false);
-            }
-            else
-            {
-                return $this->_output->output(500, "Something went wrong, PDO error: $output", false);
-            }
-        }
-        else
+        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) < 3)
         {
             return $this->_output->output(403, "Invalid auth_token");
         }
+        
+        $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $type = (isset($this->_params[0])) ? $this->_params[0] : false;
+        $from = (isset($this->_params[1])) ? $this->_params[1] : false;
+        $to = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+        //we know if 0 isnt set then the rest wont be
+        if($type === false)
+        {
+            return $this->_output->output(400, "URI is malformed, please check the documents", false);
+        }
+
+        $output = $this->_db->get_logs($type, $from, $to);
+
+        return (is_array($output)) ? $this->_output->output(200, $output, false) : (is_int($output)) ? $this->_output->output(200, "There are no logs right now!", false) : $this->_output->output(500, "Something went wrong, PDO error: $output", false);
     }
 
     public function registerAPIuser()
     {
         if(isset($_POST))
+
         {
             $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -122,9 +110,10 @@ class Admin
         return $this->_output->output(400, "Resource can only be accessed via POST", false);
     }
 
+
     public function revokeToken()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) > 3)
+        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) == 3)
         {
             $this->_log->set_message("Admin::revokeToken() Called from " . $_SERVER['REMOTE_ADDR'] . " by " . $this->_header['auth_user'], "INFO");
 
