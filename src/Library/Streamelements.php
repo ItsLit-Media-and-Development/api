@@ -23,9 +23,13 @@ class Streamelements
     private $_channelID = '';
     private $_JWT;
 
-    public function __construct($token)
+    /*public function __construct($token)
     {
         $this->_JWT = $token;
+    }*/
+
+    public function __construct()
+    {
     }
 
     /**
