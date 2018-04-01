@@ -104,15 +104,19 @@ class AdminModel
     {
         try
         {
+
             $stmt = $this->_db->prepare("INSERT INTO api_users (username, email, token, ip, last_access, SE_token) VALUES(:username, :email, :tid, :ip, NOW(), :setoken)");
+
 
             $stmt->execute(
                 [
                     ':username' => $user_details['username'],
                     ':email' => $user_details['email'],
                     ':token' => $user_details['token'],
+
                     ':ip' => $user_details['ip'],
                     ':setoken' => (isset($user_details['SE_Token']) ? $user_details['SE_Token'] : 'na')
+
                 ]
             );
 

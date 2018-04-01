@@ -2,6 +2,7 @@
 /**
  * Authentication Library
  *
+
  * Creates and authenticates JWT tokens as an authentication method
  * Level 1 = bot only token
  * Level 2 = web token
@@ -14,6 +15,7 @@
  * @copyright    Copyright (c) 2017 Marc Towler
  * @license      https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link         https://api.itslit.uk
+
  * @since        Version 1.0
  * @filesource
  */

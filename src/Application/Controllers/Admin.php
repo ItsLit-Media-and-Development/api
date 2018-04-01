@@ -91,6 +91,7 @@ class Admin
     public function registerAPIuser()
     {
         if(isset($_POST))
+
         {
             $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -108,6 +109,7 @@ class Admin
 
         return $this->_output->output(400, "Resource can only be accessed via POST", false);
     }
+
 
     public function revokeToken()
     {
