@@ -104,10 +104,7 @@ class RewardModel
                     ]
                 );
 
-                if($ins->rowCount() > 0)
-                {
-                    $this->_output = true;
-                }
+                $this->_output = ($ins->rowCount() > 0) ? true : false;
             }
         } catch(\PDOException $e) {
             $this->_output = $e->getMessage();
@@ -137,14 +134,7 @@ class RewardModel
                 ]
             );
 
-            if($ins->rowCount() > 0)
-            {
-                $this->_output = $result['code'];
-            }
-            else
-            {
-                $this->_output = false;
-            }
+            $this->_output = ($ins->rowCount() > 0) ? $result['code'] : false;
         } catch(\PDOException $e) {
             $this->_output = false;
         }

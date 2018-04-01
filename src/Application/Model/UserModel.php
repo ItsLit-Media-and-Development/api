@@ -46,13 +46,7 @@ class UserModel
                     ':status' => $status
                 ]);
 
-                if($stmt->rowCount() > 0)
-                {
-                    $this->_output = true;
-                } else
-                {
-                    $this->_output = false;
-                }
+                $this->_output = ($stmt->rowCount() > 0) ? true : false;
             }
         } catch(\PDOException $e) {
             $this->_output = $e->getMessage();
@@ -79,11 +73,7 @@ class UserModel
                     $stmt2->execute([':name' => $user]);
                 }
 
-                if($stmt->rowCount() > 0) {
-                    $this->_output = true;
-                } else {
-                    $this->_output = false;
-                }
+                $this->_output = ($stmt->rowCount() > 0) ? true : false;
             }
         } catch(\PDOException $e) {
             $this->_output = $e->getMessage();

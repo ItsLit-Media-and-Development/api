@@ -16,20 +16,19 @@
 namespace API\Library;
 
 
+use GuzzleHttp\Client;
+
 class Streamelements
 {
     public $data;
     private $_url = 'https://api.streamelements.com/kappa/v2';
     private $_channelID = '';
     private $_JWT;
-
-    /*public function __construct($token)
-    {
-        $this->_JWT = $token;
-    }*/
+    private $_guzzle;
 
     public function __construct()
     {
+        $this->_guzzle = new Client();
     }
 
     /**
@@ -50,6 +49,26 @@ class Streamelements
     public function set_channel_id($channelID)
     {
         $this->_channelID = $channelID;
+    }
+
+    /**
+     * Returns the SE JWT Token
+     *
+     * @return string
+     */
+    public function get_token()
+    {
+        return $this->_JWT;
+    }
+
+    /**
+     * Sets the SE JWT Token
+     *
+     * @param string $token
+     */
+    public function set_token($token)
+    {
+        $this->_JWT = $token;
     }
 
     /**
@@ -118,12 +137,10 @@ class Streamelements
      */
     public function get_giveaways($channelID = 0)
     {
-        if($channelID == 0)
+        if($channelID != 0)
         {
-            return false;
+            $this->set_channel_id($channelID);
         }
-
-        $this->set_channel_id($channelID);
 
         $this->_url .= '/giveaways/' . $this->_channelID;
 
@@ -134,8 +151,23 @@ class Streamelements
         return $this->data;
     }
 
+    /**
+     * Returns if a user is entered into the specified giveaway and if so, how many entries they have
+     *
+     * @param int $channelID
+     * @param int $giveawayID
+     * @return array|\Psr\Http\Message\StreamInterface
+     */
     public function check_entry_giveaway($channelID = 0, $giveawayID = 0)
     {
-        //@TODO: work out how I want to store/use the JWT for SE
+        if($channelID != 0)
+        {
+            $this->set_channel_id($channelID);
+        }
+
+        $res = $this->_guzzle->request('GET', 'https://api.streamelements.com/kappa/v2/giveaways/' . $this->_channelID . '/' . $giveawayID . '/joined',
+            ['Authorization' => $this->_JWT]);
+
+        return ($res->getStatusCode() != 401) ? $res->getBody() : ["Error" => 401, "response" => $res->getBody()];
     }
 }

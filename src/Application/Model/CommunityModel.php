@@ -29,5 +29,19 @@ class CommunityModel
         $this->_db = $this->_config->database();
     }
 
+    public function get_SE_Token($channel)
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("SELECT SE_token FROM api_users WHERE channel = :channel");
+            $stmt->execute([':channel' => $channel]);
 
+            $this->_output = $stmt->fetch();
+        } catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }

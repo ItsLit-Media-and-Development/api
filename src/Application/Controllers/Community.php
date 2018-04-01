@@ -54,6 +54,8 @@ class Community
         {
             case 'streamelements':
                 $this->service = new Library\Streamelements();
+
+                $this->service->set_token($this->_db->get_SE_Token($channel));
                 break;
             case 'streamlabs':
                 $this->service = new Library\Streamlabs();
