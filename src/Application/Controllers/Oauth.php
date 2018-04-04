@@ -50,11 +50,11 @@ class Oauth
 
         $res = $this->_guzzle->post($this->_SL_URI . 'token', [
                 'form_params' => [
-                    'grant_type' => 'authorization_code',
-                'client_id' => $this->_clientID,
-                'client_secret' => $this->_clientSecret,
-                    'redirect_uri' => $this->_redirect_URI,
-                    'code' => $response
+					'grant_type'    => 'authorization_code',
+					'client_id'     => $this->_clientID,
+					'client_secret' => $this->_clientSecret,
+					'redirect_uri'  => $this->_redirect_URI,
+					'code'          => $response
                 ]]
         );
 
