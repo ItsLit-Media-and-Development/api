@@ -54,4 +54,18 @@ class OauthModel
             return $e->getMessage();
         }
     }
+
+	public function is_token_valid($username)
+	{
+		try {
+			$stmt = $this->_db->prepare("SELECT COUNT(username) AS ValidTokens FROM api_users WHERE SL_token_expires > NOW() AND username = :username");
+			$stmt->execute([':username' => $username]);
+
+			$res = $stmt->fetch(PDO::FETCH_ASSOC);
+
+			return ($res['ValidTokens'] > 0) ? true : false;
+		} catch(\PDOException $e) {
+			return $e->getMessage();
+		}
+	}
 }

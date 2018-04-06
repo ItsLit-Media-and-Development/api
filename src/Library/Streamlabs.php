@@ -16,7 +16,23 @@
 namespace API\Library;
 
 
+use API\Model\OauthModel;
+
 class Streamlabs
 {
+	private $_model;
 
+	public function __construct()
+	{
+		$this->_model = new OauthModel();
+	}
+
+	public function authorise($user)
+	{
+		if($this->_model->is_token_valid($user) === true) {
+			return true;
+		} else {
+			header('Location: https://www.streamlabs.com/api/v1.0/authorize?client_id=vKoCYYMK2vcHO5yA4YUHupwSSnlJwP6VqnClL5HA&redirect_uri=https://api.itslit.uk/oauth/streamlabs/&response_type=code&scope=donations.read+donations.create+alerts.create+points.read+points.write+alerts.write');
+		}
+	}
 }

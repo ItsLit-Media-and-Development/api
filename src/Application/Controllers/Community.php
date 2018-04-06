@@ -60,6 +60,8 @@ class Community
                 break;
             case 'streamlabs':
                 $this->service = new Library\Streamlabs();
+
+				$this->service->authorise($qParam);
                 break;
         }
 
