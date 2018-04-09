@@ -61,7 +61,7 @@ class OauthModel
 			$stmt = $this->_db->prepare("SELECT COUNT(username) AS ValidTokens FROM api_users WHERE SL_token_expires > NOW() AND username = :username");
 			$stmt->execute([':username' => $username]);
 
-			$res = $stmt->fetch(PDO::FETCH_ASSOC);
+			$res = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 			return ($res['ValidTokens'] > 0) ? true : false;
 		} catch(\PDOException $e) {

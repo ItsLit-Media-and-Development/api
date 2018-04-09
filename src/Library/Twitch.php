@@ -255,4 +255,6 @@ class Twitch extends TwitchRequest
     {
         return in_array(strtolower($streamType), ['live', 'playlist', 'all']);
     }
+
+
 }

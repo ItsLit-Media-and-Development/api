@@ -55,8 +55,9 @@ class Community
             case 'streamelements':
                 $this->service = new Library\Streamelements();
 
-//                $this->service->set_token($this->_db->get_SE_Token($channel));
-                $this->service->set_channel_id('599537d2d0cacf1582b82b0d');
+
+				$this->service->set_token($this->_db->get_SE_Token($channel));
+				//$this->service->set_channel_id('599537d2d0cacf1582b82b0d');
                 break;
             case 'streamlabs':
                 $this->service = new Library\Streamlabs();
