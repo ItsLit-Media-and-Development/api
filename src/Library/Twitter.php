@@ -134,7 +134,7 @@ class Twitter
 		return $this->_post_fields;
 	}
 
-	public function setPostFields(array $array)
+	public function setPostfields(array $array)
 	{
 		if(!is_null($this->getGetfield())) {
 			throw new TwitterException('You can only choose get OR post fields');
