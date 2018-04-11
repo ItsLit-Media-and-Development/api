@@ -41,7 +41,6 @@ class Lists
      * Covers the router's default method incase a part of the URL was missed
      *
      * @return array|string
-     * @throws \Exception
      */
     public function main()
     {
