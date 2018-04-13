@@ -51,12 +51,14 @@ class Twitch
 
 	public function followage()
 	{
+		$this->_log->set_message("Twitch::followage() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$channel = $this->_twitch->get_user_id($this->_params[0]);
 		$user = $this->_twitch->get_user_id($this->_params[1]);
 
 		$output = $this->_twitch->get('users/' . $user . '/follows/channels/' . $channel, false);
 
-		return $this->_output->output(200, $this->_getDateDiff($output['created_at'], time(), 2), false);
+		return $this->_output->output(200, $this->_getDateDiff($output['created_at'], time(), 2), true);
 	}
 
 	public function getchatrules()
