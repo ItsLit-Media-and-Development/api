@@ -43,10 +43,16 @@ class Twitch
 			$settings['headers']['Accept'] = 'application/vnd.twitchtv.v5+json';
 		}
 
+		//Added this workaround for when we access old API's that fail if you pass an Accept header
+		if(isset($headers['nover'])) {
+			$settings = [];
+			$settings['headers']['Client-ID'] = $this->_clientid;
+		}
+
 		$settings['http_errors'] = false;
 		//var_dump(SELF::API_BASE . $url);die;
 
-		$result = $this->_client->request('GET', (!$override ? SELF::API_BASE : '') . $url, $settings);
+		$result = $this->_client->request('GET', (!$override ? self::API_BASE : '') . $url, $settings);
 
 		return json_decode($result->getBody(), true);
 	}

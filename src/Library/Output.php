@@ -148,7 +148,7 @@ class Output
     {
         header('Content-Type: text/html');
 
-        $conv = '<table id="rsp-stat-ok"><tr>';
+		$conv = '<table id="rsp-stat-ok">';
 
         if(is_array($input))
         {
@@ -158,12 +158,12 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-                        $conv .= "<td id='$key'>$val</td>";
+						$conv .= "<tr><td id='$key'>$val</td></tr>";
                     }
                 }
             }
 
-            $conv .= "</tr></table>";
+			$conv .= "</table>";
         }
         else
         {

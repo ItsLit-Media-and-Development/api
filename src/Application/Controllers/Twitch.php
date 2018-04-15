@@ -49,6 +49,12 @@ class Twitch
 		return $this->_output->output(501, "Function not implemented", false);
 	}
 
+	/**
+	 * Returns how long a user has followed the channel
+	 *
+	 * @return array
+	 * @throws \API\Exceptions\InvalidIdentifierException
+	 */
 	public function followage()
 	{
 		$this->_log->set_message("Twitch::followage() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
@@ -61,9 +67,22 @@ class Twitch
 		return $this->_output->output(200, $this->_getDateDiff($output['created_at'], time(), 2), true);
 	}
 
+	/**
+	 * Returns the channel's chat rules
+	 *
+	 * @return array
+	 * @throws \API\Exceptions\InvalidIdentifierException
+	 */
 	public function getchatrules()
 	{
+		$this->_log->set_message("Twitch::getchatrules() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = (isset($this->_params[1]) ? $this->_params[1] : false);
+
+		$output = $this->_twitch->get('api/channels/' . $channel . '/chat_properties', false);
+
+		return $this->_output->output(200, $output['chat_rules'], $bot);
 	}
 
 	public function howold()
@@ -73,7 +92,16 @@ class Twitch
 
 	public function recentfollowers()
 	{
+		$this->_log->set_message('Twitch::recentfollowers() was called from ' . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$limit = $this->_params[1];
+		$dir = isset($this->_params[2]) ? $this->_params[2] : 'desc';
+		$bot = (isset($this->_params[3]) ? $this->_params[3] : false);
+
+		$output = $this->_twitch->get(sprintf('channels/%s/follows?limit=%d&offset=0&direction=%s', $channel, $limit, $dir));
+
+		return $this->_output->output(200, $output, $bot);
 	}
 
 	public function highlight()
@@ -91,9 +119,21 @@ class Twitch
 
 	}
 
+	/**
+	 * Returns the sub emote URL's
+	 *
+	 * @return array
+	 */
 	public function subemotes()
 	{
+		$this->_log->set_message("Twitch::subemotes() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_params[0];
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('chat/' . $channel . '/emoticons', false, ['nover' => true]);
+
+		return $this->_output->output(200, $output, $bot);
 	}
 
 	public function status()
@@ -108,7 +148,14 @@ class Twitch
 
 	public function viewercount()
 	{
+		$this->_log->set_message("Twitch::viercount() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_params[0];
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('https://tmi.twitch.tv/group/user/' . $channel . '/chatters', true);
+
+		return $this->_output->output('200', $output['chatter_count'], $bot);
 	}
 
 	private function _getDateDiff($time1, $time2, $precision = 2)
