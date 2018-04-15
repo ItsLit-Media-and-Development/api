@@ -16,243 +16,65 @@
 
 namespace API\Library;
 
-use API\Exceptions\ClientIdRequiredException;
-use API\Exceptions\InvalidTypeException;
-use API\Exceptions\UnsupportedApiVersionException;
+use API\Exceptions\InvalidIdentifierException;
+use GuzzleHttp\Client;
 
-
-class Twitch extends TwitchRequest
+class Twitch
 {
-    protected $defaultApiVersion = 5;
-    protected $supportedApiVersions = [3, 5];
-    protected $clientId;
-    protected $clientSecret;
-    protected $apiVersion;
-    protected $redirectUri;
-    protected $scope;
-    protected $state;
-    protected $accessToken;
+	const API_BASE = 'https://api.twitch.tv/kraken/';
+	private $_client;
+	private $_clientid;
+	private $_clientsecret;
 
-    /**
-     * Instantiate a new TwitchApi instance
-     *
-     * @param array $options
-     * @throws ClientIdRequiredException string
-     * @throws UnsupportedApiVersionException
-     * @throws InvalidTypeException
-     */
-    public function __construct(array $options)
+	public function __construct()
     {
-        if(!isset($options['client_id']))
-        {
-            throw new ClientIdRequiredException();
-        }
-        $this->setClientId($options['client_id']);
-        $this->setClientSecret(isset($options['client_secret']) ? $options['client_secret'] : NULL);
-        $this->setRedirectUri(isset($options['redirect_uri']) ? $options['redirect_uri'] : NULL);
-        $this->setApiVersion(isset($options['api_version']) ? $options['api_version'] : $this->getDefaultApiVersion());
-        $this->setScope(isset($options['scope']) ? $options['scope'] : []);
+		$this->_client = new Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false,),));
+		$tmp = new Config();
+		$this->_clientid = $tmp->getSettings('CLIENT_ID');
+		$this->_clientsecret = $tmp->getSettings('TWITCH_SECRET');
     }
 
-    /**
-     * Get defaultApiVersion
-     *
-     * @return int
-     */
-    public function getDefaultApiVersion()
-    {
-        return $this->defaultApiVersion;
-    }
+	public function get($url = '', $override = false, $headers = [])
+	{
+		$settings['headers'] = $headers;
+		$settings['headers']['Client-ID'] = $this->_clientid;
 
-    /**
-     * Get supportedApiVersions
-     *
-     * @return array
-     */
-    public function getSupportedApiVersions()
-    {
-        return $this->supportedApiVersions;
-    }
+		if(empty($settings['headers']['Accept'])) {
+			$settings['headers']['Accept'] = 'application/vnd.twitchtv.v5+json';
+		}
 
-    /**
-     * @param String $clientId
-     */
-    public function setClientId($clientId)
-    {
-        $this->clientId = $clientId;
-    }
+		//Added this workaround for when we access old API's that fail if you pass an Accept header
+		if(isset($headers['nover'])) {
+			$settings = [];
+			$settings['headers']['Client-ID'] = $this->_clientid;
+		}
 
-    /**
-     * Get client ID
-     *
-     * @return string
-     */
-    public function getClientId()
-    {
-        return $this->clientId;
-    }
+		$settings['http_errors'] = false;
+		//var_dump(SELF::API_BASE . $url);die;
 
-    /**
-     * Set client secret
-     *
-     * @param string $clientSecret
-     */
-    public function setClientSecret($clientSecret)
-    {
-        $this->clientSecret = $clientSecret;
-    }
+		$result = $this->_client->request('GET', (!$override ? self::API_BASE : '') . $url, $settings);
 
-    /**
-     * Get client secret
-     *
-     * @return string
-     */
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
-    }
+		return json_decode($result->getBody(), true);
+	}
 
-    /**
-     * Set API version
-     *
-     * @param string|int $apiVersion
-     * @throws UnsupportedApiVersionException
-     */
-    public function setApiVersion($apiVersion)
-    {
-        if(!in_array($apiVersion = intval($apiVersion), $this->getSupportedApiVersions()))
-        {
-            throw new UnsupportedApiVersionException();
-        }
-        $this->apiVersion = $apiVersion;
-    }
+	public function base($token = '', $headers = [])
+	{
+		if(!empty($token)) {
+			$headers['Authorization'] = 'OAuth ' . $token;
+		}
 
-    /**
-     * Get API version
-     *
-     * @return int
-     */
-    public function getApiVersion()
-    {
-        return $this->apiVersion;
-    }
+		return $this->get('', false, $headers);
+	}
 
-    /**
-     * Set redirect URI
-     *
-     * @param string $redirectUri
-     */
-    public function setRedirectUri($redirectUri)
-    {
-        $this->redirectUri = $redirectUri;
-    }
+	public function get_user_id($username)
+	{
+		$getUser = $this->get('users?login=' . $username, false);
 
-    /**
-     * Get redirect URI
-     *
-     * @return string
-     */
-    public function getRedirectUri()
-    {
-        return $this->redirectUri;
-    }
+		if(empty($getUser['users'])) {
+			throw new InvalidIdentifierException("No user with the name '$username' was found");
+		}
 
-    /**
-     * Set scope
-     *
-     * @param array $scope
-     * @throws InvalidTypeException
-     */
-    public function setScope($scope)
-    {
-        if(!is_array($scope))
-        {
-            throw new InvalidTypeException('Scope', 'array', gettype($scope));
-        }
-        $this->scope = $scope;
-    }
+		return $getUser['users'][0]['_id'];
+	}
 
-    /**
-     * Get scope
-     *
-     * @return array
-     */
-    public function getScope()
-    {
-        return $this->scope;
-    }
-
-    /**
-     * Returns true if the set API version is greater than v3
-     *
-     * @return bool
-     */
-    protected function apiVersionIsGreaterThanV3()
-    {
-        return $this->getApiVersion() > 3;
-    }
-
-    /**
-     * Return true if the provided limit is valid
-     *
-     * @param string|int $limit
-     * @return bool
-     */
-    protected function isValidLimit($limit)
-    {
-        return is_numeric($limit) && $limit > 0;
-    }
-
-    /**
-     * Return true if the provided offset is valid
-     *
-     * @param string|int $offset
-     * @return bool
-     */
-    protected function isValidOffset($offset)
-    {
-        return is_numeric($offset) && $offset > -1;
-    }
-
-    /**
-     * Return true if the provided direction is valid
-     *
-     * @param string $direction
-     * @return bool
-     */
-    protected function isValidDirection($direction)
-    {
-        return in_array(strtolower($direction), ['asc', 'desc']);
-    }
-
-    /**
-     * Return true if the provided broadcast type is valid
-     *
-     * @param string $broadcastType
-     * @return bool
-     */
-    protected function isValidBroadcastType($broadcastType)
-    {
-        $validBroadcastTypes = ['archive', 'highlight', 'upload'];
-        $broadcastTypeArray = explode(',', $broadcastType);
-        foreach($broadcastTypeArray as $type)
-        {
-            if(!in_array($type, $validBroadcastTypes))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Return true if the provided stream type is valid
-     *
-     * @param string $streamType
-     * @return bool
-     */
-    protected function isValidStreamType($streamType)
-    {
-        return in_array(strtolower($streamType), ['live', 'playlist', 'all']);
-    }
 }

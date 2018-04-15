@@ -80,28 +80,10 @@ class AdminModel
 
     public function get_logs($log_level, $from, $to)
     {
-        //levels are tiered, info being lowest.. warning is second but also pulls in info... error is highest pulling in everything
-        $sql = "SELECT * FROM logs WHERE date <= :to AND date >= :from ";
-
-        switch($log_level)
-        {
-            case 'INFO':
-                $sql .= "err_level = 'INFO'";
-
-                break;
-            case 'WARNING':
-                $sql .= "err_level = 'INFO' OR err_level = 'WARNING'";
-
-                break;
-            case 'ERROR':
-                $sql .= "err_level = 'INFO' OR err_level = 'WARNING' OR err_level = 'ERROR'";
-
-                break;
-        }
-
         try
         {
-            $stmt = $this->_db->prepare($sql);
+            $stmt = $this->_db->prepare("SELECT * FROM logs WHERE date <= :to AND date >= :from AND err_level = $log_level");
+
             $stmt->execute(
                 [
                     ':to' => $to,

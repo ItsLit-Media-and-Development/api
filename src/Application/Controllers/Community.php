@@ -45,8 +45,8 @@ class Community
         $botService = $this->_params[0];
         $channel = $this->_params[1];
         $type = $this->_params[2]; //Either channel or user
-        $qParam = $this->_params[3];
-        $bot = (isset($this->_params[4])) ? $this->_params[4] : true;
+        $qParam = (isset($this->_params[3])) ? $this->_params[3] : 1000;
+        $bot = (isset($this->_params[4])) ? $this->_params[4] : false;
 
         $this->_output->setOutput((isset($this->_params[5])) ? $this->_params[5] : NULL);
 
@@ -54,9 +54,15 @@ class Community
         {
             case 'streamelements':
                 $this->service = new Library\Streamelements();
+
+
+				$this->service->set_token($this->_db->get_SE_Token($channel));
+				//$this->service->set_channel_id('599537d2d0cacf1582b82b0d');
                 break;
             case 'streamlabs':
                 $this->service = new Library\Streamlabs();
+
+				$this->service->authorise($qParam);
                 break;
         }
 

@@ -97,18 +97,7 @@ class User
             //there is a user specified, lets see if it is in the activation table
             $query = $this->_db->activate($user, $key);
 
-            if($query == true)
-            {
-                return $this->_output->output(200, "User " . $user . " successfully activated!", $bot);
-            }
-            elseif($query == false)
-            {
-                return $this->_output->output(400, "Unable to activate, invalid key", $bot);
-            } else {
-                $this->_log->set_message("Something went wrong in User::register(), PDO error $query", "ERROR");
-
-                return $this->_output->output(400, $query, $bot);
-            }
+            return ($query == true) ? $this->_output->output(200, "User " . $user . " successfully activated!", $bot) : ($query == false) ? $this->_output->output(400, "Unable to activate, invalid key", $bot) : $this->_output->output(400, $query, $bot);
         } else {
             $this->_log->set_message("User::register() No uer key was definied, returning a 400", "WARNING");
 
@@ -153,16 +142,7 @@ class User
                     break;
             }
 
-            if(is_array($query))
-            {
-                return $this->_output->output(200, $query, $bot);
-            } elseif(empty($query)) {
-                return $this->_output->output(404, "User $user not found", $bot);
-            } else {
-                $this->_log->set_message("Something went wrong in User::profile(), PDO error $query", "ERROR");
-
-                return $this->_output->output(400, $query, $bot);
-            }
+            return (is_array($query)) ? $this->_output->output(200, $query, $bot) : (empty($query)) ? $this->_output->output(404, "User $user not found", $bot) : $this->_output->output(400, $query, $bot);
         } else {
             $this->_log->set_message("User::profile() No uer key was definied, returning a 400", "WARNING");
 

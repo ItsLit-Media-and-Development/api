@@ -66,7 +66,7 @@ class Rewards
         $bot     = (isset($this->_params[3])) ? $this->_params[3] : true;
         $this->_output->setOutput((isset($this->_params[4])) ? $this->_params[4] : NULL);
 
-        if((isset($chan) && $chan != '') && (isset($reward) && $reward != '') && (isset($desc) && $desc != ''))
+        if(isset($desc) && $desc != '')
         {
             $query = $this->_db->add_reward($chan, $reward, $desc);
 
