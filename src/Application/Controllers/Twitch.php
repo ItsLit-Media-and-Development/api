@@ -85,9 +85,20 @@ class Twitch
 		return $this->_output->output(200, $output['chat_rules'], $bot);
 	}
 
+	/**
+	 * Returns how old a user's account is
+	 *
+	 * @return array
+	 * @throws \API\Exceptions\InvalidIdentifierException
+	 */
 	public function howold()
 	{
+		$this->_log->set_message("Twitch::howold() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$user = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		return $this->_output->output(200, $this->_getDateDiff($this->_users($user)['created_at'], time(), 2), $bot);
 	}
 
 	public function recentfollowers()
@@ -120,7 +131,7 @@ class Twitch
 	}
 
 	/**
-	 * Returns the sub emote URL's
+	 * Returns the emote URL's available to a channel
 	 *
 	 * @return array
 	 */
@@ -156,6 +167,11 @@ class Twitch
 		$output = $this->_twitch->get('https://tmi.twitch.tv/group/user/' . $channel . '/chatters', true);
 
 		return $this->_output->output('200', $output['chatter_count'], $bot);
+	}
+
+	private function _users($userid)
+	{
+		return $this->_twitch->get('users/' . $userid);
 	}
 
 	private function _getDateDiff($time1, $time2, $precision = 2)

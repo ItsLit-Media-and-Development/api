@@ -81,7 +81,7 @@ class Output
             header("Access-Control-Allow-Origin: *");
 
             //Bots can't handle anything more then plain text so lets change the output as such.
-            if($bot == true)
+			if($bot === true)
             {
                 $this->_output = "plain";
             }
@@ -158,7 +158,7 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-						$conv .= "<tr><td id='$key'>$val</td></tr>";
+						$conv .= "<tr><td id='$key'>" . str_replace("%3A", ":", str_replace("%20", " ", $val)) . "</td></tr>";
                     }
                 }
             }
