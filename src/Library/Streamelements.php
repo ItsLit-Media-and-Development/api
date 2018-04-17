@@ -144,6 +144,11 @@ class Streamelements
      */
     public function get_giveaways($channelID = 0)
     {
+        if($channelID == 0)
+        {
+            return false;
+        }
+      
         $this->set_channel_id($channelID);
 
         $this->_url .= '/giveaways/' . $this->_channelID;
