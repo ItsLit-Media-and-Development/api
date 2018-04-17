@@ -122,32 +122,25 @@ class User
 
         $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
-        //check that $user is a string and not blank then pull from db
-        if(isset($user) && is_string($user))
-        {
-            //lets check the mode
-            switch($mode)
-            {
-                case "all":
-                    $query = $this->_db->profile_all($user);
+		//lets check the mode
+		switch($mode) {
+			case "all":
+				$query = $this->_db->profile_all($user);
 
-                    break;
-                case "followers":
-                    $query = $this->_db->profile_follow($user);
+				break;
+			case "followers":
+				$query = $this->_db->profile_follow($user);
 
-                    break;
-                case "views":
-                    $query = $this->_db->profile_views($user);
+				break;
+			case "views":
+				$query = $this->_db->profile_views($user);
 
-                    break;
-            }
+				break;
+		}
 
-            return (is_array($query)) ? $this->_output->output(200, $query, $bot) : (empty($query)) ? $this->_output->output(404, "User $user not found", $bot) : $this->_output->output(400, $query, $bot);
-        } else {
-            $this->_log->set_message("User::profile() No uer key was definied, returning a 400", "WARNING");
-
-            return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
-        }
+		return (is_array($query)) ? $this->_output->output(200, $query, $bot) :
+			(empty($query)) ? $this->_output->output(404, "User $user not found", $bot) :
+				$this->_output->output(400, $query, $bot);
     }
 
     /**

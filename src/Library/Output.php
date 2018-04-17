@@ -67,7 +67,7 @@ class Output
      * @param bool $bot Whether or not the output is to be designed for a bot
      * @return array|string The converted output to send to the user.
      */
-    public function output($code, $response, $bot = true)
+	public function output($code, $response, $bot = '')
     {
         if($this->_output == '')
         {
@@ -81,10 +81,9 @@ class Output
             header("Access-Control-Allow-Origin: *");
 
             //Bots can't handle anything more then plain text so lets change the output as such.
-			if($bot === true)
-            {
-                $this->_output = "plain";
-            }
+			if($bot == true) {
+				$this->_output = "plain";
+			}
 
             switch ($this->_output)
             {
