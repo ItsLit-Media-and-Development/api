@@ -14,6 +14,7 @@
 namespace API\Controllers;
 
 use API\Library;
+use API\Model\OauthModel;
 
 class Twitch
 {
@@ -21,6 +22,7 @@ class Twitch
 	private $_output;
 	private $_log;
 	private $_twitch;
+	private $_db;
 
 	public function __construct()
 	{
@@ -29,6 +31,7 @@ class Twitch
 		$this->_output = new Library\Output();
 		$this->_log = new Library\Logger();
 		$this->_twitch = new Library\Twitch();
+		$this->_db = new OauthModel();
 	}
 
 	public function __destruct()
@@ -115,19 +118,37 @@ class Twitch
 		return $this->_output->output(200, $output, $bot);
 	}
 
-	public function highlight()
+	/**
+	 * Allows a user to create a clip via command to edit it later
+	 *
+	 * @return array|string URL of clip
+	 * @throws \API\Exceptions\InvalidIdentifierException
+	 */
+	public function clip()
 	{
+		$this->_log->set_message('Twitch::clip() was called from ' . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$user = $this->_authorise($this->_params[1]);
+		$bot = isset($this->_params[2]) ? $this->_params[2] : false;
+
+		$output = $this->_twitch->post('https://api.twitch.tv/helix/clips?broadcaster_id=' . $channel, ['Authorization' => 'Bearer ' . $user]);
+
+		return $this->_output->output(200, $output['edit_url'], $bot);
 	}
 
 	public function randomsub()
 	{
+		$this->_log->set_message("Twitch::randomsub() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
 
+		return $this->_output->output(501, "Function not implemented", false);
 	}
 
 	public function randomuser()
 	{
+		$this->_log->set_message("Twitch::randomuser() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
 
+		return $this->_output->output(501, "Function not implemented", false);
 	}
 
 	/**
@@ -154,7 +175,14 @@ class Twitch
 
 	public function totalviews()
 	{
+		$this->_log->set_message("Twitch::totalviews() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('channels/' . $channel);
+
+		return $this->_output->output(200, $output['views'], $bot);
 	}
 
 	public function viewercount()
@@ -228,5 +256,16 @@ class Twitch
 		}
 		// Return string with times
 		return implode(", ", $times);
+	}
+
+	private function _authorise($user)
+	{
+		$output = $this->_db->authorize($user, 'twitch');
+
+		if($output === false) {
+			header('Location: https://id.twitch.tv/oauth2/authorize?client_id=6ewkckds8dw9unp55rmfk0w8opnh2f&redirect_uri=https://api.itslit.co.uk/oauth/twitch/&response_type=token&scope=bits:read clips:edit user:edit channel_check_subscription channel_subscriptions user:read');
+		}
+
+		return $output;
 	}
 }
