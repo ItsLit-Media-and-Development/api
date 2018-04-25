@@ -144,6 +144,12 @@ class User
 		return (is_array($query)) ? $this->_output->output(200, $query, $bot) :
 			(empty($query)) ? $this->_output->output(404, "User $user not found", $bot) :
 				$this->_output->output(400, $query, $bot);
+            return (is_array($query)) ? $this->_output->output(200, $query, $bot) : (empty($query)) ? $this->_output->output(404, "User $user not found", $bot) : $this->_output->output(400, $query, $bot);
+        } else {
+            $this->_log->set_message("User::profile() No uer key was definied, returning a 400", "WARNING");
+
+            return $this->_output->output(400, "The key 'user' must be defined as a string", $bot);
+        }
     }
 
     /**
