@@ -50,9 +50,30 @@ class Twitch
 		}
 
 		$settings['http_errors'] = false;
-		//var_dump(SELF::API_BASE . $url);die;
 
 		$result = $this->_client->request('GET', (!$override ? self::API_BASE : '') . $url, $settings);
+
+		return json_decode($result->getBody(), true);
+	}
+
+	public function post($url = '', $headers = [])
+	{
+		$settings['headers'] = $headers;
+		$settings['headers']['Client-ID'] = $this->_clientid;
+
+		if(empty($settings['headers']['Accept'])) {
+			$settings['headers']['Accept'] = 'application/vnd.twitchtv.v5+json';
+		}
+
+		//Added this workaround for when we access old API's that fail if you pass an Accept header
+		if(isset($headers['nover'])) {
+			$settings = [];
+			$settings['headers']['Client-ID'] = $this->_clientid;
+		}
+
+		$settings['http_errors'] = false;
+
+		$result = $this->_client->request('POST', $url, $settings);
 
 		return json_decode($result->getBody(), true);
 	}
@@ -76,5 +97,4 @@ class Twitch
 
 		return $getUser['users'][0]['_id'];
 	}
-
 }

@@ -68,4 +68,19 @@ class OauthModel
 			return $e->getMessage();
 		}
 	}
+  
+	public function authorize($name, $type)
+	{
+		try {
+			$stmt = $this->_db->prepare("SELECT * FROM api_users WHERE username = :username");
+			$stmt->execute([':username' => $name]);
+
+			$res = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+			return ($type == 'twitch') ? $res['twitch_token'] :
+				($type == 'sl') ? $res['SL_access_token'] : $res['SE_token'];
+		} catch(\PDOException $e) {
+			return $e->getMessage();
+		}
+	}
 }
