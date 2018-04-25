@@ -15,6 +15,7 @@ namespace API\Controllers;
 
 use API\Library;
 use API\Model;
+use GuzzleHttp\Client;
 
 
 class User
@@ -24,6 +25,7 @@ class User
     private $_params;
     private $_output;
     private $_log;
+	private $_guzzle;
 
     public function __construct()
     {
@@ -33,6 +35,7 @@ class User
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
         $this->_log = new Library\Logger();
+		$this->_guzzle = new Client();
     }
 
     public function __destruct()
@@ -177,4 +180,23 @@ class User
             }
         }
     }
+
+	public function get_stats()
+	{
+		$this->_log->set_message("User::get_stats() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$user = $this->_params[0];
+
+		$follows = $this->_guzzle->request('GET', 'https://api.itslit.uk/twitch/totalfollowers/' . $user . '/true');
+		$follows = $follows->getBody();
+		$views = $this->_guzzle->get('https://api.itslit.uk/twitch/totalviews/' . $user . '/true');
+		$views = $views->getBody();
+
+		$output = ['output' => ["title" => "Total stats for $user:", "followers" => "Followers: $follows",
+								"Views" => "Total Views: $views"]];
+
+		$this->_output->setOutput('html');
+
+		return $this->_output->output(200, $output, false);
+	}
 }

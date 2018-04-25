@@ -118,6 +118,18 @@ class Twitch
 		return $this->_output->output(200, $output, $bot);
 	}
 
+	public function totalfollowers()
+	{
+		$this->_log->set_message('Twitch::totalfollowers() was called from ' . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('channels/' . $channel);
+
+		return $this->_output->output(200, $output['followers'], $bot);
+	}
+
 	/**
 	 * Allows a user to create a clip via command to edit it later
 	 *
@@ -146,9 +158,22 @@ class Twitch
 
 	public function randomuser()
 	{
-		$this->_log->set_message("Twitch::randomuser() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+		$this->_log->set_message("Twitch::randomuser() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-		return $this->_output->output(501, "Function not implemented", false);
+		$users = [];
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$data = $this->_twitch->get('https://tmi.twitch.tv/group/user/' . $channel . '/chatters', true);
+
+		foreach($data['chatters'] as $group => $chatters) {
+			$users = array_merge($users, $chatters);
+		}
+
+		shuffle($users);
+		$rand = mt_rand(0, count($users) - 1);
+
+		return $this->_output->output(200, $users[$rand], $bot);
 	}
 
 	/**
