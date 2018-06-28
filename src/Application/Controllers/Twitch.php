@@ -67,7 +67,11 @@ class Twitch
 
 		$output = $this->_twitch->get('users/' . $user . '/follows/channels/' . $channel, false);
 
-		return $this->_output->output(200, $this->_getDateDiff($output['created_at'], time(), 2), true);
+		if(isset($output['created_at'])) {
+			return $this->_output->output(200, $this->_getDateDiff($output['created_at'], time(), 2), true);
+		} else {
+			return $this->_output->output(404, "{$this->_params[1]} does not follow {$this->_params[0]}", true);
+		}
 	}
 
 	/**
@@ -130,25 +134,6 @@ class Twitch
 		return $this->_output->output(200, $output['followers'], $bot);
 	}
 
-	/**
-	 * Allows a user to create a clip via command to edit it later
-	 *
-	 * @return array|string URL of clip
-	 * @throws \API\Exceptions\InvalidIdentifierException
-	 */
-	public function clip()
-	{
-		$this->_log->set_message('Twitch::clip() was called from ' . $_SERVER['REMOTE_ADDR'], "INFO");
-
-		$channel = $this->_twitch->get_user_id($this->_params[0]);
-		$user = $this->_authorise($this->_params[1]);
-		$bot = isset($this->_params[2]) ? $this->_params[2] : false;
-
-		$output = $this->_twitch->post('https://api.twitch.tv/helix/clips?broadcaster_id=' . $channel, ['Authorization' => 'Bearer ' . $user]);
-
-		return $this->_output->output(200, $output['edit_url'], $bot);
-	}
-
 	public function randomsub()
 	{
 		$this->_log->set_message("Twitch::randomsub() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
@@ -196,6 +181,18 @@ class Twitch
 	public function status()
 	{
 
+	}
+
+	public function current_game()
+	{
+		$this->_log->set_message("Twitch::current_game() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('channels/' . $channel);
+
+		return $this->_output->output(200, $output['game'], $bot);
 	}
 
 	public function totalviews()
@@ -265,7 +262,7 @@ class Twitch
 		$count = 0;
 		$times = array();
 		foreach($diffs as $interval => $value) {
-			// Break if we have needed precission
+			// Break if we have needed precision
 			if($count >= $precision) {
 				break;
 			}
