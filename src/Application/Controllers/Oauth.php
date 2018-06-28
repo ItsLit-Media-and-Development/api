@@ -22,14 +22,15 @@ class Oauth
     private $_params;
     private $_output;
     private $_log;
-	private $_SLclientID;
-	private $_SLclientSecret;
+  	private $_SLclientID;
+	  private $_SLclientSecret;
     private $_redirect_URI = 'https://api.itslit.uk/oauth/streamlabs/';
-	private $_twitch_redirect = 'https://api.itslit.uk/Oauth/twitch/';
+	  private $_twitch_redirect = 'https://api.itslit.uk/Oauth/twitch/';
     private $_SL_URI = 'https://streamlabs.com/api/v1.0/';
     private $_db;
     private $_guzzle;
-	private $_config;
+  	private $_config;
+
 
     public function __construct()
     {
@@ -39,9 +40,9 @@ class Oauth
         $this->_log = new Library\Logger();
         $this->_db = new OauthModel();
         $this->_guzzle = new Client();
-		$this->_config = new Library\Config();
-		$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
-		$this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
+    		$this->_config = new Library\Config();
+	    	$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
+		    $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
     }
 
     public function __destruct()
@@ -88,7 +89,6 @@ class Oauth
 
 	public function twitch()
 	{
-		//$tmp = $this->_guzzle->get('https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=6ewkckds8dw9unp55rmfk0w8opnh2f&redirect_uri=https://api.itslit.uk/Oauth/twitch/&scope=channel_editor+channel_read+user_read+channel_subscriptions+user_subscriptions+chat_login');
 		if(isset($this->_params[0])) {
 			//We know it is an internal request!
 			$query = $this->_db->authorize($this->_params[0], 'twitch');

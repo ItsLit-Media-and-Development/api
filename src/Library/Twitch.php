@@ -97,5 +97,4 @@ class Twitch
 
 		return $getUser['users'][0]['_id'];
 	}
-
 }

@@ -68,7 +68,7 @@ class OauthModel
 			return $e->getMessage();
 		}
 	}
-
+  
 	public function authorize($name, $type)
 	{
 		try {

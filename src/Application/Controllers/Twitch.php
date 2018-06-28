@@ -279,7 +279,7 @@ class Twitch
 		// Return string with times
 		return implode(", ", $times);
 	}
-
+  
 	private function _authorise($user)
 	{
 		$output = $this->_db->authorize($user, 'twitch');
