@@ -195,6 +195,18 @@ class Twitch
 		return $this->_output->output(200, $output['game'], $bot);
 	}
 
+	public function current_status()
+	{
+		$this->_log->set_message("Twitch::current_status() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('channels/' . $channel);
+
+		return $this->_output->output(200, $output['status'], $bot);
+	}
+
 	public function totalviews()
 	{
 		$this->_log->set_message("Twitch::totalviews() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
