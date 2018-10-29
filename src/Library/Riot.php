@@ -34,9 +34,8 @@ class Riot
     private $_client;
     private $_cache;
 
-    public function __construct($platform, CacheInterface $cache = null)
+    public function __construct(CacheInterface $cache = null)
     {
-        $this->_platform = $platform;
         $this->_cache    = $cache;
 
         $this->_client = new Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false,),));
