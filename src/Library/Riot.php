@@ -138,7 +138,7 @@ class Riot
         $queue->enqueue(time());
     }
 
-    private function get_user_id($username)
+    public function get_user_id($username)
     {
         $getUser = $this->get('summoner/v3/summoners/by-name/' . $username, false);
 

@@ -44,7 +44,7 @@ class Lists
      */
     public function main()
     {
-        $this->_log->set_message("Wriggle::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+        $this->_log->set_message("Lists::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
 
         return $this->_output->output(501, "Function not implemented", false);
     }

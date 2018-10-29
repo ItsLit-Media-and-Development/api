@@ -78,9 +78,32 @@ class Lol
 
         //Set the platform
         $this->_riot->setPlatform($this->_params[0]);
-        $bot = $this->_params[1];
+        $bot = (isset($this->_params[1])) ? $this->_params[1] : false;
 
         $output = $this->_riot->get('platform/v3/champions?freeToPlay=true');
+
+        return $this->_output->output(200, $output, $bot);
+    }
+
+    /**
+     * Returns all champions mastery for a player
+     *
+     * @return array
+     */
+    public function getChampionMastery()
+    {
+        $this->_log->set_message("League::getChampionMastery() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        //Set the platform and user
+        $this->_riot->setPlatform($this->_params[0]);
+
+        $id      = $this->_riot->get_user_id($this->_params[1]);
+        $champId = (isset($this->_params[2])) ? $this->_params[2] : false;
+        $bot     = (isset($this->_params[3])) ? $this->_params[3] : false;
+
+        $output = $this->_riot->get(($champId !== false) ?
+            'champion-mastery/v3/champion-masteries/by-summoner/' . $id . '/by-champion/' . $champId :
+            'champion-mastery/v3/champion-masteries/by-summoner/' . $id);
 
         return $this->_output->output(200, $output, $bot);
     }
