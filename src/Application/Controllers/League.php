@@ -107,4 +107,39 @@ class League
 
         return $this->_output->output(200, $output, $bot);
     }
+
+    /**
+     * Gets information on a summoner's current game
+     *
+     * @return array
+     */
+    public function getCurrentGame()
+    {
+        $this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        //Set the platform and user
+        $this->_riot->setPlatform($this->_params[0]);
+
+        $id  = $this->_riot->get_user_id($this->_params[1]);
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+        $output = $this->_riot->get('spectator/v3/active-games/by-summoner/' . $id);
+
+        return $this->_output->output(200, $output, $bot);
+    }
+
+    public function getLeague()
+    {
+        $this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        //Set the platform and user
+        $this->_riot->setPlatform($this->_params[0]);
+
+        $id  = $this->_riot->get_user_id($this->_params[1]);
+        $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
+
+        $output = $this->_riot->get('/league/v3/leagues/by-summoner/' . $id);
+
+        return $this->_output->output(200, $output, $bot);
+    }
 }
