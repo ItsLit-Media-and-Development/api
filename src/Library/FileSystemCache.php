@@ -65,7 +65,7 @@ class FileSystemCache implements CacheInterface
 
     /**
      * @param string $key
-     * @param $data
+     * @param string $data
      * @param int $ttl Time for the data to live inside the cache
      * @return mixed
      */

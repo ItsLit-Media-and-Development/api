@@ -34,6 +34,9 @@ class Riot
     private $_client;
     private $_cache;
 
+    public $shortLimitQueue;
+    public $longLimitQueue;
+
     public function __construct(CacheInterface $cache = null)
     {
         $this->_cache    = $cache;
@@ -43,6 +46,9 @@ class Riot
         $tmp = new Config();
         
         $this->_api_key = $tmp->getSettings('RIOT_API_KEY');
+
+        $this->shortLimitQueue = new \SplQueue();
+        $this->longLimitQueue  = new \SplQueue();
     }
 
     public function get($uri, $static = false, $headers = [])
@@ -79,7 +85,7 @@ class Riot
                 //is there something in cache?
                 if($this->_cache !== null)
                 {
-                    $this->cache->put($uri, $result, self::CACHE_LIFETIME_MINUTES * 60);
+                    $this->_cache->put($uri, $result, self::CACHE_LIFETIME_MINUTES * 60);
                 }
             } else
             {

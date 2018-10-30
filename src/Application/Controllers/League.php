@@ -15,7 +15,7 @@ namespace API\Controllers;
 
 use API\Library;
 
-class Lol
+class League
 {
     private $_params;
     private $_output;
