@@ -164,6 +164,8 @@ class Riot
 		$data = json_decode($file, true);
 		$data = $data['data'];
 
+		$tmp = '';
+
 		if($nameOnly) {
 			$i = 0;
 
@@ -181,6 +183,7 @@ class Riot
 	public function get_champ_name($id)
 	{
 		$data = $this->get_champs();
+		$output = [];
 
 		foreach($data as $champ) {
 			if($champ['key'] == $id) {
