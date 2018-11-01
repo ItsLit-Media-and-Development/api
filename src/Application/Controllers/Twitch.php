@@ -164,6 +164,8 @@ class Twitch
 	/**
 	 * Returns the emote URL's available to a channel
 	 *
+	 * @TODO clean up the array output
+	 *
 	 * @return array
 	 */
 	public function subemotes()

@@ -87,8 +87,7 @@ class Riot
                 {
                     $this->_cache->put($uri, $result, self::CACHE_LIFETIME_MINUTES * 60);
                 }
-            } else
-            {
+			} else {
                 //Throw exception
             }
         }
@@ -157,4 +156,38 @@ class Riot
 
     }
 
+	public function get_champs($nameOnly = false)
+	{
+		//lets load the champion file, later on we will do an update check first
+		$file = file_get_contents('Application/Static Files/LoL/champion.json');
+
+		$data = json_decode($file, true);
+		$data = $data['data'];
+
+		if($nameOnly) {
+			$i = 0;
+
+			foreach($data as $key => $value) {
+				$tmp[$i] = $key;
+				$i++;
+			}
+
+			$data = $tmp;
+		}
+
+		return $data;
+	}
+
+	public function get_champ_name($id)
+	{
+		$data = $this->get_champs();
+
+		foreach($data as $champ) {
+			if($champ['key'] == $id) {
+				$output = $champ['id'];
+			}
+		}
+
+		return $output;
+	}
 }

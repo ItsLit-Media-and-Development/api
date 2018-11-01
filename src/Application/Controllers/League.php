@@ -60,9 +60,9 @@ class League
 
         //Set the platform
         $this->_riot->setPlatform($this->_params[0]);
-        $bot = $this->_params[1];
+		$bot = (isset($this->_params[1])) ? $this->_params[1] : false;
 
-        $output = $this->_riot->get('platform/v3/champions');
+		$output = $this->_riot->get_champs(true);
 
         return $this->_output->output(200, $output, $bot);
     }
@@ -80,7 +80,15 @@ class League
         $this->_riot->setPlatform($this->_params[0]);
         $bot = (isset($this->_params[1])) ? $this->_params[1] : false;
 
-        $output = $this->_riot->get('platform/v3/champions?freeToPlay=true');
+		//$output = $this->_riot->get('platform/v3/champions?freeToPlay=true');
+		$output = $this->_riot->get('platform/v3/champion-rotations');
+
+		//could add the option to pull the user's level and add on the freeChampionIdsForNewPlayers option
+		$output = $output['freeChampionIds'];
+
+		for($i = 0; $i < count($output); $i++) {
+			$output[$i] = $this->_riot->get_champ_name($output[$i]);
+		}
 
         return $this->_output->output(200, $output, $bot);
     }
@@ -88,11 +96,15 @@ class League
     /**
      * Returns all champions mastery for a player
      *
+	 * @TODO work out what stupid time format Riot uses for the lastPlayTime result and convert it to datediff
+	 *
      * @return array
      */
     public function getChampionMastery()
     {
-        $this->_log->set_message("League::getChampionMastery() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("League::getChampionMastery() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		//$date = new \DateTime();
 
         //Set the platform and user
         $this->_riot->setPlatform($this->_params[0]);
@@ -105,6 +117,13 @@ class League
             'champion-mastery/v3/champion-masteries/by-summoner/' . $id . '/by-champion/' . $champId :
             'champion-mastery/v3/champion-masteries/by-summoner/' . $id);
 
+		//lets add summoner name in for ease
+		for($i = 0; $i < count($output); $i++) {
+			$output[$i]['championName'] = $this->_riot->get_champ_name($output[$i]['championId']);
+			//$date->setTimestamp($output[$i]['lastPlayTime']);
+			//$output[$i]['playDateDiff'] = $date->format('U = d-m-Y H:i:s');
+		}
+
         return $this->_output->output(200, $output, $bot);
     }
 
@@ -115,7 +134,11 @@ class League
      */
     public function getCurrentGame()
     {
-        $this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+
+		return $this->_output->output(501, "Function not implemented", false);
+
+		/*$this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
         //Set the platform and user
         $this->_riot->setPlatform($this->_params[0]);
@@ -125,9 +148,14 @@ class League
 
         $output = $this->_riot->get('spectator/v3/active-games/by-summoner/' . $id);
 
-        return $this->_output->output(200, $output, $bot);
+        return $this->_output->output(200, $output, $bot);*/
     }
 
+	/**
+	 * Retrieves the summoner's league info
+	 *
+	 * @return array|string
+	 */
     public function getLeague()
     {
         $this->_log->set_message("League::getCurrentGame() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
@@ -138,8 +166,9 @@ class League
         $id  = $this->_riot->get_user_id($this->_params[1]);
         $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
 
-        $output = $this->_riot->get('/league/v3/leagues/by-summoner/' . $id);
+		$output = $this->_riot->get('league/v3/positions/by-summoner/' . $id);
 
         return $this->_output->output(200, $output, $bot);
     }
+
 }
