@@ -3,8 +3,8 @@
  * Questions Endpoint
  *
  * @package		API
- * @author		Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright	Copyright (c) 2017 Marc Towler
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
  * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link		https://api.itslit.uk
  * @since		Version 0.1

@@ -1,10 +1,13 @@
 <?php
 /**
- * CacheInterface.php - API
+ * CacheInterface Library File
  *
- * @author    Marc Towler <marc.towler@designdeveloprealize.com>
- *
- * @copyright 2018 - Design Develop Realize
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since		Version 1.1
  */
 
 namespace API\Library;

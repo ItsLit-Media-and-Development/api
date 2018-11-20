@@ -40,9 +40,9 @@ class Oauth
         $this->_log = new Library\Logger();
         $this->_db = new OauthModel();
         $this->_guzzle = new Client();
-    		$this->_config = new Library\Config();
-	    	$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
-		    $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
+        $this->_config = new Library\Config();
+        $this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
+        $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
     }
 
     public function __destruct()
