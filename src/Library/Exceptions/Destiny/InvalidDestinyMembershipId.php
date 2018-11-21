@@ -12,7 +12,7 @@
  * @filesource
  */
 
-namespace API\Exceptions;
+namespace API\Exceptions\Destiny;
 
 
 class InvalidDestinyMembershipId extends \Exception

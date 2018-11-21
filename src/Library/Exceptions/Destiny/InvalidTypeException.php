@@ -12,10 +12,10 @@
  * @filesource
  */
 
-namespace API\Exceptions;
+namespace API\Exceptions\Destiny;
 
 
-class InvalidTypeException extends APIException
+class InvalidTypeException extends \Exception
 {
     /**
      * @var string $name

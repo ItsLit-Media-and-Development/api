@@ -12,10 +12,10 @@
  * @filesource
  */
 
-namespace API\Exceptions;
+namespace API\Exceptions\Destiny;
 
 
-class InvalidItemActivityIdD2 extends \Exception
+class InvalidItemActivityId extends \Exception
 {
 	public function __construct($value)
 	{

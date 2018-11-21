@@ -12,10 +12,10 @@
  * @filesource
  */
 
-namespace API\Exceptions;
+namespace API\Exceptions\Destiny;
 
 
-class InvalidCharacterIdD2 extends \Exception
+class InvalidCharacterId extends \Exception
 {
 	public function __construct($value)
 	{

@@ -12,10 +12,10 @@
  * @filesource
  */
 
-namespace API\Exceptions;
+namespace API\Exceptions\Destiny;
 
 
-class InvalidGroupIdD2 extends \Exception
+class InvalidGroupId extends \Exception
 {
 	public function __construct($value)
 	{
