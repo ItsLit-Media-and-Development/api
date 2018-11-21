@@ -18,44 +18,20 @@ use API\Model;
 use GuzzleHttp\Client;
 
 
-class User
+class User extends Library\BaseController
 {
     private $_db;
     private $_config;
-    private $_params;
-    private $_output;
-    private $_log;
 	private $_guzzle;
 
     public function __construct()
     {
-        $tmp           = new Library\Router();
+		parent::__construct();
+
         $this->_config = new Library\Config();
         $this->_db     = new Model\UserModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
 		$this->_guzzle = new Client();
     }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("User::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
-    }
-
 
     /**
      * POST - adds user's to the system

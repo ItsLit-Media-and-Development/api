@@ -17,14 +17,10 @@ namespace API\Model;
 
 use API\Library;
 
-class SubModel
+class SubModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
-
-    public function __construct()
-    {
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 }

@@ -17,17 +17,12 @@ namespace API\Model;
 
 use API\Library;
 
-class QuestionModel
+class QuestionModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
-    private $_output;
-
-    public function __construct()
-    {
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     public function add_question($channel, $user, $question)
     {

@@ -17,16 +17,11 @@ namespace API\Model;
 
 use API\Library;
 
-class CommunityModel
+class CommunityModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
-    private $_output;
-
     public function __construct()
     {
-        $this->_config = new Library\Config();
-        $this->_db = $this->_config->database();
+		parent::__construct();
     }
 
     public function get_SE_Token($channel)

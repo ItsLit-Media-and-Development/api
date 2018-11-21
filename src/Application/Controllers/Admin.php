@@ -16,46 +16,23 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Admin
+class Admin extends Library\BaseController
 {
     private $_db;
-    private $_params;
-    private $_output;
     private $_token;
     private $_config;
-    private $_log;
     private $_header;
     private $_auth;
 
     public function __construct()
     {
-		$tmp = new Library\Router();
+		parent::__construct();
+
 		$this->_db = new Model\AdminModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
 		$this->_token = new Library\JWT();
         $this->_config = new Library\Config();
-		$this->_log = new Library\Logger();
-        $this->_header = $tmp->getAllHeaders();
+		$this->_header = $this->_router->getAllHeaders();
 		$this->_auth = new Library\Authentication();
-    }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("Admin::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**

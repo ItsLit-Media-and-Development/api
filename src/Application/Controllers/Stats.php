@@ -15,41 +15,19 @@ namespace API\Controllers;
 
 use API\Library;
 
-class Stats
+class Stats extends Library\BaseController
 {
     private $_db;
     private $_config;
-    private $_params;
-    private $_output;
-    private $_log;
 
     public function __construct()
     {
-        $tmp           = new Library\Router();
+		parent::__construct();
+
         $this->_config = new Library\Config();
         $this->_db     = $this->_config->database();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
     }
 
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("Stats::main() called from " . $_SERVER['REMOTE_ADDR'] . ", 501 returned", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
-    }
     /**
      * Synxiec: "How many viewers do I have for each time I play these games so I can correlate my viewership to the games I play"
     "How many viewers are unique versus non-unique? I want to be able to determine which games are my staples and which ones tend to bring newer audiences"

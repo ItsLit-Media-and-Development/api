@@ -17,17 +17,14 @@ namespace API\Model;
 
 use API\Library;
 
-class UserModel
+class UserModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
     private $_hash;
-    private $_output;
 
     public function __construct()
     {
-        $this->_config = new Library\Config();
-        $this->_db     = $this->_config->database();
+		parent::__construct();
+
         $this->_hash   = new Library\Password();
     }
 

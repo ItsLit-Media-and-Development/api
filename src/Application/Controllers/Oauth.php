@@ -17,37 +17,27 @@ use API\Library;
 use API\Model\OauthModel;
 use GuzzleHttp\Client;
 
-class Oauth
+class Oauth extends Library\BaseController
 {
-    private $_params;
-    private $_output;
-    private $_log;
   	private $_SLclientID;
-	  private $_SLclientSecret;
-    private $_redirect_URI = 'https://api.itslit.uk/oauth/streamlabs/';
-	  private $_twitch_redirect = 'https://api.itslit.uk/Oauth/twitch/';
-    private $_SL_URI = 'https://streamlabs.com/api/v1.0/';
+	private $_SLclientSecret;
+	private $_redirect_URI = 'https://api.itslit.uk/oauth/streamlabs/';
+	private $_twitch_redirect = 'https://api.itslit.uk/Oauth/twitch/';
+	private $_SL_URI = 'https://streamlabs.com/api/v1.0/';
     private $_db;
     private $_guzzle;
   	private $_config;
 
-
     public function __construct()
     {
-        $tmp = new Library\Router();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
-        $this->_db = new OauthModel();
+		parent::__construct();
+
+		$this->_db = new OauthModel();
         $this->_guzzle = new Client();
         $this->_config = new Library\Config();
-        $this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
-        $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
-    }
 
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
+		$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
+        $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
     }
 
     public function streamlabs()

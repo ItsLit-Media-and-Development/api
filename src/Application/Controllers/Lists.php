@@ -16,37 +16,15 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Lists
+class Lists extends Library\BaseController
 {
     private $_db;
-    private $_params;
-    private $_output;
-    private $_log;
 
     public function __construct()
     {
-        $tmp = new Library\Router();
+		parent::__construct();
+
         $this->_db = new Model\ListModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
-    }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     */
-    public function main()
-    {
-        $this->_log->set_message("Lists::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**

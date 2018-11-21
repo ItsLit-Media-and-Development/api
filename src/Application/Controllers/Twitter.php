@@ -15,24 +15,11 @@ namespace API\Controllers;
 
 use API\Library;
 
-class Twitter
+class Twitter extends Library\BaseController
 {
-	private $_db;
-	private $_params;
-	private $_output;
-	private $_log;
 
 	public function __construct()
 	{
-		$tmp = new Library\Router();
-		$this->_params = $tmp->getAllParameters();
-		$this->_output = new Library\Output();
-		$this->_log = new Library\Logger();
-
-	}
-
-	public function __destruct()
-	{
-		$this->_log->saveMessage();
+		parent::__construct();
 	}
 }

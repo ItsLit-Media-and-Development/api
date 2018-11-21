@@ -15,38 +15,15 @@ namespace API\Controllers;
 
 use API\Library;
 
-class League
+class League extends Library\BaseController
 {
-    private $_params;
-    private $_output;
-    private $_log;
     private $_riot;
 
     public function __construct()
     {
-        $tmp           = new Library\Router();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log    = new Library\Logger();
+		parent::__construct();
+
         $this->_riot   = new Library\Riot();
-    }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("League::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**

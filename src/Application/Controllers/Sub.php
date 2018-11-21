@@ -16,38 +16,15 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Sub
+class Sub extends Library\BaseController
 {
-    private $_params;
-    private $_output;
     private $_db;
-    private $_log;
 
     public function __construct()
     {
-        $tmp           = new Library\Router();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_db     = new Model\SubModel();
-        $this->_log = new Library\Logger();
-    }
+		parent::__construct();
 
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("Sub::main() called from " . $_SERVER['REMOTE_ADDR'] . ", 501 returned", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
+		$this->_db = new Model\SubModel();
     }
 
     /**
