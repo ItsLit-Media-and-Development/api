@@ -29,15 +29,15 @@ class Admin
 
     public function __construct()
     {
-        $tmp = new Library\Router();
-        $this->_db = new Model\AdminModel();
+		$tmp = new Library\Router();
+		$this->_db = new Model\AdminModel();
         $this->_params = $tmp->getAllParameters();
         $this->_output = new Library\Output();
-        $this->_token = new Library\JWT();
+		$this->_token = new Library\JWT();
         $this->_config = new Library\Config();
-        $this->_log = new Library\Logger();
+		$this->_log = new Library\Logger();
         $this->_header = $tmp->getAllHeaders();
-        $this->_auth = new Library\Authentication();
+		$this->_auth = new Library\Authentication();
     }
 
     public function __destruct()
