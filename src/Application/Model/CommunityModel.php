@@ -39,4 +39,30 @@ class CommunityModel extends Library\BaseModel
 
         return $this->_output;
     }
+
+	public function ban_user($channel, $user, $requester, $reason)
+	{
+		try {
+			$stmt = $this->_db->prepare("INSERT INTO twitch_logs (channel, user, requester, reason, type) VALUES(:chan, :user, :requester, :reason, :type)");
+			$stmt->execute(
+				[
+					':chan'      => $channel,
+					':user'      => $user,
+					':requester' => $requester,
+					':reason'    => preg_replace("/^(\w+\s)/", "", urldecode($reason)),
+					':type'      => 'ban'
+				]
+			);
+
+			if($stmt->rowCount() > 0) {
+				$this->_output = true;
+			} else {
+				$this->_output = false;
+			}
+		} catch(\PDOException $e) {
+			$this->_output = $e->getMessage();
+		}
+
+		return $this->_output;
+	}
 }

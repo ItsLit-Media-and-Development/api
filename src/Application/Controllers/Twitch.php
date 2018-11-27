@@ -14,12 +14,14 @@
 namespace API\Controllers;
 
 use API\Library;
+use API\Model\CommunityModel;
 use API\Model\OauthModel;
 
 class Twitch extends Library\BaseController
 {
 	private $_twitch;
 	private $_db;
+	private $_db2;
 
 	public function __construct()
 	{
@@ -27,6 +29,7 @@ class Twitch extends Library\BaseController
 
 		$this->_twitch = new Library\Twitch();
 		$this->_db = new OauthModel();
+		$this->_db2 = new CommunityModel();
 	}
 
 	/**
@@ -210,6 +213,26 @@ class Twitch extends Library\BaseController
 		return $this->_output->output('200', $output['chatter_count'], $bot);
 	}
 
+	public function ban()
+	{
+		$this->_log->set_message("Twitch::viercount() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$user = $this->_params[1];
+		$banner = $this->_params[2];
+		$reason = $this->_params[3];
+		$bot = isset($this->_params[4]) ? $this->_params[4] : false;
+
+		$output = $this->_db2->ban_user($channel, $user, $banner, $reason);
+
+		if($output == false) {
+			//shouldn't be 200 but fix later
+			return $this->_output->output('200', 'There was an error with the request', $bot);
+		}
+
+		return $this->_output->output('200', "/ban $user", $bot);
+	}
+
 	private function _users($userid)
 	{
 		return $this->_twitch->get('users/' . $userid);
@@ -252,13 +275,17 @@ class Twitch extends Library\BaseController
 		}
 		$count = 0;
 		$times = array();
+
 		foreach($diffs as $interval => $value) {
+
 			// Break if we have needed precision
 			if($count >= $precision) {
 				break;
 			}
+
 			// Add value and interval if value is bigger than 0
 			if($value > 0) {
+
 				if($value != 1) {
 					$interval .= "s";
 				}
