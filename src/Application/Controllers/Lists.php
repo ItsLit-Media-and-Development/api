@@ -77,7 +77,10 @@ class Lists extends Library\BaseController
 
             $query = $this->_db->delete_item($owner, $lName, $name);
 
-            return ($query != NULL) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was removed from the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			//return ($query != NULL) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was removed from the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			return ($query != NULL) ?
+				$this->_output->output(200, urldecode($name) . " was removed from the $lName list!", $bot) :
+				$this->_output->output(400, $query, $bot);
         }
     }
 
@@ -115,7 +118,10 @@ class Lists extends Library\BaseController
 
             $query = $this->_db->add_entry($owner, $lName, $name, $info);
 
-            return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			//return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			return (is_bool($query)) ?
+				$this->_output->output(200, urldecode($name) . " was added to the $lName list!", $bot) :
+				$this->_output->output(400, $query, $bot);
         }
         else
         {
