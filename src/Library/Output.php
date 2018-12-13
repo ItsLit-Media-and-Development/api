@@ -187,7 +187,8 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-                        $out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+						//$out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+						$out .= str_replace("%3A", ":", str_replace("%20", " ", $val));
                     }
                 }
             }
@@ -196,6 +197,8 @@ class Output
         {
             $out = $input;
         }
+
+		//$out = substr($out, 0, -1);
 
         return $out;
     }
