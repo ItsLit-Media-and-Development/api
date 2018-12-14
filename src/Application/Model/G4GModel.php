@@ -56,33 +56,11 @@ class G4GModel extends Library\BaseModel
 			}
 
 
+
 			return true;
 		} catch(\PDOException $e) {
 			return $e->getMessage();
 		}
-	}
-
-	private function _rank_up($points, $existing_rank)
-	{
-		$return = false;
-
-		if($points >= 1500 && $points < 3000) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger") ? "Harbinger" : false;
-		} elseif($points >= 3000 && $points < 4500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice") ?
-				"Chaos Bringer Apprentice" : false;
-		} elseif($points >= 4500 && $points < 6000) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer") ?
-				"Chaos Bringer" : false;
-		} elseif($points >= 6000 && $points < 7500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice") ?
-				"Furion Apprentice" : false;
-		} elseif($points >= 7500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice" || $existing_rank == "Furion") ?
-				"Furion" : false;
-		}
-
-		return $return;
 	}
 
 	public function add_pve_points($user, $points, $requester)
@@ -247,5 +225,61 @@ class G4GModel extends Library\BaseModel
 		} catch(\PDOException $e) {
 			$this->_output = $e->getMessage();
 		}
+	}
+
+	private function _rank_up($points, $existing_rank)
+	{
+		$return = false;
+
+		if($points >= 1500 && $points < 3000) {
+			$return = ($existing_rank == "none" || $existing_rank == "Harbinger") ? "Harbinger" : false;
+		} elseif($points >= 3000 && $points < 4500) {
+			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice") ?
+				"Chaos Bringer Apprentice" : false;
+		} elseif($points >= 4500 && $points < 6000) {
+			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer") ?
+				"Chaos Bringer" : false;
+		} elseif($points >= 6000 && $points < 7500) {
+			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice") ?
+				"Furion Apprentice" : false;
+		} elseif($points >= 7500) {
+			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice" || $existing_rank == "Furion") ?
+				"Furion" : false;
+		}
+
+		return $return;
+	}
+
+	public function link_user($discord, $tag)
+	{
+		try {
+			$stmt = $this->_db->prepare("INSERT INTO g4g_link (discord, tag) VALUES(:discord, :tag) ON DUPLICATE KEY UPDATE discord = :discord, tag = :tag");
+			$stmt->execute(
+				[
+					':discord' => $discord,
+					':tag'     => $tag
+				]
+			);
+
+			return true;
+		} catch(\PDOException $e) {
+			return $e->getMessage();
+		}
+	}
+
+	public function check_link($discord)
+	{
+		try {
+			$stmt = $this->_db->prepare("SELECT tag FROM g4g_link WHERE discord = :discord");
+			$stmt->execute([':discord' => $discord]);
+
+			$this->_output = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+			$this->_output = (is_array($this->_output)) ? $this->_output['tag'] : false;
+		} catch(\PDOException $e) {
+			$this->_output = false;
+		}
+
+		return $this->_output;
 	}
 }

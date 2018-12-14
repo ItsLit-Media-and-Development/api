@@ -19,6 +19,8 @@ class Games extends Library\BaseController
 
 	public function eightball()
 	{
+		$this->_log->set_message("Games::eightball() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$user = $this->_params[0];
 
 		$outcomes = [
@@ -72,6 +74,8 @@ class Games extends Library\BaseController
 
 	public function cointoss()
 	{
+		$this->_log->set_message("Games::cointoss() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$user = $this->_params[0];
 		$call = (strtolower($this->_params[1]) == "heads") ? 1 : ((strtolower($this->_params[1]) == "tails") ? 0 : -1);
 
@@ -95,6 +99,8 @@ class Games extends Library\BaseController
 
 	public function roulette()
 	{
+		$this->_log->set_message("Games::roulette() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$user = $this->_params[0];
 
 		$outcomes = [

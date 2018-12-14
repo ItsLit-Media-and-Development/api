@@ -25,6 +25,8 @@ class G4G extends Library\BaseController
 
 	public function add()
 	{
+		$this->_log->set_message("G4G::add() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		//format !addpoints 100 @p_rigz PVE
 		$points = $this->_params[0];
 		$target = str_replace('@', '', $this->_params[1]);
@@ -66,6 +68,8 @@ class G4G extends Library\BaseController
 
 	public function remove()
 	{
+		$this->_log->set_message("G4G::remove() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		//!removepoints 100 @p_rigz pve
 		$points = $this->_params[0];
 		$target = str_replace('@', '', $this->_params[1]);
@@ -99,9 +103,12 @@ class G4G extends Library\BaseController
 
 	public function getList()
 	{
+		$this->_log->set_message("G4G::getList() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$qty = $this->_params[0];
+		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
+
 		if($this->_params[2] != 'null') {
-			$qty = $this->_params[0];
-			$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
 			$user = $this->_params[2];
 			$bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
@@ -109,10 +116,9 @@ class G4G extends Library\BaseController
 				$this->_output->setOutput($this->_params[4]);
 			}
 		} else {
-			//!unknown(top10, all, single) MODE
-			$qty = $this->_params[0];
-			$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
-			$user = $this->_params[3];
+			$user = ($this->_db->check_link($this->_params[3]) !== false) ? $this->_db->check_link($this->_params[3]) :
+				$this->_params[3];
+			var_dump($user);
 			$bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
 			if(isset($this->_params[4])) {
@@ -123,7 +129,11 @@ class G4G extends Library\BaseController
 		$query = $this->_db->get_list($qty, $mode, $user);
 
 		if($qty == '1') {
-			$query = "<" . $query['0']['name'] . "> Prestige: " . $query['0']['prestige'] . ", Rank: " . $query['0']['rank'] . ", " . $query['0']['points'] . " $mode Points";
+			if($query == false) {
+				$query = "Sorry but you do not seem to have any $mode Points $user. If $user is not your D2 name, please do `!pointsregister D2_name` i.e. `!pointsregister KillerAuzzie`";
+			} else {
+				$query = $query['0']['name'] . " Prestige: " . $query['0']['prestige'] . ", Rank: " . $query['0']['rank'] . ", " . $query['0']['points'] . " $mode Points";
+			}
 		}
 
 		return $this->_output->output(200, $query, $bot);
@@ -131,6 +141,8 @@ class G4G extends Library\BaseController
 
 	public function prestige()
 	{
+		$this->_log->set_message("G4G::prestige() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$mode = $this->_params[0];
 		$target = $this->_params[1];
 		$event = strtolower($this->_params[2]);
@@ -144,5 +156,25 @@ class G4G extends Library\BaseController
 
 		return $this->_output->output(200, "Prestige has been " . (($event == "add") ? "added to" :
 											 "removed from") . " $target", $bot);
+	}
+
+	public function register()
+	{
+		$this->_log->set_message("G4G::register() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		if(sizeof($this->_params) < 2) {
+			$query = "Something was not quite right, the command is `!pointsregister D2_NAME`";
+		}
+		$discord = $this->_params[0];
+		$tag = $this->_params[1];
+
+		$this->_output->setOutput('plain');
+
+		$query = $this->_db->link_user($discord, $tag);
+
+		$query = ($query === true) ? "Registration is successful" :
+			"Something went wrong with the registration, tag the Web Team";
+
+		return $this->_output->output(200, $query, true);
 	}
 }
