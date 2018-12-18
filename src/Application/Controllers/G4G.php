@@ -107,6 +107,8 @@ class G4G extends Library\BaseController
 
 		$qty = $this->_params[0];
 		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
+		$this->_params[3] = str_replace(' ', '-', $this->_params[3]);
+		$this->_params[3] = preg_replace('/-+/', '-', $this->_params[3]);
 
 		if($this->_params[2] != 'null') {
 			$user = $this->_params[2];
@@ -118,7 +120,7 @@ class G4G extends Library\BaseController
 		} else {
 			$user = ($this->_db->check_link($this->_params[3]) !== false) ? $this->_db->check_link($this->_params[3]) :
 				$this->_params[3];
-			var_dump($user);
+
 			$bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
 			if(isset($this->_params[4])) {
@@ -128,14 +130,20 @@ class G4G extends Library\BaseController
 
 		$query = $this->_db->get_list($qty, $mode, $user);
 
-		if($qty == '1') {
-			if($query == false) {
-				$query = "Sorry but you do not seem to have any $mode Points $user. If $user is not your D2 name, please do `!pointsregister D2_name` i.e. `!pointsregister KillerAuzzie`";
-			} else {
-				$query = $query['0']['name'] . " Prestige: " . $query['0']['prestige'] . ", Rank: " . $query['0']['rank'] . ", " . $query['0']['points'] . " $mode Points";
+		if(empty($query)) {
+			if($this->_db->check_link($user) === false) {
+				$query = "Sorry but it seems like you do not have any $mode points $user. If this is wrong, make sure you have registered `!pointsregister D2_name` and ping the Web Team if you still see this message and it is wrong.";
+			}
+		} else {
+			if($qty == '1') {
+				if($query == false) {
+					$query = "Sorry but you do not seem to have any $mode Points $user. If $user is not your D2 name, please do `!pointsregister D2_name` i.e. `!pointsregister KillerAuzzie`";
+				} else {
+					$query = $query['0']['name'] . " Prestige: " . $query['0']['prestige'] . ", Rank: " . $query['0']['rank'] . ", " . $query['0']['points'] . " $mode Points";
+				}
 			}
 		}
-
+		
 		return $this->_output->output(200, $query, $bot);
 	}
 
@@ -149,9 +157,9 @@ class G4G extends Library\BaseController
 		$bot = (isset($this->_params[3])) ? $this->_params[3] : false;
 
 		if($mode == "add") {
-			$this->_db->add_prestige($mode, $target);
+			$this->_db->add_prestige($event, $target);
 		} else {
-			$this->_db->add_prestige($mode, $target);
+			$this->_db->remove_prestige($event, $target);
 		}
 
 		return $this->_output->output(200, "Prestige has been " . (($event == "add") ? "added to" :

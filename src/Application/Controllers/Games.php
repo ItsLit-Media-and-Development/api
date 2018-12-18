@@ -115,4 +115,46 @@ class Games extends Library\BaseController
 
 		return $this->_output->output(200, $outcomes[rand(0, sizeof($outcomes))], true);
 	}
+
+	/**
+	 * results 0 = loss, -1 = tie, 1 = win
+	 */
+	public function rps()
+	{
+		$this->_log->set_message("Games::roulette() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$call = strtolower($this->_params[0]);
+		$user = $this->_params[1];
+		$result = "0";
+
+		if($call != "paper" || $call != "rock" || $call != "scissors") {
+			$output = "I have never heard of $call, the game is **Rock, Paper, Scissors**, you must choose any **one** of them";
+		} else {
+			$botCall = rand(0, 2);
+
+			switch($botCall) {
+				//Rock
+				case 0:
+					$result = ($call == "paper") ? "1" : (($call == "rock") ? "-1" : "0");
+
+					break;
+				case 1:
+					//paper
+					$result = ($call == "scissors") ? "1" : (($call == "paper") ? "-1" : "0");
+
+					break;
+				case 2:
+					//scissors
+					$result = ($call == "rock") ? "1" : (($call == "scissors") ? "-1" : "0");
+
+					break;
+			}
+
+			$output = "$user chose " . ucwords($call) . ", I chose ";
+			$output .= ($botCall == 0) ? "Rock!" : (($botCall == 1) ? "Paper!" : "Scissors!");
+			$output .= ($result == "1") ? " You win :(" : ($result == "-1" ? " We drew!" : " I won!!!");
+		}
+
+		return $this->_output->output(200, $output, true);
+	}
 }
