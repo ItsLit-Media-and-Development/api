@@ -15,12 +15,68 @@ use API\Model;
 class G4G extends Library\BaseController
 {
 	private $_db;
+	private $_g;
 
 	public function __construct()
 	{
 		parent::__construct();
 
 		$this->_db = new Model\G4GModel();
+		$this->_g = new Library\Guilded();
+	}
+
+	public function archive()
+	{
+		$this->_log->set_message("G4G::archive() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$guilded = $this->_params[0];
+		$bungie = $this->_params[1];
+		$status = $this->_params[2];
+		$user = $this->_params[3];
+		$bot = (isset($this->_params[4])) ? $this->_params[4] : true;
+		$g_stats = $this->_g->get_event($this->_params[0]);
+
+		if(is_array($g_stats)) {
+			$output = $g_stats;
+
+			$output['createdBy'] = $this->_translate_name($g_stats['createdBy']);
+
+			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status);
+		} else {
+			$output = "The Guilded ID is incorrect or the event is marked as Member's Only, please try again!";
+		}
+
+		if($output == false) {
+			$output = "Something went wrong, KillerAuzzie will take a look into it";
+		} else {
+			$output = "Event $bungie has been archived, thank you $user";
+		}
+
+		return $this->_output->output(200, $output, $bot);
+	}
+
+	private function _translate_name($gid)
+	{
+		//need to check if the user id is in the db already, if not then we will pull it from guilded and store in the db
+		$exists = $this->_db->check_user_exists($gid);
+
+		if($exists === false) {
+			$output = $this->_guilded->get('users/' . $gid);
+
+			$output = $this->_db->add_user($gid, $output['user']['name']);
+		} else {
+			$output = $exists;
+		}
+
+		return $output;
+	}
+
+	private function _translate_roles($id)
+	{
+		$roles = ['411' => 'PlayStation', '412' => 'Xbox', '413' => 'PC', '859' => 'Officer', '856' => 'Clan Council',
+				  '858' => 'Web Team'];
+
+		return $roles[$id];
 	}
 
 	public function add()

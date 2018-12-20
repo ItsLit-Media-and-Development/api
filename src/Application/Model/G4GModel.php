@@ -18,6 +18,28 @@ class G4GModel extends Library\BaseModel
 		parent::__construct();
 	}
 
+	public function add_event($guilded, $bungie, $officer, array $g_stats, $status)
+	{
+		try {
+			$stmt = $this->_db->prepare("INSERT INTO g4g_events(gid, bid, officer, status) VALUES(:gid, :bid, :officer, :status)");
+			$stmt->execute(
+				[
+					':gid'     => $guilded,
+					':bid'     => $bungie,
+					':officer' => $officer,
+					':status'  => $status
+				]
+			);
+
+			$this->_output = $stmt->rowCount();
+
+		} catch(\PDOException $e) {
+			$this->_output = false;
+		}
+
+		return $this->_output;
+	}
+
 	public function add_pvp_points($user, $points, $requester)
 	{
 		$rankup = false;
@@ -183,7 +205,6 @@ class G4GModel extends Library\BaseModel
 				$stmt->execute([':name' => $user]);
 
 				$this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
 			} catch(\PDOException $e) {
 				$this->_output = $e->getMessage();
 			}
@@ -277,6 +298,62 @@ class G4GModel extends Library\BaseModel
 			$this->_output = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 			$this->_output = (is_array($this->_output)) ? $this->_output['tag'] : false;
+		} catch(\PDOException $e) {
+			$this->_output = false;
+		}
+
+		return $this->_output;
+	}
+
+	public function check_user_exists($gid)
+	{
+		try {
+			//lets checkt to see if we have the user already
+			$stmt = $this->_db->prepare("SELECT tag FROM g4g_link WHERE guilded = :gid");
+			$stmt->execute([':gid' => $gid]);
+
+			$name = $stmt->fetch();
+
+			$this->_output = (isset($name['tag'])) ? $name['tag'] : false;
+		} catch(\PDOException $e) {
+			$this->_output = false;
+		}
+
+		return $this->_output;
+	}
+
+	public function add_user($gid, $discord)
+	{
+		try {
+			//we will run an insert update query
+			$stmt = $this->_db->prepare("SELECT COUNT(discord) FROM g4g_link WHERE discord = :discord");
+			$stmt->execute([':discord' => $discord]);
+
+			$exists = $stmt->fetch(\PDO::FETCH_NUM);
+
+			if($exists[0] > 0) {
+				//user exists lets update
+				$update = $this->_db->prepare("UPDATE g4g_link SET guilded = :gid WHERE discord = :discord");
+				$update->execute(
+					[
+						':discord' => $discord,
+						':gid'     => $gid
+					]
+				);
+
+				$this->_output = $update->rowCount();
+			} else {
+				//they aren't in the db right now
+				$insert = $this->_db->prepare("INSERT INTO g4g_link (discord, guilded) VALUES(:discord, :guilded) ON DUPLICATE KEY UPDATE guilded = :guilded");
+				$insert->execute(
+					[
+						':discord' => $discord,
+						':gid'     => $gid
+					]
+				);
+
+				$this->_output = $insert->rowCount();
+			}
 		} catch(\PDOException $e) {
 			$this->_output = false;
 		}
