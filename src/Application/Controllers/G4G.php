@@ -29,10 +29,10 @@ class G4G extends Library\BaseController
 	{
 		$this->_log->set_message("G4G::archive() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-		$guilded = $this->_params[0];
-		$bungie = $this->_params[1];
-		$status = $this->_params[2];
-		$user = $this->_params[3];
+		$guilded = $this->_params[0]; // id from guilded URL
+		$bungie = $this->_params[1]; // bungie event id from DTR
+		$status = $this->_params[2]; // complete, checkpoint, incomplete, cancelled
+		$user = $this->_params[3]; // which officer called it
 		$bot = (isset($this->_params[4])) ? $this->_params[4] : true;
 		$g_stats = $this->_g->get_event($this->_params[0]);
 
@@ -40,6 +40,7 @@ class G4G extends Library\BaseController
 			$output = $g_stats;
 
 			$output['createdBy'] = $this->_translate_name($g_stats['createdBy']);
+			$output['allowedRoleIds'] = $this->_translate_roles($g_stats['allowedRoleIds'][0]);
 
 			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status);
 		} else {
@@ -61,7 +62,7 @@ class G4G extends Library\BaseController
 		$exists = $this->_db->check_user_exists($gid);
 
 		if($exists === false) {
-			$output = $this->_guilded->get('users/' . $gid);
+			$output = $this->_g->get('users/' . $gid);
 
 			$output = $this->_db->add_user($gid, $output['user']['name']);
 		} else {

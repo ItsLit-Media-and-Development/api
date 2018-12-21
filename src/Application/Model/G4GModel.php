@@ -18,21 +18,29 @@ class G4GModel extends Library\BaseModel
 		parent::__construct();
 	}
 
-	public function add_event($guilded, $bungie, $officer, array $g_stats, $status)
+	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false)
 	{
 		try {
-			$stmt = $this->_db->prepare("INSERT INTO g4g_events(gid, bid, officer, status) VALUES(:gid, :bid, :officer, :status)");
+			$stmt = $this->_db->prepare("INSERT INTO g4g_events(gid, bid, officer, event_owner, event_name, event_time," .
+										" platform, role_restriction, is_archived, event_status) VALUES (:gid, :bid, :officer, :owner," .
+										" :name, :time, :platform, :roles, :archive, :status)");
 			$stmt->execute(
 				[
-					':gid'     => $guilded,
-					':bid'     => $bungie,
-					':officer' => $officer,
-					':status'  => $status
+					':gid'      => $guilded,
+					':bid'      => $bungie,
+					':officer'  => $officer,
+					':owner'    => $g_stats['createdBy'],
+					':name'     => $g_stats['name'],
+					':time'     => $g_stats['happensAt'],
+					':platform' => $g_stats['allowedRoleIds'],
+					//':platform' => $g_stats['location'],
+					':roles'    => $g_stats['allowedRoleIds'],
+					':archive'  => ($status !== false) ? 1 : 0,
+					':status'   => $status
 				]
 			);
 
 			$this->_output = $stmt->rowCount();
-
 		} catch(\PDOException $e) {
 			$this->_output = false;
 		}

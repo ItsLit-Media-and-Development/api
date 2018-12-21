@@ -32,7 +32,7 @@ class Guilded
 		$output = $this->get('teams/' . $this->_team_id . '/events/' . $event_id);
 
 		if(!is_array($output)) {
-			$output = "The Guilded ID is incorrect or the event is marked as Member's Only, please try again!";
+			$output = false;
 		}
 
 		return $output;
