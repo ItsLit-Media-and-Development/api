@@ -18,6 +18,19 @@ class G4GModel extends Library\BaseModel
 		parent::__construct();
 	}
 
+	public function get_archive()
+	{
+		try {
+			$stmt = $this->_db->prepare("SELECT * FROM g4g_events");
+			$stmt->execute();
+			$this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+		} catch(\PDOException $e) {
+			$this->_output = $e->getMessage();
+		}
+
+		return $this->_output;
+	}
+
 	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false)
 	{
 		try {

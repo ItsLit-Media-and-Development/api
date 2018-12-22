@@ -50,10 +50,16 @@ class G4G extends Library\BaseController
 		if($output == false) {
 			$output = "Something went wrong, KillerAuzzie will take a look into it";
 		} else {
-			$output = "Event $bungie has been archived, thank you $user";
+			$output = "Event " . $g_stats['name'] . " has been archived, thank you $user";
 		}
 
 		return $this->_output->output(200, $output, $bot);
+	}
+
+	public function list_archive()
+	{
+		//lets just have it do all
+		return $this->_output->output(200, $this->_db->get_archive(), false);
 	}
 
 	private function _translate_name($gid)
