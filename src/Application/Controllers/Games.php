@@ -127,7 +127,9 @@ class Games extends Library\BaseController
 		$user = $this->_params[1];
 		$result = "0";
 
-		if($call != "paper" || $call != "rock" || $call != "scissors") {
+		$allowed = ['paper', 'rock', 'scissors'];
+
+		if(!in_array($call, $allowed)) {
 			$output = "I have never heard of $call, the game is **Rock, Paper, Scissors**, you must choose any **one** of them";
 		} else {
 			$botCall = rand(0, 2);

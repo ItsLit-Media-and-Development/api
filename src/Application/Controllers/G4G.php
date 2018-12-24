@@ -37,6 +37,7 @@ class G4G extends Library\BaseController
 		$g_stats = $this->_g->get_event($this->_params[0]);
 
 		if(is_array($g_stats)) {
+
 			$output = $g_stats;
 
 			$output['createdBy'] = $this->_translate_name($g_stats['createdBy']);
@@ -45,12 +46,14 @@ class G4G extends Library\BaseController
 			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status);
 		} else {
 			$output = "The Guilded ID is incorrect or the event is marked as Member's Only, please try again!";
+
+			return $this->_output->output(200, $output, $bot);
 		}
 
 		if($output == false) {
 			$output = "Something went wrong, KillerAuzzie will take a look into it";
 		} else {
-			$output = "Event " . $g_stats['name'] . " has been archived, thank you $user";
+			$output = "The event " . $g_stats['name'] . " has been archived with the status of $status, thank you " . urldecode($user);
 		}
 
 		return $this->_output->output(200, $output, $bot);
@@ -70,7 +73,7 @@ class G4G extends Library\BaseController
 		if($exists === false) {
 			$output = $this->_g->get('users/' . $gid);
 
-			$output = $this->_db->add_user($gid, $output['user']['name']);
+			$output = $this->_db->add_user($output['user']['name'], $output['user']['name']);
 		} else {
 			$output = $exists;
 		}
@@ -174,7 +177,7 @@ class G4G extends Library\BaseController
 		$this->_params[3] = preg_replace('/-+/', '-', $this->_params[3]);
 
 		if($this->_params[2] != 'null') {
-			$user = $this->_params[2];
+
 			$bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
 			if(isset($this->_params[4])) {
