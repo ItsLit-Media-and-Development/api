@@ -175,6 +175,8 @@ class G4G extends Library\BaseController
 		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
 		$this->_params[3] = str_replace(' ', '-', $this->_params[3]);
 		$this->_params[3] = preg_replace('/-+/', '-', $this->_params[3]);
+		$user = '';
+		$query = "Sorry but you do not seem to have any $mode Points $user. If $user is not your D2 name, please do `!pointsregister D2_name` i.e. `!pointsregister KillerAuzzie`";
 
 		if($this->_params[2] != 'null') {
 
