@@ -233,11 +233,11 @@ class G4GModel extends Library\BaseModel
 			try {
 				$qty = str_replace("top", "", $qty);
 
-				$stmt = $this->_db->prepare("SELECT name, rank, points, prestige FROM G4G_" . strtolower($mode) . " ORDER BY points DESC LIMIT $qty");
+				$stmt = $this->_db->prepare("SELECT name, rank, points, prestige FROM G4G_" . strtoupper($mode) . " ORDER BY points DESC LIMIT 0, $qty");
 
 				$stmt->execute();
 
-				$this->_output = $stmt->fetch(\PDO::FETCH_ASSOC);
+				$this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 			} catch(\PDOException $e) {
 				$this->_output = $e->getMessage();
 			}

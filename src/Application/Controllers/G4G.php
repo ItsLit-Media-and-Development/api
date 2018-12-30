@@ -209,6 +209,17 @@ class G4G extends Library\BaseController
 				} else {
 					$query = $query['0']['name'] . " Prestige: " . $query['0']['prestige'] . ", Rank: " . $query['0']['rank'] . ", " . $query['0']['points'] . " $mode Points";
 				}
+			} else {
+				$tmp = [];
+
+				for($i = 0; $i < sizeof($query); $i++) {
+					$tmp[$i]['Name'] = $query[$i]['name'];
+					$tmp[$i]['Prestige'] = $query[$i]['prestige'];
+					$tmp[$i]['rank'] = $query[$i]['rank'];
+					$tmp[$i]['points'] = $query[$i]['points'];
+				}
+
+				$query = $tmp;
 			}
 		}
 		
