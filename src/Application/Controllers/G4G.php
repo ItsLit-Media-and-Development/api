@@ -34,16 +34,23 @@ class G4G extends Library\BaseController
 		$status = $this->_params[2]; // complete, checkpoint, incomplete, cancelled
 		$user = $this->_params[3]; // which officer called it
 		$bot = (isset($this->_params[4])) ? $this->_params[4] : true;
+		$notes = (isset($this->_params[5])) ? $this->_params[5] : false;
 		$g_stats = $this->_g->get_event($this->_params[0]);
 
 		if(is_array($g_stats)) {
+
+			if(!isset($g_stats['allowedRoleIds']) || empty($g_stats['allowedRoleIds'])) {
+				$output = "The Guilded Calendar event has not had any role restrictions set, please fix this and resubmit";
+
+				return $this->_output->output(200, $output, $bot);
+			}
 
 			$output = $g_stats;
 
 			$output['createdBy'] = $this->_translate_name($g_stats['createdBy']);
 			$output['allowedRoleIds'] = $this->_translate_roles($g_stats['allowedRoleIds'][0]);
 
-			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status);
+			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status, $notes);
 		} else {
 			$output = "The Guilded ID is incorrect or the event is marked as Member's Only, please try again!";
 
@@ -95,9 +102,10 @@ class G4G extends Library\BaseController
 
 		//format !addpoints 100 @p_rigz PVE
 		$points = $this->_params[0];
-		$target = str_replace('@', '', $this->_params[1]);
+		$target = $this->_params[1];
 		$mode = strtolower($this->_params[2]);
-		$auth = $this->_authenticate($this->_params[3]);
+		//$auth = $this->_authenticate($this->_params[3]);
+		$auth = $this->_params[3];
 		$bot = (isset($this->_params[4])) ? $this->_params[4] : true;
 		$output = '';
 
@@ -173,8 +181,8 @@ class G4G extends Library\BaseController
 
 		$qty = $this->_params[0];
 		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
-		$this->_params[3] = str_replace(' ', '-', $this->_params[3]);
-		$this->_params[3] = preg_replace('/-+/', '-', $this->_params[3]);
+		$this->_params[3] = (isset($this->_params[3])) ? str_replace(' ', '-', $this->_params[3]) : '';
+		$this->_params[3] = (isset($this->_params[3])) ? preg_replace('/-+/', '-', $this->_params[3]) : '';
 		$user = '';
 		$query = "Sorry but you do not seem to have any $mode Points $user. If $user is not your D2 name, please do `!pointsregister D2_name` i.e. `!pointsregister KillerAuzzie`";
 

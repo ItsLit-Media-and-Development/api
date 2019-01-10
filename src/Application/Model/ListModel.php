@@ -107,7 +107,7 @@ class ListModel extends Library\BaseModel
         try
         {
 			//$stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) ORDER BY iid LIMIT 1");
-			$stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) ORDER BY iid LIMIT 1");
+			$stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) LIMIT 1");
 
             $stmt->execute(
                 [

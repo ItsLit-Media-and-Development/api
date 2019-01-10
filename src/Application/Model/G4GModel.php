@@ -31,12 +31,12 @@ class G4GModel extends Library\BaseModel
 		return $this->_output;
 	}
 
-	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false)
+	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false, $notes)
 	{
 		try {
 			$stmt = $this->_db->prepare("INSERT INTO g4g_events(gid, bid, officer, event_owner, event_name, event_time," .
-										" platform, role_restriction, is_archived, event_status) VALUES (:gid, :bid, :officer, :owner," .
-										" :name, :time, :platform, :roles, :archive, :status)");
+										" platform, role_restriction, is_archived, event_status, notes) VALUES (:gid, :bid, :officer, :owner," .
+										" :name, :time, :platform, :roles, :archive, :status, :notes)");
 			$stmt->execute(
 				[
 					':gid'      => $guilded,
@@ -49,7 +49,8 @@ class G4GModel extends Library\BaseModel
 					//':platform' => $g_stats['location'],
 					':roles'    => $g_stats['allowedRoleIds'],
 					':archive'  => ($status !== false) ? 1 : 0,
-					':status'   => $status
+					':status'   => $status,
+					':notes'    => $notes
 				]
 			);
 
@@ -213,7 +214,7 @@ class G4GModel extends Library\BaseModel
 		//check to see if the quantity is all or a fixed amount
 		if(strtolower($qty) == "all") {
 			try {
-				$stmt = $this->_db->prepare("SELECT name, rank, points, prestige FROM G4G_" . strtoupper($mode));
+				$stmt = $this->_db->prepare("SELECT name, rank, points, prestige FROM G4G_" . strtoupper($mode) . " ORDER BY points DESC");
 				$stmt->execute();
 
 				$this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);

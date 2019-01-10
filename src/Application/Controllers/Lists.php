@@ -110,7 +110,7 @@ class Lists extends Library\BaseController
         }
         elseif($type == 'addentry')
         {
-            $name = $this->_params[3];
+			$name = urldecode($this->_params[3]);
             $info = (isset($this->_params[4])) ? $this->_params[4] : '';
             $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
@@ -120,7 +120,7 @@ class Lists extends Library\BaseController
 
 			//return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
 			return (is_bool($query)) ?
-				$this->_output->output(200, urldecode($name) . " was added to the $lName list!", $bot) :
+				$this->_output->output(200, $name . " was added to the $lName list!", $bot) :
 				$this->_output->output(400, $query, $bot);
         }
         else
