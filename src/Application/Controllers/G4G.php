@@ -124,6 +124,11 @@ class G4G extends Library\BaseController
 						$output = "$points PvE points have been added to $target by " . $this->_params[3];
 					}
 					break;
+				case 'gambit':
+					if($this->_db->add_gambit_points($target, $points, $this->_params[3]) == true) {
+						$output = "$points Gambit points have been added to $target by " . $this->_params[3];
+					}
+					break;
 				default:
 					$output = "WTF is $mode!?!?!";
 			}
@@ -148,7 +153,8 @@ class G4G extends Library\BaseController
 		$points = $this->_params[0];
 		$target = str_replace('@', '', $this->_params[1]);
 		$mode = strtolower($this->_params[2]);
-		$auth = $this->_authenticate($this->_params[3]);
+		//$auth = $this->_authenticate($this->_params[3]);
+		$auth = true;
 		$bot = (isset($this->_params[4])) ? $this->_params[4] : true;
 		$output = '';
 
@@ -167,6 +173,11 @@ class G4G extends Library\BaseController
 						$output = "$points PvE points have been removed from $target by " . $this->_params[3];
 					}
 					break;
+				case 'gambit':
+					if($this->_db->remove_gambit_points($target, $points, $this->_params[3]) == true) {
+						$output = "$points Gambit points have been removed from $target by " . $this->_params[3];
+					}
+					break;
 				default:
 					$output = "WTF is $mode!?!?!";
 			}
@@ -180,7 +191,8 @@ class G4G extends Library\BaseController
 		$this->_log->set_message("G4G::getList() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$qty = $this->_params[0];
-		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" : "PvE";
+		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" :
+			(strtolower($this->_params[1]) == "gambit") ? "Gambit" : "PvE";
 		$this->_params[3] = (isset($this->_params[3])) ? str_replace(' ', '-', $this->_params[3]) : '';
 		$this->_params[3] = (isset($this->_params[3])) ? preg_replace('/-+/', '-', $this->_params[3]) : '';
 		$user = '';

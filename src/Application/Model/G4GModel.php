@@ -250,7 +250,7 @@ class G4GModel extends Library\BaseModel
 	public function add_prestige($mode, $user)
 	{
 		try {
-			$stmt = $this->_db->prepare("UPDATE G4G_" . strtolower($mode) . " SET points = 0, prestige = prestige + 1 WHERE name = :name");
+			$stmt = $this->_db->prepare("UPDATE G4G_" . strtoupper($mode) . " SET points = 0, prestige = prestige + 1 WHERE name = :name");
 
 			$stmt->execute([':name' => $user]);
 
@@ -262,7 +262,7 @@ class G4GModel extends Library\BaseModel
 	public function remove_prestige($mode, $user)
 	{
 		try {
-			$stmt = $this->_db->prepare("UPDATE G4G_" . strtolower($mode) . " SET points = 0, prestige = prestige + 1 WHERE name = :name");
+			$stmt = $this->_db->prepare("UPDATE G4G_" . strtoupper($mode) . " SET points = 0, prestige = prestige + 1 WHERE name = :name");
 
 			$stmt->execute([':name' => $user]);
 
@@ -271,26 +271,67 @@ class G4GModel extends Library\BaseModel
 		}
 	}
 
-	private function _rank_up($points, $existing_rank)
+	private function _rank_up($points, $existing_rank, $mode)
 	{
 		$return = false;
 
-		if($points >= 1500 && $points < 3000) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger") ? "Harbinger" : false;
-		} elseif($points >= 3000 && $points < 4500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice") ?
-				"Chaos Bringer Apprentice" : false;
-		} elseif($points >= 4500 && $points < 6000) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer") ?
-				"Chaos Bringer" : false;
-		} elseif($points >= 6000 && $points < 7500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice") ?
-				"Furion Apprentice" : false;
-		} elseif($points >= 7500) {
-			$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice" || $existing_rank == "Furion") ?
-				"Furion" : false;
-		}
+		switch($mode) {
+			case 'pvp':
 
+				if($points >= 1500 && $points < 3000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Harbinger") ? "Harbinger" : false;
+				} elseif($points >= 3000 && $points < 4500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice") ?
+						"Chaos Bringer Apprentice" : false;
+				} elseif($points >= 4500 && $points < 6000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer") ?
+						"Chaos Bringer" : false;
+				} elseif($points >= 6000 && $points < 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice") ?
+						"Furion Apprentice" : false;
+				} elseif($points >= 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Harbinger" || $existing_rank == "Chaos Bringer Apprentice" || $existing_rank == "Chaos Bringer" || $existing_rank == "Furion Apprentice" || $existing_rank == "Furion") ?
+						"Furion" : false;
+				}
+
+				break;
+			case 'pve':
+				if($points >= 1500 && $points < 3000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Luminary") ? "Luminary" : false;
+				} elseif($points >= 3000 && $points < 4500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Luminary" || $existing_rank == "Commodore Jr") ?
+						"Commodore Jr" : false;
+				} elseif($points >= 4500 && $points < 6000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Luminary" || $existing_rank == "Commodore Jr" || $existing_rank == "Commodore") ?
+						"Commodore" : false;
+				} elseif($points >= 6000 && $points < 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Luminary" || $existing_rank == "Commodore Jr" || $existing_rank == "Commodore" || $existing_rank == "Apex Jr") ?
+						"Apex Jr" : false;
+				} elseif($points >= 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Luminary" || $existing_rank == "Commodore Jr" || $existing_rank == "Commodore" || $existing_rank == "Apex Jr" || $existing_rank == "Apex") ?
+						"Apex" : false;
+				}
+
+				break;
+			case 'gambit':
+				if($points >= 1500 && $points < 3000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Outlaw") ? "Outlaw" : false;
+				} elseif($points >= 3000 && $points < 4500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Outlaw" || $existing_rank == "Maverick") ?
+						"Maverick" : false;
+				} elseif($points >= 4500 && $points < 6000) {
+					$return = ($existing_rank == "none" || $existing_rank == "Outlaw" || $existing_rank == "Maverick" || $existing_rank == "Renegade") ?
+						"Renegade" : false;
+				} elseif($points >= 6000 && $points < 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Outlaw" || $existing_rank == "Maverick" || $existing_rank == "Renegade" || $existing_rank == "Assassin") ?
+						"Assassin" : false;
+				} elseif($points >= 7500) {
+					$return = ($existing_rank == "none" || $existing_rank == "Outlaw" || $existing_rank == "Maverick" || $existing_rank == "Renegade" || $existing_rank == "Assassin" || $existing_rank == "Infamous") ?
+						"Infamous" : false;
+				}
+
+				break;
+		}
 		return $return;
 	}
 
