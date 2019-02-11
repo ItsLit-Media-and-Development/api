@@ -31,26 +31,26 @@ class G4GModel extends Library\BaseModel
 		return $this->_output;
 	}
 
-	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false, $notes)
+	public function add_event($guilded, $bungie, $officer, array $g_stats, $status = false, $notes, $title)
 	{
 		try {
 			$stmt = $this->_db->prepare("INSERT INTO g4g_events(gid, bid, officer, event_owner, event_name, event_time," .
-										" platform, role_restriction, is_archived, event_status, notes) VALUES (:gid, :bid, :officer, :owner," .
-										" :name, :time, :platform, :roles, :archive, :status, :notes)");
+										" platform, role_restriction, is_archived, event_status, notes, event_type) VALUES (:gid, :bid, :officer, :owner," .
+										" :name, :time, :platform, :roles, :archive, :status, :notes, :type)");
 			$stmt->execute(
 				[
 					':gid'      => $guilded,
 					':bid'      => $bungie,
 					':officer'  => $officer,
 					':owner'    => $g_stats['createdBy'],
-					':name'     => $g_stats['name'],
+					':name'     => $title[1],
 					':time'     => $g_stats['happensAt'],
 					':platform' => $g_stats['allowedRoleIds'],
-					//':platform' => $g_stats['location'],
 					':roles'    => $g_stats['allowedRoleIds'],
 					':archive'  => ($status !== false) ? 1 : 0,
 					':status'   => $status,
-					':notes'    => $notes
+					':notes'    => $notes,
+					':type'     => $title[2]
 				]
 			);
 

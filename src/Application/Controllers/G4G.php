@@ -45,12 +45,25 @@ class G4G extends Library\BaseController
 				return $this->_output->output(200, $output, $bot);
 			}
 
+			$title = explode('-', $g_stats['name']);
+			$title[2] = trim($title[2], " ");
+
+			$allowed = ['beginner', 'training', 'intermediate', 'advanced'];
+
+			if(sizeof($title) < 3) {
+				return $this->_output->output(200, "Sorry but the title of your event doesn't look right, it should be PLATFORM-EVENT-ABILITY (remember the hyphens)", $bot);
+			}
+
+			if(!in_array(strtolower($title[2]), $allowed)) {
+				return $this->_output->output(200, "Sorry but the ability in your title must be either Training, Beginner, Intermediate or Advanced, you have $title[2]", $bot);
+			}
+
 			$output = $g_stats;
 
 			$output['createdBy'] = $this->_translate_name($g_stats['createdBy']);
 			$output['allowedRoleIds'] = $this->_translate_roles($g_stats['allowedRoleIds'][0]);
 
-			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status, $notes);
+			$output = $this->_db->add_event($guilded, $bungie, $user, $output, $status, $notes, $title);
 		} else {
 			$output = "The Guilded ID is incorrect or the event is marked as Member's Only, please try again!";
 
@@ -80,7 +93,7 @@ class G4G extends Library\BaseController
 		if($exists === false) {
 			$output = $this->_g->get('users/' . $gid);
 
-			$output = $this->_db->add_user($output['user']['name'], $output['user']['name']);
+			$output = $this->_db->add_user($output['user']['id'], $output['user']['name']);
 		} else {
 			$output = $exists;
 		}
@@ -90,7 +103,9 @@ class G4G extends Library\BaseController
 
 	private function _translate_roles($id)
 	{
-		$roles = ['411' => 'PlayStation', '412' => 'Xbox', '413' => 'PC', '859' => 'Officer', '856' => 'Clan Council',
+		//50317 is actually G4G Orion
+		$roles = ['50317' => 'PlayStation', '411' => 'PlayStation', '412' => 'Xbox', '413' => 'PC', '859' => 'Officer',
+				  '856'   => 'Clan Council',
 				  '858' => 'Web Team'];
 
 		return $roles[$id];
@@ -124,11 +139,11 @@ class G4G extends Library\BaseController
 						$output = "$points PvE points have been added to $target by " . $this->_params[3];
 					}
 					break;
-				case 'gambit':
+				/*case 'gambit':
 					if($this->_db->add_gambit_points($target, $points, $this->_params[3]) == true) {
 						$output = "$points Gambit points have been added to $target by " . $this->_params[3];
 					}
-					break;
+					break;*/
 				default:
 					$output = "WTF is $mode!?!?!";
 			}
@@ -173,11 +188,11 @@ class G4G extends Library\BaseController
 						$output = "$points PvE points have been removed from $target by " . $this->_params[3];
 					}
 					break;
-				case 'gambit':
+				/*case 'gambit':
 					if($this->_db->remove_gambit_points($target, $points, $this->_params[3]) == true) {
 						$output = "$points Gambit points have been removed from $target by " . $this->_params[3];
 					}
-					break;
+					break;*/
 				default:
 					$output = "WTF is $mode!?!?!";
 			}
@@ -191,8 +206,9 @@ class G4G extends Library\BaseController
 		$this->_log->set_message("G4G::getList() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$qty = $this->_params[0];
-		$mode = (strtolower($this->_params[1]) == "pvp") ? "PvP" :
-			(strtolower($this->_params[1]) == "gambit") ? "Gambit" : "PvE";
+		$mode = (strtolower($this->_params[1]) === "pvp") ? "PvP" :
+			((strtolower($this->_params[1]) === "gambit") ? "Gambit" : "PvE");
+
 		$this->_params[3] = (isset($this->_params[3])) ? str_replace(' ', '-', $this->_params[3]) : '';
 		$this->_params[3] = (isset($this->_params[3])) ? preg_replace('/-+/', '-', $this->_params[3]) : '';
 		$user = '';

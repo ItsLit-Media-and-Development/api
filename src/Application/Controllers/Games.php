@@ -121,7 +121,7 @@ class Games extends Library\BaseController
 	 */
 	public function rps()
 	{
-		$this->_log->set_message("Games::roulette() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("Games::rps() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$call = strtolower($this->_params[0]);
 		$user = $this->_params[1];
