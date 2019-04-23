@@ -1,3 +1,4 @@
 /vendor
 /src/Config/site.ini
 /.idea
+/src/vendor

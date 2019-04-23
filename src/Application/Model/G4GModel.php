@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 11/12/2018
- * Time: 16:18
- */
-
 namespace API\Model;
 
 use API\Library;
