@@ -188,7 +188,6 @@ class Twitch extends Library\BaseController
 	{
 
 	}
-
 	public function recent_vods()
 	{
 		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
@@ -339,7 +338,6 @@ class Twitch extends Library\BaseController
 		$times = array();
 
 		foreach($diffs as $interval => $value) {
-
 			// Break if we have needed precision
 			if($count >= $precision) {
 				break;
