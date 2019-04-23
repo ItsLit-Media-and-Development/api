@@ -2,12 +2,12 @@
 /**
  * Admin Endpoint
  *
- * @package        API
- * @author        Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright    Copyright (c) 2017 Marc Towler
- * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link        https://api.itslit.uk
- * @since        Version 0.7
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.7
  * @filesource
  */
 
@@ -16,46 +16,23 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Admin
+class Admin extends Library\BaseController
 {
     private $_db;
-    private $_params;
-    private $_output;
     private $_token;
     private $_config;
-    private $_log;
     private $_header;
     private $_auth;
 
     public function __construct()
     {
-        $tmp = new Library\Router();
-        $this->_db = new Model\AdminModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_token = new Library\JWT();
+		parent::__construct();
+
+		$this->_db = new Model\AdminModel();
+		$this->_token = new Library\JWT();
         $this->_config = new Library\Config();
-        $this->_log = new Library\Logger();
-        $this->_header = $tmp->getAllHeaders();
-        $this->_auth = new Library\Authentication();
-    }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     * @throws \Exception
-     */
-    public function main()
-    {
-        $this->_log->set_message("Admin::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
+		$this->_header = $this->_router->getAllHeaders();
+		$this->_auth = new Library\Authentication();
     }
 
     /**

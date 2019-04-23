@@ -2,12 +2,12 @@
 /**
  * Community Endpoint
  *
- * @package        API
- * @author        Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright    Copyright (c) 2018 Marc Towler
- * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link        https://api.itslit.uk
- * @since        Version 1.0
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 1.0
  * @filesource
  */
 
@@ -16,26 +16,16 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Community
+class Community extends Library\BaseController
 {
     public $service;
     private $_db;
-    private $_params;
-    private $_output;
-    private $_log;
 
     public function __construct()
     {
-        $tmp = new Library\Router();
-        $this->_db = new Model\CommunityModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
-    }
+		parent::__construct();
 
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
+        $this->_db = new Model\CommunityModel();
     }
 
     public function get_points()

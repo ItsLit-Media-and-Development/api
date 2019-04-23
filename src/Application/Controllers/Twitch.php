@@ -2,54 +2,34 @@
 /**
  * Twitch Endpoint
  *
- * @package       API
- * @author        Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright     Copyright (c) 2018 Marc Towler
- * @license       https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link          https://api.itslit.uk
- * @since         Version 1.0
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 1.0
  * @filesource
  */
 
 namespace API\Controllers;
 
 use API\Library;
+use API\Model\CommunityModel;
 use API\Model\OauthModel;
 
-class Twitch
+class Twitch extends Library\BaseController
 {
-	private $_params;
-	private $_output;
-	private $_log;
 	private $_twitch;
 	private $_db;
+	private $_db2;
 
 	public function __construct()
 	{
-		$tmp = new Library\Router();
-		$this->_params = $tmp->getAllParameters();
-		$this->_output = new Library\Output();
-		$this->_log = new Library\Logger();
+		parent::__construct();
+
 		$this->_twitch = new Library\Twitch();
 		$this->_db = new OauthModel();
-	}
-
-	public function __destruct()
-	{
-		$this->_log->saveMessage();
-	}
-
-	/**
-	 * Covers the router's default method incase a part of the URL was missed
-	 *
-	 * @return array|string
-	 * @throws \Exception
-	 */
-	public function main()
-	{
-		$this->_log->set_message("Twitch::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-		return $this->_output->output(501, "Function not implemented", false);
+		$this->_db2 = new CommunityModel();
 	}
 
 	/**
@@ -164,11 +144,13 @@ class Twitch
 	/**
 	 * Returns the emote URL's available to a channel
 	 *
+	 * @TODO clean up the array output
+	 *
 	 * @return array
 	 */
-	public function subemotes()
+	public function emotes()
 	{
-		$this->_log->set_message("Twitch::subemotes() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("Twitch::emotes() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel = $this->_params[0];
 		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
@@ -178,9 +160,45 @@ class Twitch
 		return $this->_output->output(200, $output, $bot);
 	}
 
+	public function subemotes()
+	{
+		$this->_log->set_message("Twitch::subemotes() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get('https://api.twitch.tv/api/channels/' . $channel . '/product', true);
+
+		return $this->_output->output(200, $output['plans'], $bot);
+	}
+
+	public function subbadges()
+	{
+		$this->_log->set_message("Twitch::subbadges() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
+
+		$output = $this->_twitch->get("https://badges.twitch.tv/v1/badges/channels/$channel/display?language=en", true, ['nover' => true]);
+
+		return $this->_output->output(200, $output['badge_sets']['subscriber']['versions'], $bot);
+	}
+
 	public function status()
 	{
 
+	}
+	public function recent_vods()
+	{
+		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
+		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
+
+		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
+
+		return $this->_output->output(200, $output['videos'], $bot);
 	}
 
 	public function current_game()
@@ -231,6 +249,51 @@ class Twitch
 		return $this->_output->output('200', $output['chatter_count'], $bot);
 	}
 
+	public function ban()
+	{
+		$this->_log->set_message("Twitch::viercount() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$user = $this->_params[1];
+		$banner = $this->_params[2];
+		$reason = $this->_params[3];
+		$bot = isset($this->_params[4]) ? $this->_params[4] : false;
+
+		$output = $this->_db2->ban_user($channel, $user, $banner, $reason);
+
+		if($output == false) {
+			//shouldn't be 200 but fix later
+			return $this->_output->output('200', 'There was an error with the request', $bot);
+		}
+
+		return $this->_output->output('200', "/ban $user", $bot);
+	}
+
+	public function topclips()
+	{
+		$this->_log->set_message("Twitch::topclips() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$limit   = (isset($this->_params[1]) ? $this->_params[1] : 10);
+		$period  = (isset($this->_params[2]) ? $this->_params[2] : 'all');
+
+		$output = $this->_twitch->get("clips/top?channel=$channel&period=$period&limit=$limit");
+
+		return $this->_output->output(200, $output['clips'], false);
+	}
+
+	public function getclips()
+	{
+		$this->_log->set_message("Twitch::getclips() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel    = $this->_twitch->get_user_id($this->_params[0]);
+		$start_time = (strpos($this->_params[1], "T") !== false) ? $this->_params[1] : date("c", strtotime(now()));
+
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/clips?broadcaster_id=$channel&started_at=$start_time", true);
+
+		return $this->_output->output(200, $output['data'], false);
+	}
+
 	private function _users($userid)
 	{
 		return $this->_twitch->get('users/' . $userid);
@@ -273,13 +336,16 @@ class Twitch
 		}
 		$count = 0;
 		$times = array();
+
 		foreach($diffs as $interval => $value) {
 			// Break if we have needed precision
 			if($count >= $precision) {
 				break;
 			}
+
 			// Add value and interval if value is bigger than 0
 			if($value > 0) {
+
 				if($value != 1) {
 					$interval .= "s";
 				}

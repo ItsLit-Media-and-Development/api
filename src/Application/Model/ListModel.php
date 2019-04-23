@@ -4,12 +4,12 @@
  *
  * All database functions regarding the Lists endpoint is stored here
  *
- * @package       API
- * @author        Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright     Copyright (c) 2017 Marc Towler
- * @license       https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link          https://api.itslit.uk
- * @since         Version 0.8
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.8
  * @filesource
  */
 
@@ -17,17 +17,12 @@ namespace API\Model;
 
 use API\Library;
 
-class ListModel
+class ListModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
-    private $_output;
-
-    public function __construct()
-    {
-        $this->_config = new Library\Config();
-        $this->_db = $this->_config->database();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     public function delete_item($owner, $lName, $name)
     {
@@ -111,7 +106,8 @@ class ListModel
     {
         try
         {
-            $stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) ORDER BY iid LIMIT 1");
+			//$stmt = $this->_db->prepare("SELECT i.name, i.info FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) ORDER BY iid LIMIT 1");
+			$stmt = $this->_db->prepare("SELECT i.name FROM list_items i INNER JOIN lists l ON i.lid = l.lid WHERE l.owner = :owner AND list_name = :lName AND iid >= (SELECT FLOOR( MAX(iid) * RAND()) FROM list_items) LIMIT 1");
 
             $stmt->execute(
                 [

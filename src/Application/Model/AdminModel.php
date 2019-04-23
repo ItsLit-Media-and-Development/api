@@ -4,12 +4,12 @@
  *
  * All database functions regarding the Admin endpoint is stored here
  *
- * @package        API
- * @author        Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright    Copyright (c) 2017 Marc Towler
- * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link        https://api.itslit.uk
- * @since        Version 0.7
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.7
  * @filesource
  */
 
@@ -17,17 +17,12 @@ namespace API\Model;
 
 use API\Library;
 
-class AdminModel
+class AdminModel extends Library\BaseModel
 {
-    private $_db;
-    private $_config;
-    private $_output;
-
-    public function __construct()
-    {
-        $this->_config = new Library\Config();
-        $this->_db = $this->_config->database();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
     public function generate_token($user, $token, $level)
     {

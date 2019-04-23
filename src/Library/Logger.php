@@ -4,12 +4,12 @@
  *
  * Logs errors, warning and other features (TBC)
  *
- * @package        API
- * @author        Marc Towler <marc@marctowler.co.uk>
- * @copyright    Copyright (c) 2017 Marc Towler
- * @license        https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link        https://api.itslit.uk
- * @since        Version 0.2
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.2
  * @filesource
  */
 

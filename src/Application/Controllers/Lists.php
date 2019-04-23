@@ -2,12 +2,12 @@
 /**
  * Lists Endpoint
  *
- * @package      API
- * @author       Marc Towler <marc.towler@designdeveloprealize.com>
- * @copyright    Copyright (c) 2017 Marc Towler
- * @license      https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link         https://api.itslit.uk
- * @since        Version 0.8
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.8
  * @filesource
  */
 
@@ -16,37 +16,15 @@ namespace API\Controllers;
 use API\Library;
 use API\Model;
 
-class Lists
+class Lists extends Library\BaseController
 {
     private $_db;
-    private $_params;
-    private $_output;
-    private $_log;
 
     public function __construct()
     {
-        $tmp = new Library\Router();
+		parent::__construct();
+
         $this->_db = new Model\ListModel();
-        $this->_params = $tmp->getAllParameters();
-        $this->_output = new Library\Output();
-        $this->_log = new Library\Logger();
-    }
-
-    public function __destruct()
-    {
-        $this->_log->saveMessage();
-    }
-
-    /**
-     * Covers the router's default method incase a part of the URL was missed
-     *
-     * @return array|string
-     */
-    public function main()
-    {
-        $this->_log->set_message("Wriggle::main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
-
-        return $this->_output->output(501, "Function not implemented", false);
     }
 
     /**
@@ -99,7 +77,10 @@ class Lists
 
             $query = $this->_db->delete_item($owner, $lName, $name);
 
-            return ($query != NULL) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was removed from the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			//return ($query != NULL) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was removed from the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			return ($query != NULL) ?
+				$this->_output->output(200, urldecode($name) . " was removed from the $lName list!", $bot) :
+				$this->_output->output(400, $query, $bot);
         }
     }
 
@@ -129,7 +110,7 @@ class Lists
         }
         elseif($type == 'addentry')
         {
-            $name = $this->_params[3];
+			$name = urldecode($this->_params[3]);
             $info = (isset($this->_params[4])) ? $this->_params[4] : '';
             $bot = (isset($this->_params[5])) ? $this->_params[5] : false;
 
@@ -137,7 +118,10 @@ class Lists
 
             $query = $this->_db->add_entry($owner, $lName, $name, $info);
 
-            return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			//return (is_bool($query)) ? $this->_output->output(200, str_replace("%20", " ", $name) . " was added to the $lName list!", $bot) : $this->_output->output(400, $query, $bot);
+			return (is_bool($query)) ?
+				$this->_output->output(200, $name . " was added to the $lName list!", $bot) :
+				$this->_output->output(400, $query, $bot);
         }
         else
         {

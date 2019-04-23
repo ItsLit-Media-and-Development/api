@@ -10,13 +10,12 @@
  *
  * Each token can be used for the level it is issued at and below
  *
- * @package      API
- * @author       Marc Towler <marc@marctowler.co.uk>
- * @copyright    Copyright (c) 2017 Marc Towler
- * @license      https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
- * @link         https://api.itslit.uk
-
- * @since        Version 1.0
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 1.0
  * @filesource
  */
 

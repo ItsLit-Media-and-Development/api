@@ -6,7 +6,7 @@
  *
  * @package		API
  * @author		Marc Towler <marc@marctowler.co.uk>
- * @copyright	Copyright (c) 2017 Marc Towler
+ * @copyright	Copyright (c) 2018 Marc Towler
  * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link		https://api.itslit.uk
  * @since		Version 0.2
@@ -81,10 +81,9 @@ class Output
             header("Access-Control-Allow-Origin: *");
 
             //Bots can't handle anything more then plain text so lets change the output as such.
-			if($bot == true) {
+			if($bot === true) {
 				$this->_output = "plain";
 			}
-
             switch ($this->_output)
             {
                 case 'json':
@@ -157,16 +156,18 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-						$conv .= "<tr><td id='$key'>" . str_replace("%3A", ":", str_replace("%20", " ", $val)) . "</td></tr>";
+						$conv .= "<tr><td id='$key'>" . urldecode($val) . "</td></tr>";
                     }
-                }
+				} else {
+					$conv .= "<tr><td>" . urldecode($item) . "</td></tr>";
+				}
             }
 
 			$conv .= "</table>";
         }
         else
         {
-            $conv .= "<td id='$code'>$input</td></tr></table>";
+			$conv .= "<tr><td id='$code'>$input</td></tr></table>";
         }
 
         return $conv;
@@ -186,7 +187,8 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-                        $out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+						//$out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
+						$out .= str_replace("%3A", ":", str_replace("%20", " ", $val));
                     }
                 }
             }
@@ -195,6 +197,8 @@ class Output
         {
             $out = $input;
         }
+
+		//$out = substr($out, 0, -1);
 
         return $out;
     }
