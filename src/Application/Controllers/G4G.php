@@ -362,4 +362,34 @@ class G4G extends Library\BaseController
 
 		return $this->_output->output(200, $query, true);
 	}
+
+	public function add_warn()
+	{
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if(!$data) { return $this->_output->output(405, "This is a POST endpoint", false); }
+		
+		$number = $this->_db->addWarn($data);
+
+		return $this->_output->output(200, $number, false);
+	}
+
+	public function get_warn()
+	{
+		$number = $this->_params[0];
+
+		$warning = $this->_db->getWarn($number);
+
+		return $this->_output->output(200, $warning, false);
+	}
+
+	public function remove_warn()
+	{
+		$number = $this->_params[0];
+
+		$removed = $this->_db->removeWarn($number);
+
+		return $this->_output->output(200, $removed, false);
+	}
+
 }

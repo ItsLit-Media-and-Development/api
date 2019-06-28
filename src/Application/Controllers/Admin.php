@@ -68,7 +68,6 @@ class Admin extends Library\BaseController
     public function registerAPIuser()
     {
         if(isset($_POST))
-
         {
             $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
