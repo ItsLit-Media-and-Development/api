@@ -15,6 +15,7 @@ abstract class BaseController
 	protected $_output;
 	protected $_log;
 	protected $_router;
+	public $output;
 
 	public function __construct()
 	{
@@ -37,7 +38,7 @@ abstract class BaseController
 	 */
 	public function main()
 	{
-		$this->_log->set_message("ain() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
+		$this->_log->set_message("main() Called from " . $_SERVER['REMOTE_ADDR'] . ", returning a 501", "INFO");
 
 		return $this->_output->output(501, "Function not implemented", false);
 	}

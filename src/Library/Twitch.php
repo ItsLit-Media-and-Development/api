@@ -92,7 +92,8 @@ class Twitch
 		$getUser = $this->get('users?login=' . $username, false);
 
 		if(empty($getUser['users'])) {
-			throw new InvalidIdentifierException("No user with the name '$username' was found");
+			//throw new InvalidIdentifierException("No user with the name '$username' was found");
+			return false;
 		}
 
 		return $getUser['users'][0]['_id'];

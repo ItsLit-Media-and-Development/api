@@ -416,4 +416,36 @@ class G4GModel extends Library\BaseModel
 
 		return $this->_output;
 	}
+
+	public function addWarn(array $data)
+	{
+		$stmt = $this->_db->prepare("INSERT INTO g4g_warn (user, sender, reason) VALUES (:user, :sender, :reason)");
+		$stmt->execute([
+			':user'   => $data['user'],
+			':sender' => $data['sender'],
+			':reason' => $data['reason']
+		]);
+
+		return $this->_db->lastInsertId();
+	}
+
+	public function getWarn($id)
+	{
+		$stmt = $this->_db->prepare("SELECT user, sender, reason FROM g4g_warn WHERE id = :id AND active = 1");
+		$stmt->execute([':id' => $id]);
+
+		$this->_output = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+		return $this->_output;
+	}
+
+	public function removeWarn($id)
+	{
+		$stmt = $this->_db->prepare("UPDATE g4g_warn SET active = 0 WHERE id = :id");
+		$stmt->execute([':id' => $id]);
+
+		$this->_output = $stmt->rowCount();
+
+		return $this->_output;
+	}
 }

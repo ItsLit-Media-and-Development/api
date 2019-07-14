@@ -2,3 +2,5 @@
 /src/Config/site.ini
 /.idea
 /src/vendor
+/junk
+website.code-workspace

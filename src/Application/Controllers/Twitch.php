@@ -186,7 +186,39 @@ class Twitch extends Library\BaseController
 
 	public function status()
 	{
+		$this->_log->set_message("Twitch::status() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$response = [];
 
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		if(!$channel) {
+			return $this->_output->output(400, ['error' => "Username " . $this->_params[0] . " does not exist"], false);
+		}
+
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/streams?user_id=$channel", true);
+
+		if(!empty($output['data'][0]))
+		{
+			$response['username'] = $output['data'][0]['user_name'];
+			$response['title']    = $output['data'][0]['title'];
+			$response['image']    = str_replace('{height}', '180', str_replace('{width}', '300', $output['data'][0]['thumbnail_url']));
+		}
+
+
+		return $this->_output->output(200, $response, false);
+	}
+
+	public function recent_vods()
+	{
+		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
+		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
+
+		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
+
+		return $this->_output->output(200, $output['videos'], $bot);
 	}
 	public function recent_vods()
 	{
@@ -213,9 +245,9 @@ class Twitch extends Library\BaseController
 		return $this->_output->output(200, $output['game'], $bot);
 	}
 
-	public function current_status()
+	public function current_title()
 	{
-		$this->_log->set_message("Twitch::current_status() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("Twitch::current_title() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel = $this->_twitch->get_user_id($this->_params[0]);
 		$bot = isset($this->_params[1]) ? $this->_params[1] : false;
@@ -251,7 +283,7 @@ class Twitch extends Library\BaseController
 
 	public function ban()
 	{
-		$this->_log->set_message("Twitch::viercount() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+		$this->_log->set_message("Twitch::ban() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel = $this->_params[0];
 		$user = $this->_params[1];
@@ -287,7 +319,7 @@ class Twitch extends Library\BaseController
 		$this->_log->set_message("Twitch::getclips() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel    = $this->_twitch->get_user_id($this->_params[0]);
-		$start_time = (strpos($this->_params[1], "T") !== false) ? $this->_params[1] : date("c", strtotime(now()));
+		$start_time = (strpos(isset($this->_params[1]), "T") !== false) ? $this->_params[1] : date('Y-m-d',strtotime('-24 hours')) . "T" . date('H:i:s') . "Z";
 
 		$output = $this->_twitch->get("https://api.twitch.tv/helix/clips?broadcaster_id=$channel&started_at=$start_time", true);
 

@@ -362,4 +362,98 @@ class G4G extends Library\BaseController
 
 		return $this->_output->output(200, $query, true);
 	}
+
+	public function add_warn()
+	{
+		$data = json_decode(file_get_contents('php://input'), true);
+
+		if(!$data) { return $this->_output->output(405, "This is a POST endpoint", false); }
+		
+		$number = $this->_db->addWarn($data);
+
+		return $this->_output->output(200, $number, false);
+	}
+
+	public function get_warn()
+	{
+		$number = $this->_params[0];
+
+		$warning = $this->_db->getWarn($number);
+
+		return $this->_output->output(200, $warning, false);
+	}
+
+	public function remove_warn()
+	{
+		$number = $this->_params[0];
+
+		$removed = $this->_db->removeWarn($number);
+
+		return $this->_output->output(200, $removed, false);
+	}
+
+	public function upcomingEvents()
+	{
+		try {
+			$request = $this->_guzzle->get("https://clanevents.net/api/ClanEvents?filter=upcoming", [
+				'headers' => [
+					'Content-Type' => 'application/json',
+					'API_Key'      => 'A26A6177-A85F-490B-9D35-F3C992825694'
+				]
+			]);
+
+			$output = json_decode($request->getBody(), true)['responseBody'];
+			var_dump($output);
+		} catch(RequestException $e) {
+			if($e->getResponse()->getStatusCode() === 404)
+			{
+				$returnInfo['success'] = false;
+			}
+		}
+	}
+
+	public function verifyUser()
+	{
+		$id = $this->_params[0];
+		$returnInfo = [];
+
+		try {
+			$request = $this->_guzzle->get("https://clanevents.net/api/Users/FindDiscordId/$id", [
+				'headers' => [
+					'Content-Type' => 'application/json',
+					'API_Key'      => 'A26A6177-A85F-490B-9D35-F3C992825694'
+				]
+			]);
+
+			$output = json_decode($request->getBody(), true);
+
+			if($output['success'])
+			{
+				$returnInfo['success'] = true;
+
+				$accts = $output['responseBody']['bungieUsers'];
+
+				for($i = 0; $i < sizeof($accts); $i++)
+				{
+					$returnInfo['DisplayName'] = $accts[$i]['bungieDisplayName'];
+
+					for($j = 0; $j < sizeof($accts[$i]['profiles']); $j++)
+					{
+						$returnInfo['Clan'][$j] = $accts[$i]['profiles'][$j]['clan'];
+						$returnInfo['memberType'] = $accts[$i]['profiles'][$j]['memberType'];
+					}
+				}
+			} else {
+				$returnInfo['success'] = false;
+				$returnInfo['message'] = $output['message']
+			}
+		} catch(RequestException $e) {
+			if($e->getResponse()->getStatusCode() === 404)
+			{
+				$returnInfo['success'] = false;
+			}
+		}
+
+		return $this->_output->output(200, $returnInfo, false);
+	}
 }
