@@ -45,7 +45,7 @@ class QuestionModel extends Library\BaseModel
 
     public function mark_read($qid)
     {
-        $stmt = $this->_db->prepare("UPDATE questions flag = 1 WHERE qid = :qid");
+        $stmt = $this->_db->prepare("UPDATE questions SET flag = 1 WHERE qid = :qid");
         $stmt->execute([':qid' => $qid]);
 
         if($stmt->rowCount() > 0)

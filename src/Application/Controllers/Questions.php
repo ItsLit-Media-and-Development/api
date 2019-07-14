@@ -39,7 +39,7 @@ class Questions extends Library\BaseController
 
         $channel  = $this->_params[0];
         $user     = $this->_params[1];
-        $question = $this->_params[2];
+        $question = urldecode($this->_params[2]);
 
         $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
@@ -48,7 +48,7 @@ class Questions extends Library\BaseController
         {
             $query = $this->_db->add_question($channel, $user, $question);
 
-            return (!is_string($query) && $query == true) ? $this->_output->output(200, "Question Added") : $this->_output->output(400, $query);
+            return (!is_string($query) && $query == true) ? $this->_output->output(200, "Question Added", true) : $this->_output->output(400, $query);
         } else {
             $this->_log->set_message("URI is missing parameters, we have: $channel, $user, $question", "WARNING");
 
