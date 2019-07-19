@@ -220,6 +220,18 @@ class Twitch extends Library\BaseController
 
 		return $this->_output->output(200, $output['videos'], $bot);
 	}
+	public function recent_vods()
+	{
+		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_params[0];
+		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
+		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
+
+		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
+
+		return $this->_output->output(200, $output['videos'], $bot);
+	}
 
 	public function current_game()
 	{
