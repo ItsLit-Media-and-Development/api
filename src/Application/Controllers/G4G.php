@@ -445,12 +445,16 @@ class G4G extends Library\BaseController
 				}
 			} else {
 				$returnInfo['success'] = false;
-				$returnInfo['message'] = $output['message']
+				$returnInfo['message'] = $output['message'];
 			}
 		} catch(RequestException $e) {
 			if($e->getResponse()->getStatusCode() === 404)
 			{
 				$returnInfo['success'] = false;
+				$returnInfo['message'] = "ClanEvents issued a 404";
+			} elseif($e->getResponse()->getStatusCode() === 400) {
+				$returnInfo['success'] = false;
+				$returnInfo['message'] = "No Profiles where found tied to this account in your clan";
 			}
 		}
 
