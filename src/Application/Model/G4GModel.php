@@ -439,6 +439,16 @@ class G4GModel extends Library\BaseModel
 		return $this->_output;
 	}
 
+	public function getUsersWarn($name)
+	{
+	    $stmt = $this->_db->prepare("SELECT * FROM g4g_warn WHERE user = :name");
+	    $stmt->execute([':name' => $name]);
+	    
+	    $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+	    
+	    return $this->_output;
+	}
+
 	public function removeWarn($id)
 	{
 		$stmt = $this->_db->prepare("UPDATE g4g_warn SET active = 0 WHERE id = :id");

@@ -383,6 +383,15 @@ class G4G extends Library\BaseController
 		return $this->_output->output(200, $warning, false);
 	}
 
+	public function get_users_warn()
+	{
+	    $name = $this->_params[0];
+	    
+	    $warnings = $this->_db->getUsersWarn($name);
+	    
+	    return $this->_output->output(200, $warnings, false);
+	}
+
 	public function remove_warn()
 	{
 		$number = $this->_params[0];
