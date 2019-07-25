@@ -208,29 +208,23 @@ class Twitch extends Library\BaseController
 		return $this->_output->output(200, $response, false);
 	}
 
+	/**
+	* @TODO DUE FOR DEPRICATION 
+	**/
 	public function recent_vods()
 	{
 		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-		$channel = $this->_params[0];
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
 		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
 		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
 
+		/* DEPRICATED
 		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
+		*/
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/videos?user_id=$channel&type=archive&first=$limit", true);
 
-		return $this->_output->output(200, $output['videos'], $bot);
-	}
-	public function recent_vods()
-	{
-		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
-		$channel = $this->_params[0];
-		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
-		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
-
-		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
-
-		return $this->_output->output(200, $output['videos'], $bot);
+		return $this->_output->output(200, $output['data'], $bot);
 	}
 
 	public function current_game()
@@ -324,6 +318,17 @@ class Twitch extends Library\BaseController
 		$output = $this->_twitch->get("https://api.twitch.tv/helix/clips?broadcaster_id=$channel&started_at=$start_time", true);
 
 		return $this->_output->output(200, $output['data'], false);
+	}
+
+	public function getlogo()
+	{
+		$this->_log->set_message("Twitch::getclips() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = $this->_twitch->get("users/$channel");
+
+		return $this->_output->output(200, $output['logo'], false);
 	}
 
 	private function _users($userid)
