@@ -208,9 +208,6 @@ class Twitch extends Library\BaseController
 		return $this->_output->output(200, $response, false);
 	}
 
-	/**
-	* @TODO DUE FOR DEPRICATION 
-	**/
 	public function recent_vods()
 	{
 		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
