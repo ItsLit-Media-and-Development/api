@@ -94,6 +94,31 @@ class Streamelements
         return $this->data['users'];
     }
 
+    public function get_store_items($channelID = 0)
+    {
+        $this->set_channel_id($channelID);
+
+        $this->_url .= 'store/' . $this->_channelID . '/items';
+
+        $data = file_get_contents($this->_url);
+
+        $this->data = json_decode($data, true);
+
+        return $this->data;
+    }
+
+    public function redeem($channelID, $id)
+    {
+        $this->set_channel_id($channelID);
+        $this->_url .= 'store/' . $this->_channelID . '/redemptions/' . $id;
+
+        $data = file_get_contents($this->_url);
+
+        $this->data = json_decode($data, true);
+
+        return $this->data;
+    }
+
     /**
      * Pulls the points of the specified user from the channel
      *
