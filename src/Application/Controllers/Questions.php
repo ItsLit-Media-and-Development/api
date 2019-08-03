@@ -52,7 +52,7 @@ class Questions extends Library\BaseController
         } else {
             $this->_log->set_message("URI is missing parameters, we have: $channel, $user, $question", "WARNING");
 
-            return $this->_output->output(400, "URI is missing all its parameters... Should look like https://api.itslit.uk/Questions/add/channel/username/question");
+            return $this->_output->output(400, "You forgot to actually ask a question!", true);
         }
     }
 
