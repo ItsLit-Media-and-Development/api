@@ -277,10 +277,10 @@ class Twitch extends Library\BaseController
 		$this->_log->set_message("Twitch::ban() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel = $this->_params[0];
-		$user = $this->_params[1];
-		$banner = $this->_params[2];
-		$reason = $this->_params[3];
-		$bot = isset($this->_params[4]) ? $this->_params[4] : false;
+		$user    = $this->_params[1];
+		$banner  = $this->_params[2];
+		$reason  = $this->_params[3];
+		$bot     = isset($this->_params[4]) ? $this->_params[4] : false;
 
 		$output = $this->_db2->ban_user($channel, $user, $banner, $reason);
 
@@ -290,6 +290,25 @@ class Twitch extends Library\BaseController
 		}
 
 		return $this->_output->output('200', "/ban $user", $bot);
+	}
+
+	//Want it as POST due to needing an OAuth token
+	public function getBannedList()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+
+		/**
+		*	@TODO finish off the call, run a tertiary to see if user_id was set in the received data, if so, append it to the Twitch GET request to pull data on just that user
+		*/
+
+		var_dump($channel);
 	}
 
 	public function topclips()
