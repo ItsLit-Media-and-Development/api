@@ -328,6 +328,17 @@ class Twitch extends Library\BaseController
 		return $this->_output->output(200, $output['logo'], false);
 	}
 
+	public function getteams()
+	{
+		$this->_log->set_message("Twitch::getteams() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = (empty($this->_twitch->get("channels/$channel/teams")['teams'])) ? "None" : $this->_twitch->get("channels/$channel/teams")['teams'];
+
+		return $this->_output->output(200, $output, false);
+	}
+
 	private function _users($userid)
 	{
 		return $this->_twitch->get('users/' . $userid);

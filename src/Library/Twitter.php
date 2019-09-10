@@ -36,10 +36,10 @@ class Twitter
 		$config = new Config();
 		$this->_guzzle = new Client();
 
-		$this->_consumer_key = $config->getSettings('CONSUMER_KEY');
+		$this->_consumer_key    = $config->getSettings('CONSUMER_KEY');
 		$this->_consumer_secret = $config->getSettings('CONSUMER_SECRET');
-		$this->_oauth_token = $config->getSettings('OAUTH_TOKEN');
-		$this->_oauth_secret = $config->getSettings('OAUTH_SECRET');
+		$this->_oauth_token     = $config->getSettings('OAUTH_TOKEN');
+		$this->_oauth_secret    = $config->getSettings('OAUTH_SECRET');
 	}
 
 	public function request($url, $method = 'get', $data = NULL, $curlOptions = array())
