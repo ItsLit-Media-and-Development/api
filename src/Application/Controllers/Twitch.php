@@ -292,7 +292,6 @@ class Twitch extends Library\BaseController
 		return $this->_output->output('200', "/ban $user", $bot);
 	}
 
-	//Want it as POST due to needing an OAuth token
 	public function getBannedList()
 	{
 		$received = json_decode(file_get_contents('php://input'), true);
@@ -306,6 +305,83 @@ class Twitch extends Library\BaseController
 		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel";
 
 		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getModerators()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getModeratorEvents()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/moderators/events?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/moderators/events?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getBannedEvents()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/banned/events?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/banned/events?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getSubs()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/subscriptions?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/subscriptions?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getStreamTags()
+	{
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/streams/tags?broadcaster_id=$channel", true);
 
 		return $this->_output->output(200, $output, false);
 	}
