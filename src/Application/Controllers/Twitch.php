@@ -303,12 +303,11 @@ class Twitch extends Library\BaseController
 		}
 
 		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel";
 
-		/**
-		*	@TODO finish off the call, run a tertiary to see if user_id was set in the received data, if so, append it to the Twitch GET request to pull data on just that user
-		*/
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
 
-		var_dump($channel);
+		return $this->_output->output(200, $output, false);
 	}
 
 	public function topclips()
