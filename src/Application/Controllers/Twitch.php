@@ -206,6 +206,7 @@ class Twitch extends Library\BaseController
 
 
 		return $this->_output->output(200, $response, false);
+
 	}
 
 	public function recent_vods()

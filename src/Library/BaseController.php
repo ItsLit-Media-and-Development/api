@@ -16,7 +16,6 @@ abstract class BaseController
 	protected $_log;
 	protected $_router;
 	public $output;
-	protected $_config;
 
 	public function __construct()
 	{

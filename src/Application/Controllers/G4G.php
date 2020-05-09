@@ -428,7 +428,7 @@ class G4G extends Library\BaseController
 	public function verifyUser()
 	{
 		$this->_log->set_message("G4G::verifyUser() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
+    
 		$id = $this->_params[0];
 		$returnInfo = [];
 
