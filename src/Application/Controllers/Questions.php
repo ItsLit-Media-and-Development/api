@@ -41,6 +41,14 @@ class Questions extends Library\BaseController
         $user     = $this->_params[1];
         $question = urldecode($this->_params[2]);
 
+        if(count($this->_params) > 3)
+        {
+            for($i = 3; $i < count($this->_params); $i++)
+            {
+                $question .= "/" . $this->_params[$i];
+            }
+        }
+
         $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
 
         //if question is filled in then user is!
