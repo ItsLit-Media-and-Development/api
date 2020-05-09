@@ -62,4 +62,27 @@ class Community extends Library\BaseController
 
         return ($output == false) ? $this->_output->output(400, "Unable to retrieve data, is the channel ID correct?", $bot) : $this->_output->output(200, $output, $bot);
     }
+
+    public function getItems()
+    {
+        $this->service = new Library\Streamelements();
+
+        $channel = $this->_params[0];
+
+        $output = $this->service->get_store_items($channel);
+
+        var_dump($output);
+    }
+
+    public function redeem()
+    {
+        $this->service = new Library\Streamelements();
+
+        $channel = $this->_params[0];
+        $item    = $this->_params[1];
+
+        $output = $this->service->redeem($channel, $item);
+
+        var_dump($output);
+    }
 }

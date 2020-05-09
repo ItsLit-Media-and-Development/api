@@ -213,7 +213,7 @@ class Output
     {
         if(is_int($code))
         {
-            header('HTTP/1.1 ' . $code . ' ' . $response);
+            header('HTTP/1.1 ' . $code);
             header("Access-Control-Allow-Origin: *");
 
             switch($this->_output)

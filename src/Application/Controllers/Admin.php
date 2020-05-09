@@ -62,7 +62,7 @@ class Admin extends Library\BaseController
 
         $output = $this->_db->get_logs($type, $from, $to);
 
-        return (is_array($output)) ? $this->_output->output(200, $output, false) : (is_int($output)) ? $this->_output->output(200, "There are no logs right now!", false) : $this->_output->output(500, "Something went wrong, PDO error: $output", false);
+        return (is_array($output)) ? $this->_output->output(200, $output, false) : (is_int($output)) ? $this->_output->output(204, "There are no logs right now!", false) : $this->_output->output(500, "Something went wrong, PDO error: $output", false);
     }
 
     public function registerAPIuser()
@@ -99,7 +99,7 @@ class Admin extends Library\BaseController
 
             $query = $this->_db->revoke_token($user);
 
-            return (is_integer($query) && $query > 0) ? $this->_output->output(201, "Token revoked", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
+            return (is_integer($query) && $query > 0) ? $this->_output->output(200, "Token revoked", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
         }
     }
 }

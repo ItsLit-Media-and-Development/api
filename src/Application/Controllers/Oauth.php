@@ -26,7 +26,6 @@ class Oauth extends Library\BaseController
 	private $_SL_URI = 'https://streamlabs.com/api/v1.0/';
     private $_db;
     private $_guzzle;
-  	private $_config;
 
     public function __construct()
     {
@@ -34,7 +33,6 @@ class Oauth extends Library\BaseController
 
 		$this->_db = new OauthModel();
         $this->_guzzle = new Client();
-        $this->_config = new Library\Config();
 
 		$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
         $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');

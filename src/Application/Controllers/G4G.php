@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 11/12/2018
- * Time: 16:15
- */
-
 namespace API\Controllers;
 
 use API\Library;
@@ -84,7 +77,7 @@ class G4G extends Library\BaseController
 		return $this->_output->output(200, $output, $bot);
 	}
 */
-	public function archive()
+/*	public function archive()
 	{
 		$this->_log->set_message("G4G::archive() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -228,14 +221,14 @@ class G4G extends Library\BaseController
 
 		return $this->_output->output(200, $output, $bot);
 	}
-
-	public function list_archive()
+*/
+/*	public function list_archive()
 	{
 		//lets just have it do all
 		return $this->_output->output(200, $this->_db->get_archive(), false);
 	}
-
-	public function upcoming()
+*/
+/*	public function upcoming()
 	{
 		$date = strtotime("+7 day");
 		$output = $this->_g->get('teams/QR4AyKlP/events?endDate=' . date('Y-m-d', $date));
@@ -249,8 +242,8 @@ class G4G extends Library\BaseController
 		}
 		return $this->_output->output(200, $output, false);
 	}
-
-	private function _translate_name($gid)
+*/
+/*	private function _translate_name($gid)
 	{
 		//need to check if the user id is in the db already, if not then we will pull it from guilded and store in the db
 		//$exists = $this->_db->check_user_exists($gid);
@@ -267,8 +260,8 @@ class G4G extends Library\BaseController
 
 		return $output;
 	}
-
-	private function _translate_roles($id)
+*/
+/*	private function _translate_roles($id)
 	{
 		//50317 is actually G4G Orion
 		$roles = ['50317' => 'PlayStation', '411' => 'PlayStation', '412' => 'Xbox', '413' => 'PC', '859' => 'Officer', '856' => 'Clan Council',
@@ -276,7 +269,7 @@ class G4G extends Library\BaseController
 
 		return $roles[$id];
 	}		
-
+*/
 	public function points()
 	{
 		$this->_log->set_message("G4G::points() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
@@ -290,7 +283,7 @@ class G4G extends Library\BaseController
 			$request = $this->_guzzle->get("https://clanevents.net/api/ClanRankings/$user", [
 				'headers' => [
 					'Content-Type' => 'application/json',
-					'API_Key'      => 'A26A6177-A85F-490B-9D35-F3C992825694'
+					'API_Key'      => $this->_config->getSettings('CE_API_KEY')
 				]
 			]);
 
@@ -317,14 +310,15 @@ class G4G extends Library\BaseController
 				return $this->_output->output(200, $data, false);
 			}
 		} catch(RequestException $e) {
-			if ($e->getResponse()->getStatusCode() == '400') {
+			if ($e->getResponse()->getStatusCode() == '400')
+			{
 				$output = json_decode((string) $e->getResponse()->getBody(), true)['message'];
 			}
 
 		}
 	}
 
-	public function prestige()
+/*	public function prestige()
 	{
 		$this->_log->set_message("G4G::prestige() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -342,8 +336,8 @@ class G4G extends Library\BaseController
 		return $this->_output->output(200, "Prestige has been " . (($event == "add") ? "added to" :
 											 "removed from") . " $target", $bot);
 	}
-
-	public function register()
+*/
+/*	public function register()
 	{
 		$this->_log->set_message("G4G::register() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -362,9 +356,11 @@ class G4G extends Library\BaseController
 
 		return $this->_output->output(200, $query, true);
 	}
-
+*/
 	public function add_warn()
 	{
+		$this->_log->set_message("G4G::add_warn() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$data = json_decode(file_get_contents('php://input'), true);
 
 		if(!$data) { return $this->_output->output(405, "This is a POST endpoint", false); }
@@ -376,6 +372,8 @@ class G4G extends Library\BaseController
 
 	public function get_warn()
 	{
+		$this->_log->set_message("G4G::get_warn() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$number = $this->_params[0];
 
 		$warning = $this->_db->getWarn($number);
@@ -383,8 +381,21 @@ class G4G extends Library\BaseController
 		return $this->_output->output(200, $warning, false);
 	}
 
+	public function get_users_warn()
+	{
+		$this->_log->set_message("G4G::get_user_warn() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+	    $name = $this->_params[0];
+	    
+	    $warnings = $this->_db->getUsersWarn($name);
+	    
+	    return $this->_output->output(200, $warnings, false);
+	}
+
 	public function remove_warn()
 	{
+		$this->_log->set_message("G4G::remove_warn() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		$number = $this->_params[0];
 
 		$removed = $this->_db->removeWarn($number);
@@ -394,11 +405,13 @@ class G4G extends Library\BaseController
 
 	public function upcomingEvents()
 	{
+		$this->_log->set_message("G4G::upcomingEvents() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
 		try {
 			$request = $this->_guzzle->get("https://clanevents.net/api/ClanEvents?filter=upcoming", [
 				'headers' => [
 					'Content-Type' => 'application/json',
-					'API_Key'      => 'A26A6177-A85F-490B-9D35-F3C992825694'
+					'API_Key'      => $this->_config->getSettings('CE_API_KEY')
 				]
 			]);
 
@@ -414,14 +427,16 @@ class G4G extends Library\BaseController
 
 	public function verifyUser()
 	{
+		$this->_log->set_message("G4G::verifyUser() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+    
 		$id = $this->_params[0];
 		$returnInfo = [];
 
 		try {
-			$request = $this->_guzzle->get("https://clanevents.net/api/Users/FindDiscordId/$id", [
+			$request = $this->_guzzle->get("https://clanevents.net/api/Users/G4GVerifyRegistration/$id", [
 				'headers' => [
 					'Content-Type' => 'application/json',
-					'API_Key'      => 'A26A6177-A85F-490B-9D35-F3C992825694'
+					'API_Key'      => $this->_config->getSettings('CE_API_KEY')
 				]
 			]);
 
@@ -445,12 +460,20 @@ class G4G extends Library\BaseController
 				}
 			} else {
 				$returnInfo['success'] = false;
-				$returnInfo['message'] = $output['message']
+				$returnInfo['message'] = $output['message'];
 			}
 		} catch(RequestException $e) {
 			if($e->getResponse()->getStatusCode() === 404)
 			{
+				$output = json_decode($e->getResponse()->getBody()->getContents(), true);
+
 				$returnInfo['success'] = false;
+				$returnInfo['message'] = $output['message'];
+			} elseif($e->getResponse()->getStatusCode() === 400) {
+				$output = json_decode($e->getResponse()->getBody()->getContents(), true);
+				
+				$returnInfo['success'] = false;
+				$returnInfo['message'] = $output['message'];
 			}
 		}
 

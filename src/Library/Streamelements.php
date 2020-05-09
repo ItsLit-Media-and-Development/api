@@ -87,11 +87,45 @@ class Streamelements
 
         $this->_url .= 'points/' . $this->_channelID . '/alltime?limit=' . $limit;
 
-        $data = file_get_contents($this->_url);
+        $request = $this->_guzzle->get($this->_url);
+
+        $this->data = json_decode($request->getBody(), true);
+
+        return $this->data['users'];
+    }
+
+    public function get_store_items($channelID = 0)
+    {
+        $this->set_channel_id($channelID);
+
+        $this->_url .= 'store/' . $this->_channelID . '/items';
+
+        $request = $this->_guzzle->get($this->_url);
+
+        $this->data = json_decode($request->getBody(), true);
+
+        return $this->data;
+    }
+    //////////// DONE TO HERE //////////////
+
+    public function redeem($channelID, $id)
+    {
+        $this->set_channel_id($channelID);
+
+        $this->_url .= 'store/' . $this->_channelID . '/redemptions/' . $id;
+
+        //$data = file_get_contents($this->_url);
+        $response = $this->_guzzle->post($this->_url, [
+            'headers' => [
+                'Authorization': "Bearer " . $this->get_token();
+            ]
+        ]);
+
+        $data = $response->getBody();
 
         $this->data = json_decode($data, true);
 
-        return $this->data['users'];
+        return $this->data;
     }
 
     /**
@@ -107,7 +141,8 @@ class Streamelements
 
         $this->_url .= 'points/' . $this->_channelID . '/' . $username;
 
-        $data = file_get_contents($this->_url);
+        $request = $this->_guzzle->get($this->_url);
+        $data = $request->getBody();
 
         $this->data = json_decode($data, true);
 
@@ -153,7 +188,8 @@ class Streamelements
 
         $this->_url .= '/giveaways/' . $this->_channelID;
 
-        $data = file_get_contents($this->_url);
+        $request = $this->_guzzle->get($this->_url);
+        $data = $request->getBody();
 
         $this->data = json_decode($data, true);
 

@@ -206,31 +206,23 @@ class Twitch extends Library\BaseController
 
 
 		return $this->_output->output(200, $response, false);
+
 	}
 
 	public function recent_vods()
 	{
 		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-		$channel = $this->_params[0];
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
 		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
 		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
 
+		/* DEPRICATED
 		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
+		*/
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/videos?user_id=$channel&type=archive&first=$limit", true);
 
-		return $this->_output->output(200, $output['videos'], $bot);
-	}
-	public function recent_vods()
-	{
-		$this->_log->set_message("Twitch::recent_vods() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
-
-		$channel = $this->_params[0];
-		$limit   = isset($this->_params[1]) ? $this->_params[1] : 10;
-		$bot     = isset($this->_params[2]) ? $this->_params[2] : false;
-
-		$output = $this->_twitch->get("https://api.twitch.tv/kraken/channels/$channel/videos?limit=$limit&broadcasts=true", true, ['Accept' => 'application/vnd.twitchtv.v3+json']);
-
-		return $this->_output->output(200, $output['videos'], $bot);
+		return $this->_output->output(200, $output['data'], $bot);
 	}
 
 	public function current_game()
@@ -286,10 +278,10 @@ class Twitch extends Library\BaseController
 		$this->_log->set_message("Twitch::ban() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
 		$channel = $this->_params[0];
-		$user = $this->_params[1];
-		$banner = $this->_params[2];
-		$reason = $this->_params[3];
-		$bot = isset($this->_params[4]) ? $this->_params[4] : false;
+		$user    = $this->_params[1];
+		$banner  = $this->_params[2];
+		$reason  = $this->_params[3];
+		$bot     = isset($this->_params[4]) ? $this->_params[4] : false;
 
 		$output = $this->_db2->ban_user($channel, $user, $banner, $reason);
 
@@ -299,6 +291,100 @@ class Twitch extends Library\BaseController
 		}
 
 		return $this->_output->output('200', "/ban $user", $bot);
+	}
+
+	public function getBannedList()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getModerators()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/moderators?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getModeratorEvents()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/moderators/events?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/moderators/events?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getBannedEvents()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/moderation/banned/events?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/moderation/banned/events?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getSubs()
+	{
+		$received = json_decode(file_get_contents('php://input'), true);
+
+		if(!isset($received['token']))
+		{
+			return $this->_output->output(400, "missing OAuth Token", false);
+		}
+
+		$channel  = ($received['id_flag']) ? $received['channel'] : $this->_twitch->get_user_id($received['channel']);
+		$url      = (isset($received['user_id'])) ? "https://api.twitch.tv/helix/subscriptions?broadcaster_id=$channel&user_id=" . $received['user_id'] : "https://api.twitch.tv/helix/subscriptions?broadcaster_id=$channel";
+
+		$output = $this->_twitch->get($url, true, ['Authorization' => "Bearer: " . $received['token']]);
+
+		return $this->_output->output(200, $output, false);
+	}
+
+	public function getStreamTags()
+	{
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = $this->_twitch->get("https://api.twitch.tv/helix/streams/tags?broadcaster_id=$channel", true);
+
+		return $this->_output->output(200, $output, false);
 	}
 
 	public function topclips()
@@ -324,6 +410,28 @@ class Twitch extends Library\BaseController
 		$output = $this->_twitch->get("https://api.twitch.tv/helix/clips?broadcaster_id=$channel&started_at=$start_time", true);
 
 		return $this->_output->output(200, $output['data'], false);
+	}
+
+	public function getlogo()
+	{
+		$this->_log->set_message("Twitch::getclips() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = $this->_twitch->get("users/$channel");
+
+		return $this->_output->output(200, $output['logo'], false);
+	}
+
+	public function getteams()
+	{
+		$this->_log->set_message("Twitch::getteams() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+		$channel = $this->_twitch->get_user_id($this->_params[0]);
+
+		$output = (empty($this->_twitch->get("channels/$channel/teams")['teams'])) ? "None" : $this->_twitch->get("channels/$channel/teams")['teams'];
+
+		return $this->_output->output(200, $output, false);
 	}
 
 	private function _users($userid)
