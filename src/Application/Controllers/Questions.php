@@ -65,6 +65,42 @@ class Questions extends Library\BaseController
     }
 
     /**
+     * Adds questions to the system with no reply
+     *
+     * @throws \Exception
+     */
+    public function add_empty()
+    {
+        $this->_log->set_message("Questions::add+empty() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        $channel  = $this->_params[0];
+        $user     = $this->_params[1];
+        $question = urldecode($this->_params[2]);
+
+        if(count($this->_params) > 3)
+        {
+            for($i = 3; $i < count($this->_params); $i++)
+            {
+                $question .= "/" . $this->_params[$i];
+            }
+        }
+
+        $this->_output->setOutput((isset($this->_params[3])) ? $this->_params[3] : NULL);
+
+        //if question is filled in then user is!
+        if($question != '')
+        {
+            $query = $this->_db->add_question($channel, $user, $question);
+
+            return (!is_string($query) && $query == true) ? $this->_output->output(200, "", true) : $this->_output->output(400, $query);
+        } else {
+            $this->_log->set_message("URI is missing parameters, we have: $channel, $user, $question", "WARNING");
+
+            return $this->_output->output(400, "You forgot to actually ask a question!", true);
+        }
+    }
+
+    /**
      * Marks a question as read
      *
      * @return array|string Output either confirming question marked as read or an error
