@@ -39,7 +39,7 @@ class ShopTitans extends Library\BaseController
 
         $output = $this->_db->get_player($user);
 
-        return $this->_output->output(200, $output, true);
+        return $this->_output->output(200, $output, false);
     }
 
     public function setUser()
@@ -57,6 +57,18 @@ class ShopTitans extends Library\BaseController
 
         $output = $this->_db->get_wow_stats();
 
-        return $this->_output->output(200, $output, true);
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function getInvestment()
+    {
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $user = $this->_params[0];
+
+        $output = $this->_db->get_player_investment($user);
+
+        return $this->_output->output(200, $output, false);
     }
 }
