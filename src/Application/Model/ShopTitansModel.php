@@ -33,4 +33,24 @@ class ShopTitansModel extends Library\BaseModel
 
         return $this->_output;
     }
+
+    public function get_wow_stats()
+    {
+        $stmt = $this->_db->prepare("SELECT * FROM shop_titans ORDER BY last_updated DESC");
+        $stmt->execute();
+
+        $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $this->_output;
+    }
+
+    public function get_player_investment($user)
+    {
+        $stmt = $this->_db->prepare("SELECT worth, investment FROM shop_titans WHERE name = :user ORDER BY last_updated DESC LIMIT 1");
+        $stmt->execute([':user' => $user]);
+
+        $this->_output = ($stmt->rowCount() > 0) ? $stmt->fetch(\PDO::FETCH_ASSOC) : 0;
+
+        return $this->_output;
+    }
 }
