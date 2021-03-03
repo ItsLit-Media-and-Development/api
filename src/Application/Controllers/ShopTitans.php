@@ -71,4 +71,36 @@ class ShopTitans extends Library\BaseController
 
         return $this->_output->output(200, $output, false);
     }
+
+    public function getGcList()
+    {
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $output = $this->_db->get_gc();
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function addToGcList()
+    {
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $output = $this->_db->addToList($input['user'], $input['building']);
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function markComplete()
+    {
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $output = $this->_db->markComplete();
+
+        return $this->_output->output(200, $output, false);
+    }
 }

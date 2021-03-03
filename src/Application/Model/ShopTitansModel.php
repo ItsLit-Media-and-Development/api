@@ -53,4 +53,44 @@ class ShopTitansModel extends Library\BaseModel
 
         return $this->_output;
     }
+
+    public function get_gc()
+    {
+        $stmt = $this->_db->prepare("SELECT `name` FROM shop_titans_gc WHERE completed = false ORDER BY submitted_on ASC");
+        $stmt->execute();
+
+        $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $this->_output;
+    }
+
+    public function addToList($user, $building)
+    {
+        $ins = $this->_db->prepare("INSERT INTO shop_titans_gc (`name`, submitor, completed_on, completed) VALUES(:building, :user, '0000', 0)");
+        $ins->execute(
+            [
+                ':user' => $user,
+                ':building' => $building
+            ]
+            );
+
+        $this->_output = ($ins->rowCount() > 0) ? true : false;
+
+        return $this->_output;
+    }
+
+    public function markComplete()
+    {
+        $stmt = $this->_db->prepare("SELECT `name` FROM shop_titans_gc WHERE completed = false ORDER BY submitted_on ASC LIMIT 1");
+        $stmt->execute();
+
+        $gc = $stmt->fetch();
+
+        $upd = $this->_db->prepare("UPDATE shop_titans_gc SET completed = 1, completed_on = Now() WHERE `name` = :gc");
+        $upd->execute([':gc' => $gc[0]]);
+
+        $this->_output = ($upd->rowCount() > 0) ? true : false;
+        
+        return $this->$gc[0];
+    }
 }
