@@ -55,9 +55,32 @@ class ShopTitans extends Library\BaseController
         if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-        $output = $this->_db->get_wow_stats();
+        $cur = $this->_db->get_current_stats();
+        $last = $this->_db->get_past_stats();
 
-        return $this->_output->output(200, $output, false);
+        $last_invest = [];
+        $vs_plan = [];
+
+        for($i = 0; $i < sizeof($last); $i++)
+        {
+            $last_invest[$last[$i]['name']] = round($last[$i]['investment'] + $last[$i]['worth'] * 0.02,0);
+        }
+//var_dump($last_invest);
+        for($j = 0; $j < sizeof($cur); $j++)
+        {
+            if($cur[$j]['investment'] - ((isset($last_invest[$cur[$j]['name']]) ? $last_invest[$cur[$j]['name']] : $cur[$j]['investment'])) <= 0)
+            {
+                if(!isset($last_invest[$cur[$j]['name']]))
+                {
+                    $vs_plan[] = $cur[$j]['name'] . " (new?)";
+                } else 
+                {
+                    $vs_plan[] = $cur[$j]['name'];
+                }
+            }
+        }
+
+        return $this->_output->output(200, $vs_plan, false);
     }
 
     public function getInvestment()

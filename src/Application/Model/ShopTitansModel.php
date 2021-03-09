@@ -34,9 +34,19 @@ class ShopTitansModel extends Library\BaseModel
         return $this->_output;
     }
 
-    public function get_wow_stats()
+    public function get_current_stats()
     {
-        $stmt = $this->_db->prepare("SELECT * FROM shop_titans ORDER BY last_updated DESC");
+        $stmt = $this->_db->prepare("SELECT `name`, worth, investment FROM shop_titans WHERE last_updated >= DATE_ADD(CURDATE(), INTERVAL -6 DAY) ORDER BY last_updated DESC");
+        $stmt->execute();
+
+        $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $this->_output;
+    }
+
+    public function get_past_stats()
+    {
+        $stmt = $this->_db->prepare("SELECT `name`, worth, investment, last_updated FROM shop_titans WHERE last_updated < DATE_ADD(CURDATE(), INTERVAL -6 DAY) AND last_updated >= DATE_ADD(CURDATE(), INTERVAL -15 DAY) ORDER BY last_updated DESC");
         $stmt->execute();
 
         $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
