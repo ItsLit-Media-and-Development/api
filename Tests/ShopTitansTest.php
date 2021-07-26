@@ -45,4 +45,13 @@ class ShopTitansTest extends TestCase
 
         $this->assertIsArray($data);
     }
+    
+    public function test_failAuthentication()
+    {
+        $response = $this->client->get('/ShopTitans/getAllUsers', [
+            'http_errors' => false
+        ]);
+
+        $this->assertEquals(401, $response->getStatusCode());
+    }
 }
