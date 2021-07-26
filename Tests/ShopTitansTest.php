@@ -54,4 +54,21 @@ class ShopTitansTest extends TestCase
 
         $this->assertEquals(401, $response->getStatusCode());
     }
+
+    public function test_GetUserItsLittany()
+    {
+        $response = $this->client->get('/ShopTitans/getUser/ItsLittany', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGlzY29yZF9ib3QiLCJsZXZlbCI6NH0'
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getBody(), true);
+
+        $this->assertEquals($data['response'][0]['name'], "itsLittany");
+    }
 }
