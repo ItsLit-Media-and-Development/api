@@ -131,10 +131,7 @@ class ShopTitansTest extends TestCase
                 'user'  => 'test',
                 'token' => $this->config['TEST_TOKEN']
             ],
-            'form_params' => [
-                'building' => 'town hall',
-                'user'     => 'ItsLittany'
-            ]
+            'form_params' => []
         ]);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -148,9 +145,65 @@ class ShopTitansTest extends TestCase
                 'user'  => 'test',
                 'token' => $this->config['TEST_TOKEN']
             ],
+            'form_params' => [
+                'building' => 'town hall',
+                'user'     => 'ItsLittany'
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function test_Mark_Complete()
+    {
+        $response = $this->client->put('/ShopTitans/markComplete', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ],
             'form_params' => []
         ]);
 
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function test_get_event_info_no_event_specified()
+    {
+        $response = $this->client->get('/ShopTitans/geteventinfo', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
         $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_get_event_info_incorrect_event()
+    {
+        $response = $this->client->get('/ShopTitans/geteventinfo/fakeevent', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_get_event_info()
+    {
+        $response = $this->client->get('/ShopTitans/geteventinfo/caprice', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }

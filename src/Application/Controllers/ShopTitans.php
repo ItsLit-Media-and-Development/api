@@ -125,7 +125,16 @@ die;
 
         $input = json_decode(file_get_contents('php://input'), true);
 
-        if(empty($input)) { return $this->_output->output(400, 'Missing Body', false); }
+        if(empty($input))
+        {
+            //we haven't recieved body input, lets check to see if it is sent as Multipart
+            if(empty($_POST))
+            {
+                return $this->_output->output(400, 'Missing Body', false); 
+            }
+
+            $input = $_POST;
+        }
 
         $output = $this->_db->addToList($input['user'], $input['building']);
 
@@ -135,7 +144,7 @@ die;
     public function markComplete()
     {
         if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->validRequest('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $output = $this->_db->markComplete();
 
@@ -153,7 +162,7 @@ die;
         {
             return $this->_output->output(400, "Incorrect event type requested", false);
         }
-
+var_dump($event);die;
         $output = $this->_db->getEventScore($event);
 
         return $this->_output->output(200, $output, false);
