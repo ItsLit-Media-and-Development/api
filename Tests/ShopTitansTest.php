@@ -6,12 +6,15 @@ use PHPUnit\Framework\TestCase;
 class ShopTitansTest extends TestCase
 {
     protected $client;
+    protected $config;
 
     public function setUp(): void
     {
+        $this->config = parse_ini_file("src/Config/site.ini");
+
         $this->client = new GuzzleHttp\Client(
             [
-                'base_uri' => 'http://api'
+                'base_uri' => $this->config['BASE_URL']
             ]
         );
     }
@@ -22,7 +25,7 @@ class ShopTitansTest extends TestCase
             'http_errors' => false,
             'headers' => [
                 'user'  => 'test',
-                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGlzY29yZF9ib3QiLCJsZXZlbCI6NH0'
+                'token' => $this->config['TEST_TOKEN']
             ]
         ]);
 
@@ -35,7 +38,7 @@ class ShopTitansTest extends TestCase
             'http_errors' => false,
             'headers' => [
                 'user'  => 'test',
-                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGlzY29yZF9ib3QiLCJsZXZlbCI6NH0'
+                'token' => $this->config['TEST_TOKEN']
             ]
         ]);
 
@@ -61,7 +64,7 @@ class ShopTitansTest extends TestCase
             'http_errors' => false,
             'headers' => [
                 'user'  => 'test',
-                'token' => 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoiZGlzY29yZF9ib3QiLCJsZXZlbCI6NH0'
+                'token' => $this->config['TEST_TOKEN']
             ]
         ]);
 
@@ -70,5 +73,23 @@ class ShopTitansTest extends TestCase
         $data = json_decode($response->getBody(), true);
 
         $this->assertEquals($data[0]['name'], "itslittany");
+    }
+
+    public function test_GetInvestmentItsLittany()
+    {
+        $response = $this->client->get('/ShopTitans/getInvestment/ItsLittany', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getBody(), true);
+
+        $this->assertEquals($data['worth'], "1");
+        $this->assertEquals($data['investment'], "1");
     }
 }
