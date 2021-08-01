@@ -116,7 +116,7 @@ class Output
     {
         header('Content-Type: application/json');
 
-        return ($bot == true) ? json_encode($input) : json_encode(['status' => $code, 'response' => $input]);
+        return ($bot == true) ?: json_encode($input);
     }
 
     private function xml_output($input)
@@ -221,7 +221,7 @@ class Output
                 case 'json':
                     header('Content-Type: application/json');
 
-                    $out = json_encode(['status' => $code, 'response' => $response]);
+                    $out = json_encode($response);
                     break;
                 case 'xml':
                     header('Content-Type: text/xml');
@@ -242,7 +242,7 @@ class Output
                 default:
                     header('Content-Type: application/json');
 
-                    $out = json_encode(['status' => $code, 'response' => $response]);
+                    $out = json_encode($response);
             }
         } else {
             return $this->_outputError(500, '$code was not set as an integer... Lets get it right!');

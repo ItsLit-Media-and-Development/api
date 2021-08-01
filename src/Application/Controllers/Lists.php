@@ -37,6 +37,9 @@ class Lists extends Library\BaseController
     {
         $this->_log->set_message("Lists::getList() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $qty = (isset($this->_params[2])) ? $this->_params[2] : "all";
@@ -62,6 +65,9 @@ class Lists extends Library\BaseController
     public function remove()
     {
         $this->_log->set_message("Lists::remove() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $type = $this->_params[0];
         $owner = $this->_params[1];
@@ -140,6 +146,9 @@ class Lists extends Library\BaseController
     {
         $this->_log->set_message("Lists::getItem() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $item = $this->_params[2];
@@ -160,6 +169,9 @@ class Lists extends Library\BaseController
     {
         $this->_log->set_message("Lists::randItem() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         $owner = $this->_params[0];
         $lName = $this->_params[1];
         $bot = (isset($this->_params[2])) ? $this->_params[2] : false;
@@ -178,6 +190,9 @@ class Lists extends Library\BaseController
     public function getItemByInfo()
     {
         $this->_log->set_message("Lists::getItemByInfo() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $owner = $this->_params[0];
         $lName = $this->_params[1];

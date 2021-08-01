@@ -69,6 +69,6 @@ class ShopTitansTest extends TestCase
 
         $data = json_decode($response->getBody(), true);
 
-        $this->assertEquals($data['response'][0]['name'], "itsLittany");
+        $this->assertEquals($data[0]['name'], "itslittany");
     }
 }
