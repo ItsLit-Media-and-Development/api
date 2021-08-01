@@ -125,6 +125,8 @@ die;
 
         $input = json_decode(file_get_contents('php://input'), true);
 
+        if(empty($input)) { return $this->_output->output(400, 'Missing Body', false); }
+
         $output = $this->_db->addToList($input['user'], $input['building']);
 
         return $this->_output->output(200, $output, false);

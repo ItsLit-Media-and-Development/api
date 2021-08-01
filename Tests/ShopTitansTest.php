@@ -92,4 +92,65 @@ class ShopTitansTest extends TestCase
         $this->assertEquals($data['worth'], "1");
         $this->assertEquals($data['investment'], "1");
     }
+
+    public function test_GetGcList()
+    {
+        $response = $this->client->get('/ShopTitans/getGcList', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getBody(), true);
+
+        $this->assertIsArray($data);
+    }
+
+    public function test_AddToGcList_Wrong()
+    {
+        $response = $this->client->get('/ShopTitans/addToGcList', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(405, $response->getStatusCode());
+    }
+
+    public function test_Add_To_Gc_List_No_Body()
+    {
+        $response = $this->client->post('/ShopTitans/addToGcList', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ],
+            'form_params' => [
+                'building' => 'town hall',
+                'user'     => 'ItsLittany'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_Add_To_Gc_List()
+    {
+        $response = $this->client->post('/ShopTitans/addToGcList', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ],
+            'form_params' => []
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
 }
