@@ -122,21 +122,9 @@ die;
     {
         if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->hasBody()) { return $this->_output->output(400, "Bad Request", false); }
 
-        $input = json_decode(file_get_contents('php://input'), true);
-
-        if(empty($input))
-        {
-            //we haven't recieved body input, lets check to see if it is sent as Multipart
-            if(empty($_POST))
-            {
-                return $this->_output->output(400, 'Missing Body', false); 
-            }
-
-            $input = $_POST;
-        }
-
-        $output = $this->_db->addToList($input['user'], $input['building']);
+        $output = $this->_db->addToList($this->_input['user'], $this->_input['building']);
 
         return $this->_output->output(200, $output, false);
     }
@@ -162,7 +150,7 @@ die;
         {
             return $this->_output->output(400, "Incorrect event type requested", false);
         }
-var_dump($event);die;
+
         $output = $this->_db->getEventScore($event);
 
         return $this->_output->output(200, $output, false);
@@ -172,8 +160,10 @@ var_dump($event);die;
     {
         if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->hasBody()) { return $this->_output->output(400, "Bad Request", false); }
         
-        parse_str(file_get_contents('php://input'), $data);
+        //check this works ok still
+        parse_str($this->_input, $data);
 
         //Something weird is happening to the JSON POST data, its all being stored in the key for some reason, so I need to extract and decode just the key to pass to the DB
         $data = json_decode(key($data), true);
