@@ -210,4 +210,21 @@ class ShopTitansTest extends TestCase
 
         $this->assertEquals($data['points'], 5130931);
     }
+
+    public function test_website_update_incorrect_params()
+    {
+        $response = $this->client->post('/ShopTitans/WebsiteUpdate', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'test',
+                'token' => $this->config['TEST_TOKEN']
+            ],
+            'form_params' => [
+                'building' => 'town hall',
+                'user'     => 'ItsLittany'
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
 }

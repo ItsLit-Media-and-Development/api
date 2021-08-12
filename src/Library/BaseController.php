@@ -100,7 +100,7 @@ abstract class BaseController
 		{
 			$this->_input = json_decode(file_get_contents('php://input'), true);
 
-			if(empty($this->input))
+			if(empty($this->_input) || is_null($this->_input))
 			{
 				//this just means the post/put wasnt sent in the body, lets check to see if it is a multi-part form
 				if(empty($_POST))

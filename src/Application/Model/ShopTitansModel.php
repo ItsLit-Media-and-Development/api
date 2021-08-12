@@ -154,6 +154,16 @@ class ShopTitansModel extends Library\BaseModel
             $level = 0;
             $bounty = 0;
 
+            if(
+                !array_key_exists('level', $stats) ||
+                !array_key_exists('worth', $stats) ||
+                !array_key_exists('investment', $stats) ||
+                !array_key_exists('total_bounties', $stats)
+            )
+            {
+                return null;
+            }
+
             //Update each stat's value
             foreach($stats as $key => $value)
             {

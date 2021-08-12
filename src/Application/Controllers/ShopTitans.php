@@ -162,13 +162,20 @@ die;
         if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
         if(!$this->hasBody()) { return $this->_output->output(400, "Bad Request", false); }
         
-        //check this works ok still
+        /* //check this works ok still
         parse_str($this->_input, $data);
 
         //Something weird is happening to the JSON POST data, its all being stored in the key for some reason, so I need to extract and decode just the key to pass to the DB
-        $data = json_decode(key($data), true);
+        $data = json_decode(key($data), true); */
 
-        $this->_db->updateAll($data);
+        $data = $this->_input;
+
+        $return = $this->_db->updateAll($data);
+
+        if($return == null)
+        {
+            return $this->_output->output(400, 'Bad Request', false);
+        }
         
         return $this->_output->output(200, ['success' => true], (isset($this->_param[0]) ? $this->_params[0] : false));
     }
