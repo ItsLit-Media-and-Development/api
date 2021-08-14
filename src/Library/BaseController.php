@@ -21,6 +21,7 @@ abstract class BaseController
 	protected $_config;
 	protected $_requstType;
 	protected $_twitch;
+	protected $_input;
 
 	public function __construct()
 	{
@@ -90,6 +91,29 @@ abstract class BaseController
             return false;
         } else {
 			return true;
+		}
+	}
+
+	public function hasBody()
+	{
+		if($this->_requestType == 'PUT' || $this->_requestType == 'POST')
+		{
+			$this->_input = json_decode(file_get_contents('php://input'), true);
+
+			if(empty($this->_input) || is_null($this->_input))
+			{
+				//this just means the post/put wasnt sent in the body, lets check to see if it is a multi-part form
+				if(empty($_POST))
+				{
+					return false;
+				}
+
+				$this->_input = $_POST;
+			}
+
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

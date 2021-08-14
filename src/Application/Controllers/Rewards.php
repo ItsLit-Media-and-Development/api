@@ -24,7 +24,7 @@ class Rewards extends Library\BaseController
     {
 		parent::__construct();
 
-        $this->_db     = new Model\RewardModel();
+        $this->_db = new Model\RewardModel();
     }
 
     /**
@@ -37,6 +37,10 @@ class Rewards extends Library\BaseController
     {
         $this->_log->set_message("Rewards::add_reward() called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        //change this to php_input()
         $chan    = $this->_params[0];
         $reward  = $this->_params[1];
         $desc    = $this->_params[2];
@@ -75,6 +79,9 @@ class Rewards extends Library\BaseController
     public function redeem()
     {
         $this->_log->set_message("Rewards::redeem() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $chan    = $this->_params[0];
         $user    = $this->_params[1];
@@ -115,36 +122,32 @@ class Rewards extends Library\BaseController
     {
         $this->_log->set_message("Rewards::add_code() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         $accepted = ['playstation', 'xbox', 'steam', 'gog', 'other'];
 
-        if(isset($_POST))
+        $code = (isset($_POST['code'])) ? $_POST['code'] : NULL;
+        $platform = (isset($_POST['platform'])) ? $_POST['platform'] : NULL;
+        $title = (isset($_POST['title'])) ? $_POST['title'] : NULL;
+        $expires = (isset($_POST['expires'])) ? $_POST['expires'] : NULL;
+
+        if(is_null($code) || is_null($platform) || is_null($title) || is_null($expires))
         {
-            $code = (isset($_POST['code'])) ? $_POST['code'] : NULL;
-            $platform = (isset($_POST['platform'])) ? $_POST['platform'] : NULL;
-            $title = (isset($_POST['title'])) ? $_POST['title'] : NULL;
-            $expires = (isset($_POST['expires'])) ? $_POST['expires'] : NULL;
+            $this->_log->set_message("A parameter was missing, the following were passed: $code, $platform, $title, $expires", "WARNING");
 
-            if(is_null($code) || is_null($platform) || is_null($title) || is_null($expires))
-            {
-                $this->_log->set_message("A parameter was missing, the following were passed: $code, $platform, $title, $expires", "WARNING");
+            return $this->_output->output(400, "The form was missing parameters, it needs: code, platform, title and expires to be valid", false);
+        }
 
-                return $this->_output->output(400, "The form was missing parameters, it needs: code, platform, title and expires to be valid", false);
-            }
+        if(in_array($platform, $accepted))
+        {
+            $query = $this->_db->add_code($title, str_replace('-', '', $code), $platform, $expires);
 
-            if(in_array($platform, $accepted))
-            {
-                $query = $this->_db->add_code($title, str_replace('-', '', $code), $platform, $expires);
-
-                return ($query === true) ? $this->_output->output(201, "Addition of $title code confirmed") : $this->_output->output(400, $query);
-            } else {
-                $this->_log->set_message("An invalid platform was passed: $platform", "WARNING");
-
-                return $this->_output->output(400, "The platform $platform is not accepted, please check the documentation for accepted platforms");
-            }
+            return ($query === true) ? $this->_output->output(201, "Addition of $title code confirmed") : $this->_output->output(400, $query);
         } else {
-            $this->_log->set_message("Invalid attempt to access the method, it was not a POST request", "WARNING");
+            $this->_log->set_message("An invalid platform was passed: $platform", "WARNING");
 
-            return $this->_output->output(405, "Only POST methods are accepted for this endpoint", false);
+            return $this->_output->output(400, "The platform $platform is not accepted, please check the documentation for accepted platforms");
         }
     }
 
@@ -157,6 +160,9 @@ class Rewards extends Library\BaseController
     public function listcodes()
     {
         $this->_log->set_message("Rewards::listcodes() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         if(isset($this->_params[1]))
         {
@@ -182,6 +188,9 @@ class Rewards extends Library\BaseController
     public function remove_reward()
     {
         $this->_log->set_message("Rewards::remove_reward() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
+
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $chan = $this->_params[0];
         $reward = $this->_params[1];
@@ -220,6 +229,9 @@ class Rewards extends Library\BaseController
     {
         $this->_log->set_message("Rewards::remove_code() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         $code = $this->_params[0];
         $bot = (isset($this->_params[1])) ? $this->_params[1] : false;
 
@@ -256,11 +268,14 @@ class Rewards extends Library\BaseController
     {
         $this->_log->set_message("Rewards::redeem_code() was called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
         if((!isset($this->_params[3])) && ($this->_params[3] == true))
         {
             $this->_log->set_message("An attempt to redeem a code via a bot was made, returning a 403", "WARNING");
 
-            return $this->_output->output(403, "Endpoint /Rewards/redeem cannot be used to redeem codes via a bot or Twitch chat for securite of the code");
+            return $this->_output->output(403, "Endpoint /Rewards/redeem cannot be used to redeem codes via a bot or Twitch chat for security of the code");
         }
 
         $user = $this->_params[1];

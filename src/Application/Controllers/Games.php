@@ -110,7 +110,7 @@ class Games extends Library\BaseController
 			3 => "$user is notihng more then a blood splatter on the wall",
 			4 => "The gun fired and $user dropped to the floor like a sack of spuds",
 			5 => "**BOOM** the gun fired and $user somehow missed at point blank range!",
-			6 => "The gun goes off and misses but Sig_Shezza stabs you in the back instead",
+			//6 => "The gun goes off and misses but Sig_Shezza stabs you in the back instead",
 		];
 
 		return $this->_output->output(200, $outcomes[rand(0, sizeof($outcomes))], true);

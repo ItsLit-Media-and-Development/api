@@ -19,14 +19,12 @@ use GuzzleHttp\Client;
 
 class Clients extends Library\BaseController
 {
-    private $_g;
 
 	public function __construct()
 	{
         parent::__construct();
         
         $this->_db = new Model\ClientsModel();
-        $this->_g  = new Client();
     }
     
     public function add_win()

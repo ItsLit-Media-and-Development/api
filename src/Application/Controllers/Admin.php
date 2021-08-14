@@ -18,11 +18,8 @@ use API\Model;
 
 class Admin extends Library\BaseController
 {
-    private $_db;
+    protected $_db;
     private $_token;
-    private $_config;
-    private $_header;
-    private $_auth;
 
     public function __construct()
     {
@@ -30,9 +27,6 @@ class Admin extends Library\BaseController
 
 		$this->_db = new Model\AdminModel();
 		$this->_token = new Library\JWT();
-        $this->_config = new Library\Config();
-		$this->_header = $this->_router->getAllHeaders();
-		$this->_auth = new Library\Authentication();
     }
 
     /**
@@ -43,10 +37,8 @@ class Admin extends Library\BaseController
      */
     public function getLogs()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) < 3)
-        {
-            return $this->_output->output(403, "Invalid auth_token");
-        }
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
         
         $this->_log->set_message("Admin::getLogs() Called from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
@@ -67,39 +59,37 @@ class Admin extends Library\BaseController
 
     public function registerAPIuser()
     {
-        if(isset($_POST))
-        {
-            $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-            $user_info = $_POST;
+        $this->_log->set_message("Called Admin::registerAPIuser() from " . $_SERVER['REMOTE_ADDR'], "INFO");
 
-            $this->_output->setOutput((isset($user_info['return_output'])) ? $user_info['return_output'] : NULL);
+        $user_info = $_POST;
 
-            $user_info['token'] = $this->_auth->create_token($user_info['username'], $user_info['level']);
+        $this->_output->setOutput((isset($user_info['return_output'])) ? $user_info['return_output'] : NULL);
 
-            $query = $this->_db->add_api_user($user_info);
+        $user_info['token'] = $this->_auth->create_token($user_info['username'], $user_info['level']);
 
-            //Lets see if it worked or not
-            return (is_integer($query) && $query > 0) ? $this->_output->output(201, "API User was created, pending approval", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
-        }
+        $query = $this->_db->add_api_user($user_info);
 
-        return $this->_output->output(400, "Resource can only be accessed via POST", false);
+        //Lets see if it worked or not
+        return (is_integer($query) && $query > 0) ? $this->_output->output(201, "API User was created, pending approval", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
     }
 
 
     public function revokeToken()
     {
-        if($this->_auth->validate_token($this->_header['auth_token'], $this->_header['auth_user']) == 3)
-        {
-            $this->_log->set_message("Admin::revokeToken() Called from " . $_SERVER['REMOTE_ADDR'] . " by " . $this->_header['auth_user'], "INFO");
+        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->validRequest('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-            $user = $this->_params[0];
+        $this->_log->set_message("Admin::revokeToken() Called from " . $_SERVER['REMOTE_ADDR'] . " by " . $this->_header['auth_user'], "INFO");
 
-            $this->_output->setOutput((isset($this->_params[1]) ? $this->_params[1] : NULL));
+        $user = $this->_params[0];
 
-            $query = $this->_db->revoke_token($user);
+        $this->_output->setOutput((isset($this->_params[1]) ? $this->_params[1] : NULL));
 
-            return (is_integer($query) && $query > 0) ? $this->_output->output(200, "Token revoked", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
-        }
+        $query = $this->_db->revoke_token($user);
+
+        return (is_integer($query) && $query > 0) ? $this->_output->output(200, "Token revoked", false) : $this->_output->output(500, "Something went wrong, PDO error: $query", false);
     }
 }

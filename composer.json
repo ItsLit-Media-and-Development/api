@@ -1,5 +1,5 @@
 {
-  "name": "Design-Develop-Realize/API",
+  "name": "design-develop-realize/api",
   "type": "project",
   "description": "API for Itslittany.co.uk",
   "homepage": "https://github.com/Design-Develop-Realize/API",
@@ -13,11 +13,11 @@
     }
   ],
   "require": {
-    "php": ">=5.6.0",
-    "guzzlehttp/guzzle": "~6.0"
+    "php": ">=7.0",
+    "guzzlehttp/guzzle": "~6.0",
+    "phpunit/phpunit": "^9.5"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.7",
     "phpstan/phpstan": ">=0.9.1",
     "codeclimate/php-test-reporter": "^0.4"
   },
@@ -30,6 +30,9 @@
       "API\\Exceptions\\": "src/Library/Exceptions",
       "API\\Exceptions\\Destiny\\": "src/Library/Exceptions/Destiny"
     }
+  },
+  "scripts": {
+    "test": ".\\vendor\\bin\\phpunit --testdox"
   },
   "autoload-dev": {
     "psr-4": {
