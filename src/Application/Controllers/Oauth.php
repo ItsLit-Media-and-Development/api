@@ -25,14 +25,14 @@ class Oauth extends Library\BaseController
 	private $_twitch_redirect = 'https://api.itslit.uk/Oauth/twitch/';
 	private $_SL_URI = 'https://streamlabs.com/api/v1.0/';
     private $_db;
-    private $_guzzle;
+    protected $_guzzle;
 
     public function __construct()
     {
 		parent::__construct();
 
 		$this->_db = new OauthModel();
-        $this->_guzzle = new Client();
+        $this->_guzzle = new Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false,),));
 
 		$this->_SLclientID = $this->_config->getSettings('SL_CLIENT_ID');
         $this->_SLclientSecret = $this->_config->getSettings('SL_SECRET');
@@ -97,5 +97,37 @@ class Oauth extends Library\BaseController
 		$response = json_decode($response->getBody(), true);
 
 		return $response['access_token'];
+	}
+
+	public function Github()
+	{
+		//echo($this->_config->getSettings('GITHUB_CLIENT_ID') . "<br />" .$this->_config->getSettings('GITHUB_CLIENT_SECRET'));die;
+
+		if(isset($this->_params[0]) && substr($this->_params[0], 0, 6) == '?code=')
+		{
+			$code = str_replace('?code=', '', $this->_params[0]);
+
+			$parameters = [
+				'client_id'		 => $this->_config->getSettings('GITHUB_CLIENT_ID'),
+				'client_secret' => $this->_config->getSettings('GITHUB_CLIENT_SECRET'),
+				'code'			 => $code,
+				'response_uri'	 => $this->_config->getSettings('GITHUB_CALLBACK')
+			];
+
+			//$response = $this->_guzzle->request('POST', 'https://github.com/login/oauth/access_token', ['headers' => ['Accept' => 'application/json'], 'body' => $parameters]);
+			$response = $this->_guzzle->post('https://github.com/login/oauth/access_token', [
+				'headers' => [
+					'Accept' => 'application/json',
+					'Content-Type' => 'application/x-www-form-urlencoded'
+				], 
+				'form_params' => $parameters
+			]);
+
+			$response = json_decode($response->getBody(), true);
+
+			var_dump($response);die;
+		} else {
+			var_dump($this->_params[0]);die;
+		}
 	}
 }

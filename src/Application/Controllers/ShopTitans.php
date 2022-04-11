@@ -1,6 +1,6 @@
 <?php
 /**
- * User Endpoint
+ * Shop Titans Endpoint
  *
  * @package		API
  * @author		Marc Towler <marc@marctowler.co.uk>
@@ -76,7 +76,7 @@ class ShopTitans extends Library\BaseController
             $last_invest[$last[$i]['name']] = round($last[$i]['investment'] + ($last[$i]['worth'] * 0.02),0);
             var_dump($last[$i]['name'] . " investment " . $last[$i]['investment'] . " net worth " . $last[$i]['worth'] . " calc " . $last[$i]['worth'] * 0.02);
         }
-die;
+
         var_dump($last_invest);
 
         for($j = 0; $j < sizeof($cur); $j++)
