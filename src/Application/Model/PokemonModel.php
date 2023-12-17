@@ -1,15 +1,15 @@
 <?php
 /**
- * Sub Model Class
+ * Pokemon Model Class
  *
- * All database functions regarding the Sub endpoint is stored here
+ * All database functions regarding the Pokemon endpoint is stored here
  *
  * @package		API
  * @author		Marc Towler <marc@marctowler.co.uk>
- * @copyright	Copyright (c) 2018 Marc Towler
+ * @copyright	Copyright (c) 2023 Marc Towler
  * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
  * @link		https://api.itslit.uk
- * @since		Version 0.3
+ * @since       Version 2.0
  * @filesource
  */
 
@@ -17,7 +17,7 @@ namespace API\Model;
 
 use API\Library;
 
-class SubModel extends Library\BaseModel
+class PokemonModel extends Library\BaseModel
 {
 	public function __construct()
 	{

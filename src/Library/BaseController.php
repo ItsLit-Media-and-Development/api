@@ -1,9 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: MarcT
- * Date: 21/11/2018
- * Time: 18:10
+ * Base Controller
+ *
+ * @package		API
+ * @author		Marc Towler <marc@marctowler.co.uk>
+ * @copyright	Copyright (c) 2018 Marc Towler
+ * @license		https://github.com/Design-Develop-Realize/api/blob/master/LICENSE.md
+ * @link		https://api.itslit.uk
+ * @since       Version 0.1
+ * @filesource
  */
 
 namespace API\Library;
@@ -55,34 +60,55 @@ abstract class BaseController
 		return $this->_output->output(501, "Function not implemented", false);
 	}
 
-	public function authenticate()
+	/**
+	 * Authenticate that the requestor has the right level of permission to access the resource.
+	 * 
+	 * @param int $level The level needed for access.
+	 * 
+	 * @return bool authorised or not authorised.
+	 */
+	protected function authenticate($level)
 	{
-		if(!isset($this->_headers['user']) || ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['level'] != 4))
-        {
-			//No header, could be QS based. Lets see how big _params is and take the last value
+		//Are we using Header based authentication?
+		if(!isset($this->_headers['user']))
+		{
+			//Looks like it could be QS based, lets see how big _params is and take the last value
 			if($this->_params[sizeof($this->_params)-1][0] === '?')
 			{
-				$string = explode("&",ltrim($this->_params[sizeof($this->_params)-1], $this->_params[sizeof($this->_params)-1][0]));
+				$string = explode("&", ltrim($this->_params[sizeof($this->_params) - 1], $this->_params[sizeof($this->_params) - 1][0]));
 
-				$this->_headers['user']  = explode("=", $string[0])[1];
-				$this->_headers['token'] = explode("=", $string[1])[1];
+				//Do we have 2 values in string?
+				if(sizeof($string) == 2)
+				{
+					$this->_headers['user']  = explode("=", $string[0])[1];
+					$this->_headers['token'] = explode("=", $string[1])[1];
 
-				if(!isset($this->_headers['token']) || ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['level'] != 4))
-        		{
-					return false;
+					//Lets see if this is a valid token
+					if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
+					{
+						//They have a lower value token level
+						return false;
+					} else {
+						return true;
+					}
 				} else {
-					return true;
+					return false;
 				}
+			} else {
+				return false;
 			}
-            $this->_log->set_message("Authentication failed", "ERROR");
+		} else {
+			//We are doing header based, lets check there is a token and authenticate
+			if(!isset($this->_headers['token']))
+			{
+				return false;
+			}
 
-			return false;
-        } else {
-			return true;
+			return ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] >= $level) ? true : false;
 		}
 	}
 
-	public function validRequest($valid)
+	protected function expectedVerb($valid)
 	{
 		if($this->_requestType !== $valid)
         {
@@ -94,7 +120,7 @@ abstract class BaseController
 		}
 	}
 
-	public function hasBody()
+	protected function hasBody()
 	{
 		if($this->_requestType == 'PUT' || $this->_requestType == 'POST')
 		{

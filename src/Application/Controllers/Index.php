@@ -17,12 +17,8 @@ use API\Library;
 
 class Index extends Library\BaseController
 {
-	//private $_db;
-
     public function __construct()
     {
-		parent::__construct();
-
-		//$this->_db = new Model\IndexModel();
+        parent::__construct();
     }
 }
