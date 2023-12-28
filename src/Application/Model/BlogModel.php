@@ -93,9 +93,31 @@ class BlogModel extends Library\BaseModel
         return $this->_output;
     }
 
-    public function addPost()
+    public function addPost(array $details)
     {
+        try 
+        {
+            $ins = $this->_db->prepare("INSERT INTO blog_post (title, slug, summary, content, featured_image, published_date, published) VALUES (:title, :slug, :summary, :content, :featured_image, :published_date, :published)");
+            $ins->execute(
+                [
+                    ':title'          => $details['title'],
+                    ':slug'           => $details['slug'],
+                    ':summary'        => $details['summary'],
+                    ':content'        => $details['content'],
+                    ':featured_image' => $details['featured_image'],
+                    ':published_date' => ($details['published_date'] != null) ? $details['published_date'] : '',
+                    ':published'      => $details['published']
+                ]
+            );
 
+            $this->_output = ($ins->rowCount() > 0) ? true : false;
+        }
+        catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
     }
 
     public function updatePost()
@@ -124,9 +146,25 @@ class BlogModel extends Library\BaseModel
         return $this->_output;
     }
 
-    public function togglePostStatus()
+    public function togglePostStatus(int $id)
     {
+        try 
+        {
+            $upd = $this->_db->prepare("UPDATE blog_comments SET approved = !approved WHERE id = :id");
+            $upd->execute(
+                [
+                    ':id' => $id
+                ]
+            );
 
+            $this->_output = ($upd->rowCount() > 0) ? true : false;
+        }
+        catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
     }
 
     public function getComment(int $id)
@@ -154,9 +192,10 @@ class BlogModel extends Library\BaseModel
     {
         try
         {
-            $ins = $this->_db->prepare("INSERT INTO blog_comments (response_id, display_name, email, comment, approved) VALUES (:rid, :display, :email, :comment, :approved");
+            $ins = $this->_db->prepare("INSERT INTO blog_comments (bid, response_id, display_name, email, comment, approved) VALUES (:bid, :rid, :display, :email, :comment, :approved");
             $ins->execute(
                 [
+                    ':bid'      => $details['post_ID'],
                     ':rid'      => (isset($details['response_id']) ? $details['response_id'] : 0),
                     ':display'  => $details['display_name'],
                     ':email'    => $details['email'],
@@ -180,7 +219,7 @@ class BlogModel extends Library\BaseModel
     {
         try 
         {
-            $del = $this->_db->prepare("UPDATE blog_comments SET deleted = 1 WHERE bid = :id");
+            $del = $this->_db->prepare("UPDATE blog_comments SET deleted = 1 WHERE id = :id");
             $del->execute(
                 [
                     ':id' => $id
@@ -201,7 +240,7 @@ class BlogModel extends Library\BaseModel
     {
         try 
         {
-            $stmt = $this->_db->prepare("UPDATE blog_comments SET approved = 1 WHERE bid = :id");
+            $stmt = $this->_db->prepare("UPDATE blog_comments SET approved = 1 WHERE id = :id");
             $stmt->execute(
                 [
                     ':id' => $id
@@ -216,4 +255,5 @@ class BlogModel extends Library\BaseModel
         }
 
         return $this->_output;
+    }
 }

@@ -81,9 +81,11 @@ class Output
             header("Access-Control-Allow-Origin: *");
 
             //Bots can't handle anything more then plain text so lets change the output as such.
-			if($bot === true) {
+			if($bot === true) 
+            {
 				$this->_output = "plain";
 			}
+
             switch ($this->_output)
             {
                 case 'json':
@@ -120,6 +122,17 @@ class Output
             'Status' => $code,
             'Data'   => $input
         ];
+
+        if(count($returnArray['Data']) > 1)
+        {
+            if(count($returnArray['Data']) <= 250)
+            {
+                $returnArray['TotalCount'] = count($returnArray['Data']);
+            } else {
+                $returnArray['Count']      = 250;
+                $returnArray['TotalCount'] = count($returnArray['Data']);
+            }
+        }
 
         return ($bot == true) ?: json_encode($returnArray);
     }
@@ -192,7 +205,6 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-						//$out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
 						$out .= str_replace("%3A", ":", str_replace("%20", " ", $val));
                     }
                 }
@@ -202,8 +214,6 @@ class Output
         {
             $out = $input;
         }
-
-		//$out = substr($out, 0, -1);
 
         return $out;
     }
@@ -233,22 +243,26 @@ class Output
                     ];
 
                     $out = json_encode($returnArray);
+
                     break;
                 case 'xml':
                     header('Content-Type: text/xml');
 
                     $out = '<rsp stat="fail"><err-code=' . $code . ' response="' . $response . '" /></rsp>';
+
                     break;
                 case 'html':
                     header('Content-Type: text/html');
 
                     $out = '<table id="rsp-stat-fail"><tr><td id="' . $code . '">Error: ' . $response . '</td></tr></table>';
+
                     break;
                 case 'plain':
                     header('Content-Type: text/plain');
 
                     //This is generally only going to be used for chat bots so lets make it muggle readable
                     $out = "An error occurred: $response";
+
                     break;
                 default:
                     header('Content-Type: application/json');

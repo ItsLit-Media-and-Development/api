@@ -41,8 +41,8 @@ class Blog extends Library\BaseController
         }
 
         //It must be so time to check if the post exists
-        $blogPost['posts']    = $this->_db->getPost('ID', $id);
-        $blogPost['comments'] = $this->_db->getComment($id);
+        $blogPost['post']             = $this->_db->getPost('ID', $id);
+        $blogPost['post']['comments'] = $this->_db->getComment($id);
 
         return $this->_output->output(200, $blogPost, false);
     }
@@ -55,15 +55,15 @@ class Blog extends Library\BaseController
         $slug = $this->_params[0];
 
         //Get the post then pull the comments
-        $blogPost['posts'] = $this->_db->getPost('SLUG', $slug);
+        $blogPost['post'] = $this->_db->getPost('SLUG', $slug);
 
         //Make sure there is a post returned first!
-        if(!$blogPost['posts'])
+        if(!$blogPost['post'])
         {
             return $this->_output->output(404, "Blog Post {$slug} not found", false);
         }
         
-        $blogPost['comments'] = $this->_db->getComment($blogPost['posts']['id']);
+        $blogPost['post']['comments'] = $this->_db->getComment($blogPost['post']['id']);
 
         return $this->_output->output(200, $blogPost, false);
     }
@@ -72,6 +72,11 @@ class Blog extends Library\BaseController
     {
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $posts = $this->_db->getPost();
+        //var_dump(count($posts));die;
+
+        return $this->_output->output(200, $posts, false);
     }
 
     public function updatePost()

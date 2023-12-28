@@ -112,7 +112,7 @@ abstract class BaseController
 	{
 		if($this->_requestType !== $valid)
         {
-            $this->_log->set_message("Request received with invalid HTTP request type", "ERROR");
+            //$this->_log->set_message("Request received with invalid HTTP request type", "ERROR");
 
             return false;
         } else {
