@@ -72,8 +72,8 @@ abstract class BaseController
 		//Are we using Header based authentication?
 		if(!isset($this->_headers['user']))
 		{
-			//Check to see if Params is set and if not, check header for key/token
-			if($this->_params === false)
+			//Check to see if Params is set or user header and if not, check header for key/token
+			if($this->_params === false || !isset($this->_headers['user']))
 			{
 				if(isset($this->_headers['token']) && strlen($this->_headers['token']) > 20)
 				{
@@ -108,7 +108,7 @@ abstract class BaseController
 					{
 						$this->_headers['user']  = explode("=", $string[0])[1];
 						$this->_headers['token'] = explode("=", $string[1])[1];
-
+						var_dump($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level']);die;
 						//Lets see if this is a valid token
 						if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
 						{
@@ -130,7 +130,7 @@ abstract class BaseController
 			{
 				return false;
 			}
-
+			
 			return ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] >= $level) ? true : false;
 		}
 	}
