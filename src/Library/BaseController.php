@@ -72,16 +72,15 @@ abstract class BaseController
 		//Are we using Header based authentication?
 		if(!isset($this->_headers['user']))
 		{
-			//Looks like it could be QS based, lets see how big _params is and take the last value
-			if($this->_params[sizeof($this->_params)-1][0] === '?')
+			//Check to see if Params is set and if not, check header for key/token
+			if($this->_params === false)
 			{
-				$string = explode("&", ltrim($this->_params[sizeof($this->_params) - 1], $this->_params[sizeof($this->_params) - 1][0]));
-
-				//Do we have 2 values in string?
-				if(sizeof($string) == 2)
+				if(isset($this->_headers['token']) && strlen($this->_headers['token']) > 20)
 				{
-					$this->_headers['user']  = explode("=", $string[0])[1];
-					$this->_headers['token'] = explode("=", $string[1])[1];
+					$auth = explode('/', $this->_headers['token']);
+
+					$this->_headers['user']  = $auth[0];
+					$this->_headers['token'] = $auth[1];
 
 					//Lets see if this is a valid token
 					if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
@@ -92,10 +91,38 @@ abstract class BaseController
 						return true;
 					}
 				} else {
+
+					//Unknown how they are authenticating
 					return false;
 				}
-			} else {
-				return false;
+			}
+			else
+			{
+				//Looks like it could be QS based, lets see how big _params is and take the last value
+				if($this->_params[sizeof($this->_params)-1][0] === '?')
+				{
+					$string = explode("&", ltrim($this->_params[sizeof($this->_params) - 1], $this->_params[sizeof($this->_params) - 1][0]));
+
+					//Do we have 2 values in string?
+					if(sizeof($string) == 2)
+					{
+						$this->_headers['user']  = explode("=", $string[0])[1];
+						$this->_headers['token'] = explode("=", $string[1])[1];
+
+						//Lets see if this is a valid token
+						if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
+						{
+							//They have a lower value token level
+							return false;
+						} else {
+							return true;
+						}
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
 			}
 		} else {
 			//We are doing header based, lets check there is a token and authenticate
