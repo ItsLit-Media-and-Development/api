@@ -120,9 +120,32 @@ class BlogModel extends Library\BaseModel
         return $this->_output;
     }
 
-    public function updatePost()
+    public function updatePost(array $details)
     {
+        try 
+        {
+            $upd = $this->_db->prepare("UPDATE blog_post SET title = :title, slug = :slug, summary = :summary, content = :content, featured_image = :featured_image, updated_date = :updated_date, published = :published WHERE id = :id");
+            $upd->execute(
+                [
+                    ':id' => $details['id'],
+                    ':title'          => $details['title'],
+                    ':slug'           => $details['slug'],
+                    ':summary'        => $details['summary'],
+                    ':content'        => $details['content'],
+                    ':featured_image' => $details['featured_image'],
+                    ':updated_date'   => ($details['updated_date'] != null) ? $details['updated_date'] : '',
+                    ':published'      => $details['published']
+                ]
+            );
 
+            $this->_output = ($upd->rowCount() > 0) ? true : false;
+        }
+        catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
     }
 
     public function deletePost(int $id)

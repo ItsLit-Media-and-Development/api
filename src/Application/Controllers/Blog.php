@@ -74,7 +74,6 @@ class Blog extends Library\BaseController
         if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $posts = $this->_db->getPost();
-        //var_dump(count($posts));die;
 
         return $this->_output->output(200, $posts, false);
     }
@@ -89,6 +88,29 @@ class Blog extends Library\BaseController
     {
         if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        $output = $this->_db->addPost($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
     }
 
     public function deletePost()
