@@ -167,7 +167,7 @@ class Blog extends Library\BaseController
         } 
         elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
         {
-            retrun $this->_output->output(400, "ID Should be Numeric", false);
+            return $this->_output->output(400, "ID Should be Numeric", false);
         }
 
         $output = $this->_db->togglePostStatus($data['id']);
@@ -188,7 +188,7 @@ class Blog extends Library\BaseController
         } 
         elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
         {
-            retrun $this->_output->output(400, "ID Should be Numeric", false);
+            return $this->_output->output(400, "ID Should be Numeric", false);
         }
 
         $output = $this->_db->togglePostStatus($data['id']);
@@ -256,7 +256,7 @@ class Blog extends Library\BaseController
         } 
         elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
         {
-            retrun $this->_output->output(400, "ID Should be Numeric", false);
+            return $this->_output->output(400, "ID Should be Numeric", false);
         }
 
         $output = $this->_db->toggleCommentStatus($data['id']);
@@ -277,7 +277,7 @@ class Blog extends Library\BaseController
         } 
         elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
         {
-            retrun $this->_output->output(400, "ID Should be Numeric", false);
+            return $this->_output->output(400, "ID Should be Numeric", false);
         }
 
         $output = $this->_db->toggleCommentStatus($data['id']);
