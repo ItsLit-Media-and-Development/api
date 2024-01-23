@@ -13,6 +13,7 @@
 
 namespace API\Library;
 use GuzzleHttp\Client;
+use API\Library\Exceptions;
 
 abstract class BaseController
 {
@@ -86,13 +87,24 @@ abstract class BaseController
 					if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
 					{
 						//They have a lower value token level
+						try {
+							$tmp = new Exceptions\WrongAuthLevelException("User {$this->_headers['user']} at level {$level} was insufficient.");
+						} catch(\Exception $e) {
+							echo "Default exception";
+						}
+
 						return false;
 					} else {
 						return true;
 					}
 				} else {
-
-					//Unknown how they are authenticating
+					try {
+						//Unknown how they are authenticating
+						$tmp = new Exceptions\InvalidTokenException('Unknown attempt at authentication', 2);
+					} catch(\Exception $e) {
+						echo "Default exception";
+					}
+					
 					return false;
 				}
 			}
@@ -118,9 +130,23 @@ abstract class BaseController
 							return true;
 						}
 					} else {
+						try {
+							//Unknown how they are authenticating
+							$tmp = new Exceptions\InvalidTokenException('Unknown attempt at authentication', 2);
+						} catch(\Exception $e) {
+							echo "Default exception";
+						}
+						
 						return false;
 					}
 				} else {
+					try {
+						//Unknown how they are authenticating
+						$tmp = new Exceptions\InvalidTokenException('Unknown attempt at authentication', 2);
+					} catch(\Exception $e) {
+						echo "Default exception";
+					}
+					
 					return false;
 				}
 			}
