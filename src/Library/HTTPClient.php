@@ -40,7 +40,7 @@ class HTTPClient
         return $this->_lastResponse;
     }
 
-    private function setLastResponse($response)
+    private function setLastResponse($response, string $type)
     {
         $router = new Router();
 
@@ -48,9 +48,10 @@ class HTTPClient
         $this->_lastReponse = [];
 
         //Lets set the data
-        $this->_lastResponse['SentHeaders']  = $this->getHeaders();
+        $this->_lastResponse['RequestType']     = $type;
+        $this->_lastResponse['SentHeaders']     = $this->getHeaders();
         $this->_lastResponse['ReceivedHeaders'] = $router->getAllHeaders();
-        $this->_lastResponse['Response'] = $response;
+        $this->_lastResponse['Response']        = $response;
     }
 
     public function getHeaders()
@@ -71,17 +72,23 @@ class HTTPClient
         $this->_url = $url;
 
         $result = $this->_client->request('GET', $this->_url, $this->_headers);
-        $this->setLastResponse('test');
-		return json_decode($result->getBody(), true);
+        $response = json_decode($result->getBody(), true);
+
+        $this->setLastResponse($response, 'GET');
+
+        return $response;
     }
 
     public function post(string $url, array $body)
     {
         $this->_url = $url;
 
-        $request = $this->_client->post($this->_url, $this->_headers, $body);
+        $request = $this->_client->post($this->_url, $this->_headers, ['body' => $body]);
+        $response = $request->send();
 
-        return $request->send();
+        $this->setLastResponse($response, 'DELETE');
+
+        return $response;
     }
 
     public function put()
@@ -94,8 +101,10 @@ class HTTPClient
 
     }
 
-    public function delete()
+    public function delete(string $url, array $body)
     {
+        $this->_url = $url;
 
+        $result = $this->_client->request('DELETE', $this->_url, $this->_headers);
     }
 }
