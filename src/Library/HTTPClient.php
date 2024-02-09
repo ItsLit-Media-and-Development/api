@@ -86,19 +86,24 @@ class HTTPClient
         $request = $this->_client->post($this->_url, $this->_headers, ['body' => $body]);
         $response = $request->send();
 
-        $this->setLastResponse($response, 'DELETE');
+        $this->setLastResponse($response, 'POST');
 
         return $response;
     }
 
-    public function put()
+    public function put(string $url, array $data)
     {
-
+        $this->_url = $url;
     }
 
     public function patch()
     {
+        $this->_url = $url;
 
+        $result = $this->_client->request('PATCH', $this->_url, $this->_headers);
+        $response = $request->send();
+
+        return $response;
     }
 
     public function delete(string $url, array $body)
@@ -106,5 +111,8 @@ class HTTPClient
         $this->_url = $url;
 
         $result = $this->_client->request('DELETE', $this->_url, $this->_headers);
+        $response = $request->send();
+
+        return $response;
     }
 }
