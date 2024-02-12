@@ -51,6 +51,7 @@ class HTTPClient
         $this->_lastResponse['RequestType']     = $type;
         $this->_lastResponse['SentHeaders']     = $this->getHeaders();
         $this->_lastResponse['ReceivedHeaders'] = $router->getAllHeaders();
+        $this->_lastResponse['URL']             = $this->_url;
         $this->_lastResponse['Response']        = $response;
     }
 
