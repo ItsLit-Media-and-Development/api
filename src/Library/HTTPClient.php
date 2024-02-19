@@ -95,6 +95,13 @@ class HTTPClient
     public function put(string $url, array $data)
     {
         $this->_url = $url;
+
+        $request = $this->_client->post($this->_url, $this->_headers, ['body' => $body]);
+        $response = $request->send();
+
+        $this->setLastResponse($response, 'PUT');
+
+        return $response;
     }
 
     public function patch()
