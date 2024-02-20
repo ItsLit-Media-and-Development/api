@@ -36,5 +36,46 @@ class Pokemon extends Library\BaseController
         
     }
 
-    
+    //Add event, potentially via automation or via manually
+    public function addEvent()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        
+    }
+
+    //Update event details, add standings etc
+    public function updateEvent()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+    }
+
+    //Delete event, soft delete only
+    public function deleteEvent()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        
+    }
+
+    public function addPlayers()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+    }
+
+    public function updatePlayers()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+    }
+
+    public function deletePlayers()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+    }
 }

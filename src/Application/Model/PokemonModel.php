@@ -23,4 +23,49 @@ class PokemonModel extends Library\BaseModel
 	{
 		parent::__construct();
 	}
+
+	public function getEvent(string $id)
+	{
+		$stmt = $this->_db->prepare("SELECT * FROM pkmn_events WHERE sanction_id = :id");
+		$stmt->execute(
+			[
+				':id' => $id
+			]
+		);
+	}
+
+	public function getEvents()
+	{
+
+	}
+
+	public function addEvent(array $payload)
+	{
+
+	}
+
+	public function modifyEvent(string $id, array $payload)
+	{
+
+	}
+
+	public function removeEvent(string $id)
+	{
+
+	}
+
+	public function addStandings(string $id, array $standings)
+	{
+
+	}
+
+	public function verifyStandings(string $id)
+	{
+
+	}
+
+	public function updateStandings(string $id, array $standings)
+	{
+
+	}
 }
