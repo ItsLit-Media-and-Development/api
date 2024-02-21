@@ -8,6 +8,7 @@
 
 namespace API\Library;
 
+use API\Library\Exceptions;
 
 abstract class BaseModel
 {
