@@ -150,7 +150,6 @@ abstract class BaseController
 				}
 			}
 		} else {
-			var_dump($this->_headers);die;
 			//We are doing header based, lets check there is a token and authenticate
 			if(!isset($this->_headers['token']))
 			{
