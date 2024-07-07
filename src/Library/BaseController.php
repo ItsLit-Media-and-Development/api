@@ -74,7 +74,7 @@ abstract class BaseController
 		if(!isset($this->_headers['user']))
 		{
 			//Check to see if Params is set or user header and if not, check header for key/token
-			if($this->_params === false || !isset($this->_headers['user']))
+			if($this->_params === false && !isset($this->_headers['user']))
 			{
 				if(isset($this->_headers['token']) && strlen($this->_headers['token']) > 20)
 				{
@@ -114,13 +114,12 @@ abstract class BaseController
 				if($this->_params[sizeof($this->_params)-1][0] === '?')
 				{
 					$string = explode("&", ltrim($this->_params[sizeof($this->_params) - 1], $this->_params[sizeof($this->_params) - 1][0]));
-
 					//Do we have 2 values in string?
 					if(sizeof($string) == 2)
 					{
 						$this->_headers['user']  = explode("=", $string[0])[1];
 						$this->_headers['token'] = explode("=", $string[1])[1];
-						var_dump($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level']);die;
+						
 						//Lets see if this is a valid token
 						if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
 						{
@@ -151,6 +150,7 @@ abstract class BaseController
 				}
 			}
 		} else {
+			var_dump($this->_headers);die;
 			//We are doing header based, lets check there is a token and authenticate
 			if(!isset($this->_headers['token']))
 			{

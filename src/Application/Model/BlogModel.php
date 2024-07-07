@@ -24,7 +24,7 @@ class BlogModel extends Library\BaseModel
 		parent::__construct();
 	}
 
-    public function getPost($filterType = '', $filter = '')
+    public function getPost(bool $approved, $filterType = '', $filter = '')
     {
         switch ($filterType)
         {
@@ -36,7 +36,8 @@ class BlogModel extends Library\BaseModel
 
                 try
                 {
-                    $stmt = $this->_db->prepare("Select * from blog_post WHERE ID = :id");
+                    $stmt = $approved ? $this->_db->prepare("Select * from blog_post WHERE ID = :id AND published = 1") : $this->_db->prepare("Select * from blog_post WHERE ID = :id");
+
                     $stmt->execute(
                         [
                             ':id' => $filter
@@ -60,7 +61,7 @@ class BlogModel extends Library\BaseModel
                 
                 try
                 {
-                    $stmt = $this->_db->prepare("Select * from blog_post WHERE slug = :slug");
+                    $stmt = $approved ? $this->_db->prepare("Select * from blog_post WHERE slug = :slug AND published = 1") : $this->_db->prepare("Select * from blog_post WHERE slug = :slug");
                     $stmt->execute(
                         [
                             ':slug' => $filter
@@ -79,7 +80,7 @@ class BlogModel extends Library\BaseModel
             default:
                 try
                 {
-                    $stmt = $this->_db->prepare("Select * from blog_post");
+                    $stmt = $approved ? $this->_db->prepare("Select * from blog_post WHERE published = 1") : $this->_db->prepare("Select * from blog_post");
                     $stmt->execute();
 
                     $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -271,6 +272,27 @@ class BlogModel extends Library\BaseModel
             );
 
             $this->_output = ($stmt->rowCount() > 0) ? true : false;
+        } 
+        catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
+
+    public function getTags(int $id)
+    {
+        try 
+        {
+            $stmt = $this->_db->prepare("SELECT tag_name FROM blog_tags WHERE post_id = :id");
+            $stmt->execute(
+                [
+                    ':id' => $id
+                ]
+            );
+
+            $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } 
         catch(\PDOException $e)
         {

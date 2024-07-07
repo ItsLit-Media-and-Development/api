@@ -32,7 +32,8 @@ class Blog extends Library\BaseController
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-        $id = $this->_params[0];
+        $id       = $this->_params[0];
+        $approved = isset($this->_params[1]) && $this->_params[1] === true ? (bool) $this->_params[1] : false;
 
         //Check it is actually a number
         if(filter_var($id, FILTER_VALIDATE_INT) === false)
@@ -41,8 +42,15 @@ class Blog extends Library\BaseController
         }
 
         //It must be so time to check if the post exists
-        $blogPost['post']             = $this->_db->getPost('ID', $id);
+        $blogPost['post'] = $this->_db->getPost($approved, 'ID', $id);
+
+        if($blogPost['post'] === false)
+        {
+            return $this->_output->output(404, "Blog Post not found", false);
+        }
+
         $blogPost['post']['comments'] = $this->_db->getComment($id);
+        $blogPost['post']['tags']     = $this->_db->getTags($id);
 
         return $this->_output->output(200, $blogPost, false);
     }
@@ -52,18 +60,20 @@ class Blog extends Library\BaseController
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-        $slug = $this->_params[0];
+        $slug     = $this->_params[0];
+        $approved = isset($this->_params[1]) ? $this->_params[1] : false;
 
         //Get the post then pull the comments
-        $blogPost['post'] = $this->_db->getPost('SLUG', $slug);
+        $blogPost['post'] = $this->_db->getPost($approved, 'SLUG', $slug);
 
         //Make sure there is a post returned first!
-        if(!$blogPost['post'])
+        if($blogPost['post'] === false)
         {
             return $this->_output->output(404, "Blog Post {$slug} not found", false);
         }
         
         $blogPost['post']['comments'] = $this->_db->getComment($blogPost['post']['id']);
+        $blogPost['post']['tags']     = $this->_db->getTags($blogPost['post']['id']);
 
         return $this->_output->output(200, $blogPost, false);
     }
@@ -73,7 +83,9 @@ class Blog extends Library\BaseController
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-        $posts = $this->_db->getPost();
+        $approved = isset($this->_params[0]) ? $this->_params[0] : false;
+
+        $posts = $this->_db->getPost($approved);
 
         return $this->_output->output(200, $posts, false);
     }
