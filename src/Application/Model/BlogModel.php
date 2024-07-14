@@ -80,7 +80,7 @@ class BlogModel extends Library\BaseModel
             default:
                 try
                 {
-                    $stmt = $approved ? $this->_db->prepare("Select * from blog_post WHERE published = 1") : $this->_db->prepare("Select * from blog_post");
+                    $stmt = $approved ? $this->_db->prepare("Select * from blog_post WHERE published = 1 ORDER BY updated_date DESC") : $this->_db->prepare("Select * from blog_post ORDER BY updated_date DESC");
                     $stmt->execute();
 
                     $this->_output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
