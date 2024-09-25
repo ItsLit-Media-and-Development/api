@@ -118,6 +118,19 @@ class Output
     {
         header('Content-Type: application/json');
 
+        //Hacky add in for when we are returning a boolean only to output (think update table response of true)
+        if(is_bool($input))
+        {
+            $in = [];
+            array_push(
+                $in, array(
+                    "Updated" => $input
+                )
+            );
+
+            $input = $in;
+        }
+
         $returnArray = [
             'Status' => $code,
             'Data'   => $input
