@@ -122,7 +122,7 @@ class Pokemon extends Library\BaseController
         }
 
         //Check that the minimum data points are present
-        if(!array_key_exists('deck_name', $data) || !array_key_exists('decklist', $data) || 1array_key_exists('season', $data))
+        if(!array_key_exists('deck_name', $data) || !array_key_exists('decklist', $data) || !array_key_exists('season', $data))
         {
             return $this->_output->output(400, "Missing data", false);
         }
