@@ -122,12 +122,12 @@ class PokemonModel extends Library\BaseModel
 	{
 		try
 		{
-			$ins = $this->_db->prepare("INSERT INTO decklists (deck_name, decklist, season, played, wins, losses, ties) VALUES(:deckname, :decklist, :season, 0, 0, 0, 0)");
+			$ins = $this->_db->prepare("INSERT INTO decklists (deck_name, decklist, season) VALUES(:deckname, :decklist, :season)");
 			$ins->execute(
 				[
-					':deck_name' => $details['deck_name'],
-					':decklist'  => $details['decklist'],
-					':season'    => $details['season']
+					':deckname' => $details['deck_name'],
+					':decklist' => $details['decklist'],
+					':season'   => $details['season']
 				]
 			);
 
@@ -164,4 +164,25 @@ class PokemonModel extends Library\BaseModel
 	
 			return $this->_output;
 	}
+
+	public function deleteDecklist(int $id)
+    {
+        try 
+        {
+            $del = $this->_db->prepare("DELETE FROM decklists WHERE id = :id");
+            $del->execute(
+                [
+                    ':id' => $id
+                ]
+            );
+
+            $this->_output = ($del->rowCount() > 0) ? true : false;
+        } 
+        catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+        return $this->_output;
+    }
 }

@@ -176,6 +176,18 @@ class Pokemon extends Library\BaseController
     {
         if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
         if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $id = $this->_params[0];
+
+        //Check it is actually a number
+        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        {
+            return $this->_output->output(400, "Decklist ID should be numeric", false);
+        }
+
+        $result = $this->_db->deleteDecklist($id);
+
+        return ($result) ? $this->_output->output(204, true, false) : $this->_output->output(404, ["Deck List not found"], false);
     }
 
     public function getTeamlists()
