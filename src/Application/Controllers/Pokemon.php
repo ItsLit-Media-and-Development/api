@@ -190,12 +190,6 @@ class Pokemon extends Library\BaseController
         return ($result) ? $this->_output->output(204, true, false) : $this->_output->output(404, ["Deck List not found"], false);
     }
 
-    public function getTeamlists()
-    {
-        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
-    }
-
     public function updateDeckResult()
     {
         if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
@@ -210,6 +204,145 @@ class Pokemon extends Library\BaseController
         }
 
         $output = $this->_db->updateDeckResults($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function getTeamlists()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = $this->_db->getTeamlists();
+
+        return $this->_output->output(200, $data, false);
+    }
+
+    public function getTeam()
+    {
+        //if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $id = $this->_params[0];
+
+        //Check it is actually a number
+        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        {
+            return $this->_output->output(400, "Post ID should be numeric", false);
+        }
+
+        $data =  $this->_db->getTeam($id);
+
+        return $this->_output->output(200, $data, false);
+    }
+
+    public function addTeamlist()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        //Check that the minimum data points are present
+        if(!array_key_exists('Team_name', $data) || !array_key_exists('Teamlist', $data) || !array_key_exists('season', $data))
+        {
+            return $this->_output->output(400, "Missing data", false);
+        }
+
+        $output = $this->_db->addTeamlist($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function updateTeamlist()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        $output = $this->_db->updateTeamlist($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function deleteTeamlist()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $id = $this->_params[0];
+
+        //Check it is actually a number
+        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        {
+            return $this->_output->output(400, "Teamlist ID should be numeric", false);
+        }
+
+        $result = $this->_db->deleteTeamlist($id);
+
+        return ($result) ? $this->_output->output(204, true, false) : $this->_output->output(404, ["Team List not found"], false);
+    }
+
+    public function updateTeamResult()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PUT')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        $output = $this->_db->updateTeamResults($data);
 
         //Check to see if we had an error
         if(!is_bool($output))
