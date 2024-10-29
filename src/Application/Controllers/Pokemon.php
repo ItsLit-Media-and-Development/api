@@ -357,4 +357,103 @@ class Pokemon extends Library\BaseController
 
         return $this->_output->output(200, $output, false);
     }
+
+    public function ptcglConverter()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data) || !isset($data['decklist']))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        //Split the string to get pokemon, trainers and energy into seperate arrays... Need to make this cleaner at some point
+        $pksplit = explode("Trainer: ", $data['decklist']);
+        $trsplit = explode("Energy: ", $pksplit[1]);
+
+        $pokemon = explode("\n", substr($pksplit[0], 11));
+        $trainer = explode("\n", substr($trsplit[0], 2));
+        $energy  = explode("\n", substr($trsplit[1], 2));
+
+        $pkmn = [];
+        $trnr = [];
+        $enrg = [];
+
+        for($i = 0; $i < sizeof($pokemon); $i++)
+        {
+            $tmp = explode(" ", $pokemon[$i]);
+
+            if(sizeof($tmp) === 4)
+            {
+                $pkmn[$i]["Qty"]  = $tmp[0];
+                $pkmn[$i]["Name"] = $tmp[1];
+                $pkmn[$i]["Set"]  = $tmp[2];
+                $pkmn[$i]["Num"]  = $tmp[3];
+            } 
+            elseif(sizeof($tmp) === 5) 
+            {
+                $pkmn[$i]["Qty"]  = $tmp[0];
+                $pkmn[$i]["Name"] = $tmp[1] . " " . $tmp[2];
+                $pkmn[$i]["Set"]  = $tmp[3];
+                $pkmn[$i]["Num"]  = $tmp[4];
+            }
+        }
+
+        for($i = 0; $i < sizeof($trainer); $i++)
+        {
+            $tmp = explode(" ", $trainer[$i]);
+
+            if(sizeof($tmp) === 4)
+            {
+                $trnr[$i]["Qty"]  = $tmp[0];
+                $trnr[$i]["Name"] = $tmp[1];
+                $trnr[$i]["Set"]  = $tmp[2];
+                $trnr[$i]["Num"]  = $tmp[3];
+            } 
+            elseif(sizeof($tmp) === 5) 
+            {
+                $trnr[$i]["Qty"]  = $tmp[0];
+                $trnr[$i]["Name"] = $tmp[1] . " " . $tmp[2];
+                $trnr[$i]["Set"]  = $tmp[3];
+                $trnr[$i]["Num"]  = $tmp[4];
+            }
+            elseif(sizeof($tmp) === 6) 
+            {
+                $trnr[$i]["Qty"]  = $tmp[0];
+                $trnr[$i]["Name"] = $tmp[1] . " " . $tmp[2] . " " . $tmp[3];
+                $trnr[$i]["Set"]  = $tmp[4];
+                $trnr[$i]["Num"]  = $tmp[5];
+            }
+        }
+
+        for($i = 0; $i < sizeof($energy); $i++)
+        {
+            $tmp = explode(" ", $energy[$i]);
+
+            if(sizeof($tmp) === 5)
+            {
+                $enrg[$i]["Qty"]  = $tmp[0];
+                $enrg[$i]["Name"] = $tmp[1] . " " . $tmp[2];
+                $enrg[$i]["Set"]  = $tmp[3];
+                $enrg[$i]["Num"]  = $tmp[4];
+            } 
+            elseif(sizeof($tmp) === 6) 
+            {
+                $enrg[$i]["Qty"]  = $tmp[0];
+                $enrg[$i]["Name"] = $tmp[1] . " " . $tmp[2] . " " . $tmp[3];
+                $enrg[$i]["Set"]  = $tmp[4];
+                $enrg[$i]["Num"]  = $tmp[5];
+            }
+        }
+
+        $decklist['pokemon']  = $pkmn;
+        $decklist['trainers'] = $trnr;
+        $decklist['energy']   = $enrg;
+
+        return $this->_output->output(200, $decklist, false);
+    }
 }
