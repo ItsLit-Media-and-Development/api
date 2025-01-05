@@ -291,4 +291,33 @@ class PokemonModel extends Library\BaseModel
 
         return $this->_output;
     }
+
+	public function addEvent(array $details)
+	{
+		try
+		{
+			$ins = $this->_db->prepare("INSERT INTO events (Event_Name, Event_Dates, Event_Location, Event_Link, TCG, VGC, POGO, Unite, Spectator) VALUES(:Event_Name, :Event_Dates, :Event_Location, :Event_Link, :TCG, :VGC, :POGO, :Unite, :Spectator)");
+
+			foreach($details as $d)
+			{
+				$ins->execute(
+					[
+						':Event_Name'     => $d['Event Name'], 
+						':Event_Dates'    => $d['Event Dates'], 
+						':Event_Location' => $d['Event Location'], 
+						':Event_Link'     => $d['Event'], 
+						':TCG'            => $d['TCG'], 
+						':VGC'            => $d['VGC'], 
+						':POGO'           => $d['GO'], 
+						':Unite'          => (isset($d['Unite']) ? $d['Unite'] : null), 
+						':Spectator'      => $d['Spectator']
+					]
+				)
+			}
+		}
+		catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+	}
 }

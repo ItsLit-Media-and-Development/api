@@ -456,4 +456,89 @@ class Pokemon extends Library\BaseController
 
         return $this->_output->output(200, $decklist, false);
     }
+
+    public function test()
+    {
+        $dom = new \DomDocument();
+        $tmp = file_get_contents("https://rk9.gg/events/pokemon");
+        //var_dump($tmp);die;
+        @$dom->loadHTML($tmp);
+
+        $xpath = new \DOMXPath($dom);
+        $table     = $xpath->query('//table[@id="dtUpcomingEvents"]')->item(0); //this or the line above strips links
+        $baseURI   = "https://rk9.gg";
+        $links     = [];
+        $i = 0;
+        $j = 5;
+        
+        $rows = $table->getElementsByTagName('tr');
+
+        foreach ($rows as $row) 
+        {
+            // Initialize empty arrays to store the table data
+            $data = [];
+
+            // Iterate through the rows of the table
+            $rows = $table->getElementsByTagName('tr');
+
+            foreach ($rows as $row) 
+            {
+                $columns = $row->getElementsByTagName('td');
+
+                $rowData = [];
+
+                foreach ($columns as $col) 
+                {
+                        $rowData[] = trim($col->textContent);
+                }
+
+                if (!empty($rowData)) {
+                    unset($rowData[count($rowData) - 1]);
+
+                    //ICs and above, unite comes in on 8 and spectators on 10 but at regionals, spectators are 9 so this checks what it is
+                    if(strpos($xpath->query('//a/@href')->item($j + 4)->value, "spectator"))
+                    {
+                        $links['Event']     = $baseURI . $xpath->query('//a/@href')->item($j)->value;
+                        $links['GO']        = $baseURI . $xpath->query('//a/@href')->item($j + 1)->value;
+                        $links['TCG']       = $baseURI . $xpath->query('//a/@href')->item($j + 2)->value;
+                        $links['VGC']       = $baseURI . $xpath->query('//a/@href')->item($j + 3)->value;
+                        $links['Spectator'] = $baseURI . $xpath->query('//a/@href')->item($j + 4)->value;
+
+                        $j += 5;
+                    } else {
+                        $links['Event']     = $baseURI . $xpath->query('//a/@href')->item($j)->value;
+                        $links['GO']        = $baseURI . $xpath->query('//a/@href')->item($j + 1)->value;
+                        $links['TCG']       = $baseURI . $xpath->query('//a/@href')->item($j + 2)->value;
+                        $links['Unite']     = $baseURI . $xpath->query('//a/@href')->item($j + 3)->value;
+                        $links['VGC']       = $baseURI . $xpath->query('//a/@href')->item($j + 4)->value;
+                        $links['Spectator'] = $baseURI . $xpath->query('//a/@href')->item($j + 5)->value;
+
+                        $j += 6;
+                    }
+
+                    $data[$i]['Event Name']     = $rowData[2];
+                    $data[$i]['Event Dates']    = $rowData[0];
+                    $data[$i]['Event Location'] = $rowData[3];
+                    $data[$i]['Links']          = $links;
+                    
+                    $i += 1;
+                }
+            }
+        }
+
+        $output = $this->_db->addEvent($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
+    }
 }
