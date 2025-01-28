@@ -457,27 +457,25 @@ class Pokemon extends Library\BaseController
         return $this->_output->output(200, $decklist, false);
     }
 
-    public function test()
+    public function rk9Events()
     {
         $dom = new \DomDocument();
         $tmp = file_get_contents("https://rk9.gg/events/pokemon");
-        //var_dump($tmp);die;
+
         @$dom->loadHTML($tmp);
 
         $xpath = new \DOMXPath($dom);
         $table     = $xpath->query('//table[@id="dtUpcomingEvents"]')->item(0); //this or the line above strips links
         $baseURI   = "https://rk9.gg";
         $links     = [];
-        $i = 0;
-        $j = 5;
+        $data      = [];
+        $i         = 0;
+        $j         = 5;
         
         $rows = $table->getElementsByTagName('tr');
 
         foreach ($rows as $row) 
         {
-            // Initialize empty arrays to store the table data
-            $data = [];
-
             // Iterate through the rows of the table
             $rows = $table->getElementsByTagName('tr');
 
@@ -492,7 +490,8 @@ class Pokemon extends Library\BaseController
                         $rowData[] = trim($col->textContent);
                 }
 
-                if (!empty($rowData)) {
+                if (!empty($rowData)) 
+                {
                     unset($rowData[count($rowData) - 1]);
 
                     //ICs and above, unite comes in on 8 and spectators on 10 but at regionals, spectators are 9 so this checks what it is
@@ -503,6 +502,7 @@ class Pokemon extends Library\BaseController
                         $links['TCG']       = $baseURI . $xpath->query('//a/@href')->item($j + 2)->value;
                         $links['VGC']       = $baseURI . $xpath->query('//a/@href')->item($j + 3)->value;
                         $links['Spectator'] = $baseURI . $xpath->query('//a/@href')->item($j + 4)->value;
+                        $links['Unite']     = null;
 
                         $j += 5;
                     } else {
@@ -511,16 +511,21 @@ class Pokemon extends Library\BaseController
                         $links['TCG']       = $baseURI . $xpath->query('//a/@href')->item($j + 2)->value;
                         $links['Unite']     = $baseURI . $xpath->query('//a/@href')->item($j + 3)->value;
                         $links['VGC']       = $baseURI . $xpath->query('//a/@href')->item($j + 4)->value;
-                        $links['Spectator'] = $baseURI . $xpath->query('//a/@href')->item($j + 5)->value;
+                        $links['Spectator'] = null;
 
-                        $j += 6;
+                        $j += 5;
                     }
+                    $dateString = $rowData[0];
 
-                    $data[$i]['Event Name']     = $rowData[2];
-                    $data[$i]['Event Dates']    = $rowData[0];
-                    $data[$i]['Event Location'] = $rowData[3];
-                    $data[$i]['Links']          = $links;
-                    
+                    $data[$i]['Event Name']       = $rowData[2];
+                    $data[$i]['Event Start Date'] = \DateTime::createFromFormat('F d, Y', substr($dateString, 0, strpos($dateString, '-')) . ", " . substr($dateString, -4)) ?: false;
+                    $data[$i]['Event End Date']   = \DateTime::createFromFormat('F d, Y', substr($dateString, 0, strpos($dateString, '-')) . ", " . substr($dateString, -4)) ?: false;
+                    $data[$i]['Event Location']   = $rowData[3];
+                    $data[$i]['Links']            = $links;
+
+                    //Add days to the end date depending on if it is an international or not - Current issue is US regionals show 3 days but all others 2
+                    (strpos($rowData[2], "International") !== false) ? date_add($data[$i]['Event End Date'], date_interval_create_from_date_string("2 days")) : date_add($data[$i]['Event End Date'], date_interval_create_from_date_string("1 days"));
+
                     $i += 1;
                 }
             }

@@ -50,9 +50,63 @@ class PokemonModel extends Library\BaseModel
 
 	}
 
-	public function addEvent(array $payload)
+	public function addEvent(array $details)
 	{
+		$details = array_values($details);
 
+		//First lets check to see if we already have this event in the DB, if so, remove it from the array otherwise insert it
+		for($i = 0; $i < count($details); $i++)
+		{
+			try
+			{
+				$sel = $this->_db->prepare("SELECT count(*) FROM rk9_events WHERE Event_Name = :ename");
+				$sel->execute(
+					[
+						':ename' => $details[$i]['Event Name']
+					]
+				);
+
+				if(count($sel->fetch()) == 0)
+				{
+					unset($details[$i]);
+				}
+			}
+			catch(\PDOException $e)
+			{
+				$this->_output = $e->getMessage();
+			}
+		}
+
+		try
+		{
+			foreach($details as $d)
+			{
+				$ins = $this->_db->prepare("INSERT INTO rk9_events (Event_Name, StartDate, EndDate, Event_Location, Event_Link, TCG, VGC, POGO, Unite, Spectator) VALUES(:Event_Name, :StartDate, :EndDate, :Event_Location, :Event_Link, :TCG, :VGC, :POGO, :Unite, :Spectator)");
+
+				$ins->execute(
+					[
+						':Event_Name'     => $d['Event Name'], 
+						':StartDate'      => $d['Event Start Date']->format('Y-m-d'),
+						':EndDate'        => $d['Event End Date']->format('Y-m-d'), 
+						':Event_Location' => $d['Event Location'], 
+						':Event_Link'     => $d['Links']['Event'], 
+						':TCG'            => $d['Links']['TCG'], 
+						':VGC'            => $d['Links']['VGC'], 
+						':POGO'           => $d['Links']['GO'], 
+						':Unite'          => (isset($d['Links']['Unite']) ? $d['Links']['Unite'] : null), 
+						':Spectator'      => $d['Links']['Spectator']
+					]
+				);
+			}
+
+			$this->_output = ($ins->rowCount() > 0) ? true : false;
+		}
+		catch(\PDOException $e)
+        {
+            $this->_output = $e->getMessage();
+        }
+
+		return $this->_output;
 	}
 
 	public function modifyEvent(string $id, array $payload)
@@ -291,33 +345,4 @@ class PokemonModel extends Library\BaseModel
 
         return $this->_output;
     }
-
-	public function addEvent(array $details)
-	{
-		try
-		{
-			$ins = $this->_db->prepare("INSERT INTO events (Event_Name, Event_Dates, Event_Location, Event_Link, TCG, VGC, POGO, Unite, Spectator) VALUES(:Event_Name, :Event_Dates, :Event_Location, :Event_Link, :TCG, :VGC, :POGO, :Unite, :Spectator)");
-
-			foreach($details as $d)
-			{
-				$ins->execute(
-					[
-						':Event_Name'     => $d['Event Name'], 
-						':Event_Dates'    => $d['Event Dates'], 
-						':Event_Location' => $d['Event Location'], 
-						':Event_Link'     => $d['Event'], 
-						':TCG'            => $d['TCG'], 
-						':VGC'            => $d['VGC'], 
-						':POGO'           => $d['GO'], 
-						':Unite'          => (isset($d['Unite']) ? $d['Unite'] : null), 
-						':Spectator'      => $d['Spectator']
-					]
-				)
-			}
-		}
-		catch(\PDOException $e)
-        {
-            $this->_output = $e->getMessage();
-        }
-	}
 }
