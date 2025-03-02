@@ -163,7 +163,7 @@ class Blog extends Library\BaseController
 
         $result = $this->_db->deletePost($id);
 
-        return ($result) ? $this->_output->output(204, "", false) : $this->_output->output(404, "Blog Post not found", false);
+        return ($result) ? $this->_output->output(204, $result, false) : $this->_output->output(404, "Blog Post not found", false);
     }
 
     public function approvePost()
@@ -177,7 +177,7 @@ class Blog extends Library\BaseController
         {
             return $this->_output->output(400, "No Data Sent", false);
         } 
-        elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
         {
             return $this->_output->output(400, "ID Should be Numeric", false);
         }
@@ -198,7 +198,7 @@ class Blog extends Library\BaseController
         {
             return $this->_output->output(400, "No Data Sent", false);
         } 
-        elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
         {
             return $this->_output->output(400, "ID Should be Numeric", false);
         }
@@ -245,7 +245,7 @@ class Blog extends Library\BaseController
         $id = $this->_params[0];
 
         //Check it is actually a number
-        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        if(filter_var($data['id'], FILTER_VALIDATE_INT) === false)
         {
             return $this->_output->output(400, "Post ID should be numeric", false);
         }
@@ -266,7 +266,7 @@ class Blog extends Library\BaseController
         {
             return $this->_output->output(400, "No Data Sent", false);
         } 
-        elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
         {
             return $this->_output->output(400, "ID Should be Numeric", false);
         }
@@ -287,7 +287,7 @@ class Blog extends Library\BaseController
         {
             return $this->_output->output(400, "No Data Sent", false);
         } 
-        elseif(filter_var($id, FILTER_VALIDATE_INT) === false) 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
         {
             return $this->_output->output(400, "ID Should be Numeric", false);
         }

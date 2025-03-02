@@ -98,7 +98,7 @@ class BlogModel extends Library\BaseModel
     {
         try 
         {
-            $ins = $this->_db->prepare("INSERT INTO blog_post (title, slug, summary, content, featured_image, published_date, published) VALUES (:title, :slug, :summary, :content, :featured_image, :published_date, :published)");
+            $ins = $this->_db->prepare("INSERT INTO blog_post (title, slug, summary, content, featured_image_url, published_date, published) VALUES (:title, :slug, :summary, :content, :featured_image, :published_date, :published)");
             $ins->execute(
                 [
                     ':title'          => $details['title'],
@@ -106,7 +106,7 @@ class BlogModel extends Library\BaseModel
                     ':summary'        => $details['summary'],
                     ':content'        => $details['content'],
                     ':featured_image' => $details['featured_image'],
-                    ':published_date' => ($details['published_date'] != null) ? $details['published_date'] : '',
+                    ':published_date' => ($details['published_date'] != null) ? $details['published_date'] : null,
                     ':published'      => $details['published']
                 ]
             );

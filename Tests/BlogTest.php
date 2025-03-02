@@ -208,17 +208,126 @@ class BlogTest extends TestCase
 
     public function test_create_post()
     {
+        $response = $this->client->post('/Blog/createPost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'title'          => 'Temp Title',
+                'slug'           => 'temp-title',
+                'summary'        => 'this is the summary of a temp blog post',
+                'content'        => 'this is the summary of a temp blog post, there will be much more to handle in this including markdown to html conversion but that might be more for the end user account.',
+                'featured_image' => null,
+                'published'      => 0
+            ]
+        ]);
 
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function test_create_post_no_data()
+    {
+        $response = $this->client->post('/Blog/createPost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     public function test_approve_post()
     {
+        $response = $this->client->patch('/Blog/approvePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id' => 3
+            ]
+        ]);
 
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function test_approve_post_no_id()
+    {
+        $response = $this->client->patch('/Blog/approvePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_approve_post_string_id()
+    {
+        $response = $this->client->patch('/Blog/approvePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id' => "three"
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     public function test_unapprove_post()
     {
+        $response = $this->client->patch('/Blog/unapprovePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id' => 3
+            ]
+        ]);
+        
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 
+    public function test_unapprove_post_no_id()
+    {
+        $response = $this->client->patch('/Blog/unapprovePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_unapprove_post_string_id()
+    {
+        $response = $this->client->patch('/Blog/unapprovePost',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id' => "three"
+            ]
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
     }
 
     public function test_create_comment()
@@ -238,11 +347,34 @@ class BlogTest extends TestCase
 
     public function test_delete_comment()
     {
+        
+    }
+    
+    public function test_delete_post_invalid_id()
+    {
+        $response = $this->client->delete('/Blog/deletePost/4',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
 
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     public function test_delete_post()
     {
+         $response = $this->client->delete('/Blog/deletePost/3',[
+             'http_errors' => false,
+             'headers' => [
+                 'user'  => 'discord_bot',
+                 'token' => $this->config['TOKEN']
+             ]
+         ]);
+ 
+         $clean = json_decode($response->getBody()->getContents(), true);
 
-    }
+        $this->assertEquals(204, $clean['Status']);
+    } 
 }
