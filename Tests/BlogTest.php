@@ -365,16 +365,14 @@ class BlogTest extends TestCase
 
     public function test_delete_post()
     {
-         $response = $this->client->delete('/Blog/deletePost/3',[
-             'http_errors' => false,
-             'headers' => [
-                 'user'  => 'discord_bot',
-                 'token' => $this->config['TOKEN']
-             ]
-         ]);
- 
-         $clean = json_decode($response->getBody()->getContents(), true);
+        $response = $this->client->delete('/Blog/deletePost/3',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
 
-        $this->assertEquals(204, $clean['Status']);
+        $this->assertEquals(204, $response->getStatusCode());
     } 
 }

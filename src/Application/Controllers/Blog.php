@@ -163,7 +163,7 @@ class Blog extends Library\BaseController
 
         $result = $this->_db->deletePost($id);
 
-        return ($result) ? $this->_output->output(204, $result, false) : $this->_output->output(404, "Blog Post not found", false);
+        return ($result) ? $this->_output->output(204, null, false) : $this->_output->output(404, "Blog Post not found", false);
     }
 
     public function approvePost()
@@ -252,7 +252,7 @@ class Blog extends Library\BaseController
 
         $result = $this->_db->deleteComment($id);
 
-        return ($result) ? $this->_output->output(204, "", false) : $this->_output->output(404, "Blog Post not found", false);
+        return ($result) ? $this->_output->output(204, null, false) : $this->_output->output(404, "Blog Post not found", false);
     }
 
     public function approveComment()

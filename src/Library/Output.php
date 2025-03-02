@@ -118,6 +118,8 @@ class Output
     {
         header('Content-Type: application/json');
 
+        http_response_code($code);
+        
         //Hacky add in for when we are returning a boolean only to output (think update table response of true)
         if(is_bool($input))
         {
