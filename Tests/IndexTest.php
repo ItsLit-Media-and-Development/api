@@ -13,7 +13,7 @@ class IndexTest extends TestCase
 
         $this->client = new GuzzleHttp\Client(
             [
-                'base_uri' => 'http://api'
+                'base_uri' => 'http://api.local'
             ]
         );
     }
@@ -35,6 +35,6 @@ class IndexTest extends TestCase
 
     public function test_Config_Has_Token_Key()
     {
-        $this->assertArrayHasKey('TEST_TOKEN', $this->config);
+        $this->assertArrayHasKey('TOKEN', $this->config);
     }
 }
