@@ -125,7 +125,7 @@ class BlogModel extends Library\BaseModel
     {
         try 
         {
-            $upd = $this->_db->prepare("UPDATE blog_post SET title = :title, slug = :slug, summary = :summary, content = :content, featured_image = :featured_image, updated_date = :updated_date, published = :published WHERE id = :id");
+            $upd = $this->_db->prepare("UPDATE blog_post SET title = :title, slug = :slug, summary = :summary, content = :content, featured_image_url = :featured_image, updated_date = :updated_date, published = :published WHERE id = :id");
             $upd->execute(
                 [
                     ':id' => $details['id'],
