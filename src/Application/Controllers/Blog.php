@@ -245,7 +245,7 @@ class Blog extends Library\BaseController
         $id = $this->_params[0];
 
         //Check it is actually a number
-        if(filter_var($data['id'], FILTER_VALIDATE_INT) === false)
+        if(filter_var(id, FILTER_VALIDATE_INT) === false)
         {
             return $this->_output->output(400, "Post ID should be numeric", false);
         }
