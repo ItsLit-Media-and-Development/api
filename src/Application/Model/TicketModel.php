@@ -35,7 +35,7 @@ class TicketModel extends Library\BaseModel
 					':email'   => $data['email'],
 					':message' => $data['message']
 				]
-			)
+			);
 
 			$this->_output = ($stmt->rowCount() > 0) ? true : false;
 		}

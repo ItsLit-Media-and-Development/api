@@ -30,7 +30,7 @@ class Ticket extends Library\BaseController
     public function createTicket()
     {
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -59,7 +59,7 @@ class Ticket extends Library\BaseController
     public function viewTicket()
     {
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $id = $this->_params[0];
 
@@ -82,7 +82,7 @@ class Ticket extends Library\BaseController
     public function listTickets()
     {
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $ticket = $this->_db->listTickets();
 
@@ -97,7 +97,7 @@ class Ticket extends Library\BaseController
     public function deleteTicket()
     {
         if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
         $id = $this->_params[0];
 
