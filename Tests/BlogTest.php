@@ -6,6 +6,7 @@ class BlogTest extends TestCase
 {
     protected $client;
     protected $config;
+    protected $db;
 
     public function setUp(): void
     {
@@ -16,27 +17,47 @@ class BlogTest extends TestCase
                 'base_uri' => 'http://api.local'
             ]
         );
+
+        $this->database();
+
+        $buildPost = $this->db->prepare("CREATE TABLE `blog_post` (`id` int NOT NULL,`title` varchar(45) NOT NULL,`slug` varchar(45) NOT NULL,`summary` varchar(100) NOT NULL,`content` longtext NOT NULL,`featured_image_url` varchar(100) DEFAULT NULL,`published_date` datetime DEFAULT CURRENT_TIMESTAMP,`updated_date` datetime DEFAULT CURRENT_TIMESTAMP,`published` tinyint DEFAULT '0') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        $buildPost->execute();
+
+        $insPost = $this->db->prepare("INSERT INTO `blog_post` (`id`, `title`, `slug`, `summary`, `content`, `featured_image_url`, `published_date`, `updated_date`, `published`) VALUES (1, 'Test Title', 'test-title', 'this is the summary of a test blog post', 'this is the summary of a test blog post, there will be much more to handle in this including markdown to html conversion but that might be more for the end user account.', NULL, '2023-12-17 22:05:22', '2023-12-17 22:05:22', 1), (2, 'Second Test', 'second-test', 'this is just a second test post', 'this is the body of the second test post', NULL, '2023-12-28 23:37:03', '2023-12-28 23:37:03', 0)");
+        $insPost->execute();
+
+        $idxPost = $this->db->prepare("ALTER TABLE `blog_post` ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `title_UNIQUE` (`title`), ADD UNIQUE KEY `slug_UNIQUE` (`slug`), MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3");
+        $idxPost->execute();
+
+        $buildTag = $this->db->prepare("CREATE TABLE `blog_tags` (`post_id` int NOT NULL, `tag_name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        $buildTag->execute();
+
+        $insTag = $this->db->prepare("INSERT INTO `blog_tags` (`post_id`, `tag_name`) VALUES (1, 'tes'), (1, 'testing'), (1, 'totally_testing')");
+        $insTag->execute();
+
+        $idxTag = $this->db->prepare("ALTER TABLE `blog_tags` ADD KEY `post_id` (`post_id`)");
+        $idxTag->execute();
+
+        $buildComments = $this->db->prepare("CREATE TABLE `blog_comments` (`id` int NOT NULL, `bid` int NOT NULL, `response_id` int NOT NULL DEFAULT '0', `display_name` varchar(45) NOT NULL, `email` varchar(100) NOT NULL, `comment` mediumtext, `posted_on` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, `approved` tinyint NOT NULL DEFAULT '0', `deleted` tinyint NOT NULL DEFAULT '0') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
+        $buildComments->execute();
+
+        $insComments = $this->db->prepare("INSERT INTO `blog_comments` (`id`, `bid`, `response_id`, `display_name`, `email`, `comment`, `posted_on`, `approved`, `deleted`) VALUES (1, 1, 0, 'Test User', 'test@user.com', 'this is a test comment', '2023-12-18 21:05:20', 0, 0)");
+        $insComments->execute();
+
+        $idxComments = $this->db->prepare("ALTER TABLE `blog_comments` ADD PRIMARY KEY (`id`), MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2");
+        $idxComments->execute();
     }
 
     public function tearDown(): void
     {
-        $response = $this->client->put('/Blog/updatePost',[
-            'http_errors' => false,
-            'headers' => [
-                'user'  => 'discord_bot',
-                'token' => $this->config['TOKEN']
-            ],
-            'json' => [
-                'id'             => 1,
-                'title'          => 'Test Title',
-                'slug'           => 'test-title',
-                'summary'        => 'this is the summary of a test blog post',
-                'content'        => 'this is the summary of a test blog post, there will be much more to handle in this including markdown to html conversion but that might be more for the end user account.',
-                'featured_image' => null,
-                'updated_date'   => '2023-12-17 22:05:22',
-                'published'      => 1
-            ]
-        ]);
+        $delPost = $this->db->prepare("DROP TABLE `blog_post`");
+        $delPost->execute();
+
+        $delTag = $this->db->prepare("DROP TABLE `blog_tags`");
+        $delTag->execute();
+
+        $delComments = $this->db->prepare("DROP TABLE `blog_comments`");
+        $delComments->execute();
     }
 
     public function test_get_post_by_ID_auth_failure()
@@ -339,7 +360,7 @@ class BlogTest extends TestCase
                 'token' => $this->config['TOKEN']
             ],
             'json'    => [
-                'post_ID'        => 3,
+                'post_ID'        => 2,
                 'display_name'   => 'temp name',
                 'email'          => 'test@api.local',
                 'comment'        => 'This is a test comment',
@@ -452,7 +473,7 @@ class BlogTest extends TestCase
 
     public function test_delete_post()
     {
-        $response = $this->client->delete('/Blog/deletePost/3',[
+        $response = $this->client->delete('/Blog/deletePost/2',[
             'http_errors' => false,
             'headers' => [
                 'user'  => 'discord_bot',
@@ -462,4 +483,32 @@ class BlogTest extends TestCase
 
         $this->assertEquals(204, $response->getStatusCode());
     } 
+
+    /**
+     * Connects to the database
+     *
+     * @param string $override Optional allows temporary settings change
+     * @return object|\PDO The database connection object
+     * @throws \Exception on missing settings
+     */
+    public function database($override = '')
+    {
+        if(!is_object($this->db))
+        {
+            if(!isset($this->config['DBHOST']))
+            {
+                throw new \Exception("config::database needs settings, check your config");
+            } else {
+                $this->db = new \PDO("mysql:host=" . $this->config['DBHOST'] . ";port=" . $this->config['PORT'] .
+                    ";dbname=" . $this->config['DBNAME'], $this->config['DBUSER'], $this->config['DBPASS']);
+                $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            }
+        } else {
+            $this->db = new \PDO("mysql:host=" . $override['DBHOST'] . ";port=" . $override['PORT'] .
+                ";dbname=" . $override['DBNAME'], $override['DBUSER'], $override['DBPASS']);
+            $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        }
+
+        return $this->db;
+    }
 }

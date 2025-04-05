@@ -216,7 +216,7 @@ class BlogModel extends Library\BaseModel
     {
         try
         {
-            $ins = $this->_db->prepare("INSERT INTO blog_comments (bid, response_id, display_name, email, comment, approved) VALUES (:bid, :rid, :display, :email, :comment, :approved");
+            $ins = $this->_db->prepare("INSERT INTO blog_comments (bid, response_id, display_name, email, comment, approved) VALUES (:bid, :rid, :display, :email, :comment, :approved)");
             $ins->execute(
                 [
                     ':bid'      => $details['post_ID'],
@@ -229,6 +229,8 @@ class BlogModel extends Library\BaseModel
             );
 
             $this->_output = ($ins->rowCount() > 0) ? true : false;
+
+            var_dump($this->_output);die;
         }
         catch(\PDOException $e)
         {
