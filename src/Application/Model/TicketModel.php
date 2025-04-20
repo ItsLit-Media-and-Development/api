@@ -107,14 +107,15 @@ class TicketModel extends Library\BaseModel
 		return $this->_output;
 	}
 
-	public function toggleTicket($id)
+	public function updateReadStatus(int $id, int $status)
 	{
 		try
 		{
-			$upd = $this->_db->prepare("UPDATE ticket SET status = !status WHERE id = :id");
+			$upd = $this->_db->prepare("UPDATE ticket SET status = :status WHERE id = :id");
 			$upd->execute(
 				[
-					':id' => $id
+					':id'     => $id,
+					':status' => $status
 				]
 			);
 

@@ -114,6 +114,22 @@ class Ticket extends Library\BaseController
 
     public function toggleStatus()
     {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PATCH')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if(!isset($data['id']) || !isset($data['status']) || empty($data))
+        {
+            return $this->_output->output(400, "No Data Sent", false);
+        } 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
+        {
+            return $this->_output->output(400, "ID Should be Numeric", false);
+        }
+
+        $output = $this->_db->updateReadStatus($data['id'], $data['status']);
+
+        return $this->_output->output(200, $output, false);
     }
 }
