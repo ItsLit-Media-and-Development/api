@@ -89,23 +89,49 @@ class TicketTest extends TestCase
 
     public function test_mark_ticket_as_read()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.',
-        );
+        $response = $this->client->patch('/Ticket/toggleStatus',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id'     => 1,
+                'status' => 1
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
     
     public function test_mark_ticket_as_unread()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.',
-        );
+        $response = $this->client->patch('/Ticket/toggleStatus',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ],
+            'json'    => [
+                'id'     => 1,
+                'status' => 0
+            ]
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 
     public function test_delete_ticket()
     {
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.',
-        );
+        $response = $this->client->delete('/Ticket/deleteTicket/1',[
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $this->assertEquals(204, $response->getStatusCode());
     }
 
 

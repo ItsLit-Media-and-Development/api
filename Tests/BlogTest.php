@@ -32,7 +32,7 @@ class BlogTest extends TestCase
         $buildTag = $this->db->prepare("CREATE TABLE `blog_tags` (`post_id` int NOT NULL, `tag_name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
         $buildTag->execute();
 
-        $insTag = $this->db->prepare("INSERT INTO `blog_tags` (`post_id`, `tag_name`) VALUES (1, 'tes'), (1, 'testing'), (1, 'totally_testing')");
+        $insTag = $this->db->prepare("INSERT INTO `blog_tags` (`post_id`, `tag_name`) VALUES (1, 'tes'), (1, 'testing'), (1, 'totally_testing'), (2, 'testing')");
         $insTag->execute();
 
         $idxTag = $this->db->prepare("ALTER TABLE `blog_tags` ADD KEY `post_id` (`post_id`)");
@@ -349,6 +349,36 @@ class BlogTest extends TestCase
         ]);
 
         $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function test_get_list_of_approved_posts()
+    {
+        $response = $this->client->get('/Blog/listPosts/1', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $clean = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertEquals(1, count($clean['Data']));
+    }
+
+    public function test_get_approved_posts_by_tag()
+    {
+        $response = $this->client->get('/Blog/listPostsByTag/1/testing', [
+            'http_errors' => false,
+            'headers' => [
+                'user'  => 'discord_bot',
+                'token' => $this->config['TOKEN']
+            ]
+        ]);
+
+        $clean = json_decode($response->getBody()->getContents(), true);
+
+        $this->assertEquals(9, count($clean['Data'])); //9 items returned for 1 post
     }
 
     public function test_create_comment()

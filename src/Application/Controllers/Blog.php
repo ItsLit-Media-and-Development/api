@@ -90,6 +90,19 @@ class Blog extends Library\BaseController
         return $this->_output->output(200, $posts, false);
     }
 
+    public function listPostsByTag()
+    {
+        if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $approved = isset($this->_params[0]) ? $this->_params[0] : false;
+        $tag      = isset($this->_params[1]) ? $this->_params[1] : false;
+
+        $posts = $this->_db->getPost($approved, 'TAG', $tag);
+
+        return $this->_output->output(200, $posts, false);
+    }
+
     public function updatePost()
     {
         if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }

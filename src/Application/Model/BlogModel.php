@@ -76,6 +76,30 @@ class BlogModel extends Library\BaseModel
                 }
 
                 break;
+            
+                case 'TAG':
+                    if($filter == '')
+                    {
+                        $this->_output = false;
+                    }
+                    
+                    try
+                    {
+                        $stmt = $approved ? $this->_db->prepare("SELECT bp.* FROM blog_tags t INNER JOIN blog_post bp ON t.post_id = bp.id WHERE t.tag_name = :tag AND published = 1") : $this->_db->prepare("SELECT bp.* FROM blog_tags t INNER JOIN blog_post bp ON t.post_id = bp.id WHERE t.tag_name = :tag");
+                        $stmt->execute(
+                            [
+                                ':tag' => $filter
+                            ]
+                        );
+
+                        $this->_output = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    }
+                    catch(\PDOException $e)
+                    {
+                        $this->_output = $e->getMessage();
+                    }
+
+                    break;
 
             default:
                 try
