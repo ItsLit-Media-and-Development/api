@@ -27,7 +27,7 @@
       "API\\Library\\": "src/Library",
       "API\\Controllers\\": "src/Application/Controllers",
       "API\\Model\\": "src/Application/Model",
-      "API\\Exceptions\\": "src/Library/Exceptions",
+      "API\\Library\\Exceptions\\": "src/Library/Exceptions",
       "API\\Exceptions\\Destiny\\": "src/Library/Exceptions/Destiny"
     }
   },

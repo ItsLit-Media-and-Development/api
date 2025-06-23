@@ -17,7 +17,6 @@
 namespace API\Library;
 
 use API\Exceptions\InvalidIdentifierException;
-use GuzzleHttp\Client;
 
 class Github
 {
@@ -29,7 +28,7 @@ class Github
 
 	public function __construct()
     {
-		$this->_client = new Client(array('curl' => array(CURLOPT_SSL_VERIFYPEER => false,),));
+		$this->_client = new HTTPClient();
 		$tmp = new Config();
 		$this->_clientid = $tmp->getSettings('GITHUB_CLIENT_ID');
     }

@@ -81,9 +81,11 @@ class Output
             header("Access-Control-Allow-Origin: *");
 
             //Bots can't handle anything more then plain text so lets change the output as such.
-			if($bot === true) {
+			if($bot === true) 
+            {
 				$this->_output = "plain";
 			}
+
             switch ($this->_output)
             {
                 case 'json':
@@ -116,7 +118,38 @@ class Output
     {
         header('Content-Type: application/json');
 
-        return ($bot == true) ?: json_encode($input);
+        http_response_code($code);
+        
+        //Hacky add in for when we are returning a boolean only to output (think update table response of true)
+        if(is_bool($input))
+        {
+            $in = [];
+            array_push(
+                $in, array(
+                    "Updated" => $input
+                )
+            );
+
+            $input = $in;
+        }
+
+        $returnArray = [
+            'Status' => $code,
+            'Data'   => $input
+        ];
+
+        if(count($returnArray['Data']) > 1)
+        {
+            if(count($returnArray['Data']) <= 250)
+            {
+                $returnArray['TotalCount'] = count($returnArray['Data']);
+            } else {
+                $returnArray['Count']      = 250;
+                $returnArray['TotalCount'] = count($returnArray['Data']);
+            }
+        }
+
+        return ($bot == true) ?: json_encode($returnArray);
     }
 
     private function xml_output($input)
@@ -187,7 +220,6 @@ class Output
                 {
                     foreach($item as $key => $val)
                     {
-						//$out .= str_replace("%3A", ":", str_replace("%20", " ", $val)) . ", ";
 						$out .= str_replace("%3A", ":", str_replace("%20", " ", $val));
                     }
                 }
@@ -197,8 +229,6 @@ class Output
         {
             $out = $input;
         }
-
-		//$out = substr($out, 0, -1);
 
         return $out;
     }
@@ -221,28 +251,44 @@ class Output
                 case 'json':
                     header('Content-Type: application/json');
 
-                    $out = json_encode($response);
+                    $returnArray = [
+                        'Status' => $code,
+                        'Data'   => '',
+                        'Error'  => $response
+                    ];
+
+                    $out = json_encode($returnArray);
+
                     break;
                 case 'xml':
                     header('Content-Type: text/xml');
 
                     $out = '<rsp stat="fail"><err-code=' . $code . ' response="' . $response . '" /></rsp>';
+
                     break;
                 case 'html':
                     header('Content-Type: text/html');
 
                     $out = '<table id="rsp-stat-fail"><tr><td id="' . $code . '">Error: ' . $response . '</td></tr></table>';
+
                     break;
                 case 'plain':
                     header('Content-Type: text/plain');
 
                     //This is generally only going to be used for chat bots so lets make it muggle readable
                     $out = "An error occurred: $response";
+
                     break;
                 default:
                     header('Content-Type: application/json');
 
-                    $out = json_encode($response);
+                    $returnArray = [
+                        'Status' => $code,
+                        'Data'   => '',
+                        'Error'  => $response
+                    ];
+
+                    $out = json_encode($returnArray);
             }
         } else {
             return $this->_outputError(500, '$code was not set as an integer... Lets get it right!');

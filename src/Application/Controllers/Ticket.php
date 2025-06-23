@@ -27,15 +27,109 @@ class Ticket extends Library\BaseController
         $this->_db = new Model\TicketModel();
     }
 
-    public function create()
+    public function createTicket()
     {
-        if(!$this->authenticate()) { return $this->_output->output(401, 'Authentication failed', false); }
-        if(!$this->validRequest('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
+        if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('POST')) { return $this->_output->output(405, "Method Not Allowed", false); }
 
-        parse_str(file_get_contents('php://input'), $data);
+        $data = json_decode(file_get_contents('php://input'), true);
 
-        $this->_db->create_ticket($data);
-        
-        return $this->_output->output(200, ['success' => true], (isset($this->_param[0]) ? $this->_params[0] : false));
+        //Quick check to make sure the data is not empty
+        if(!isset($data) || empty($data))
+        {
+            return $this->_output->output(400, "No Data sent", false);
+        }
+
+        $output = $this->_db->createTicket($data);
+
+        //Check to see if we had an error
+        if(!is_bool($output))
+        {
+            return $this->_output->output(500, $output, false);
+        }
+
+        if($output === false)
+        {
+            return $this->_output->output(400, $output, false);
+        }
+
+        return $this->_output->output(200, $output, false);
+    }
+
+    public function viewTicket()
+    {
+        if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $id = $this->_params[0];
+
+        //Check it is actually a number
+        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        {
+            return $this->_output->output(400, "Ticket ID should be numeric", false);
+        }
+
+        $ticket = $this->_db->viewTicket($id);
+
+        if($ticket === false)
+        {
+            return $this->_output->output(404, "Ticket ID {$id} not found", false);
+        }
+
+        return $this->_output->output(200, $ticket, false);
+    }
+
+    public function listTickets()
+    {
+        if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('GET')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $ticket = $this->_db->listTickets();
+
+        if($ticket === false)
+        {
+            return $this->_output->output(404, "No tickets have been found", false);
+        }
+
+        return $this->_output->output(200, $ticket, false);
+    }
+
+    public function deleteTicket()
+    {
+        if(!$this->authenticate(3)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('DELETE')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $id = $this->_params[0];
+
+        //Check it is actually a number
+        if(filter_var($id, FILTER_VALIDATE_INT) === false)
+        {
+            return $this->_output->output(400, "Ticket ID should be numeric", false);
+        }
+
+        $result = $this->_db->deleteTicket($id);
+
+        return ($result) ? $this->_output->output(204, "", false) : $this->_output->output(404, "Ticket not found", false);
+    }
+
+    public function toggleStatus()
+    {
+        if(!$this->authenticate(4)) { return $this->_output->output(401, 'Authentication failed', false); }
+        if(!$this->expectedVerb('PATCH')) { return $this->_output->output(405, "Method Not Allowed", false); }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if(!isset($data['id']) || !isset($data['status']) || empty($data))
+        {
+            return $this->_output->output(400, "No Data Sent", false);
+        } 
+        elseif(filter_var($data['id'], FILTER_VALIDATE_INT) === false) 
+        {
+            return $this->_output->output(400, "ID Should be Numeric", false);
+        }
+
+        $output = $this->_db->updateReadStatus($data['id'], $data['status']);
+
+        return $this->_output->output(200, $output, false);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * API Exception
+ * Invalid Token Exception
  *
  *
  * @package       API
@@ -14,18 +14,9 @@
 
 namespace API\Library\Exceptions;
 
-use API\Library;
 
-
-class APIException extends \Exception
+class InvalidTokenException extends APIException
 {
-    protected $_message;
-    protected $_file;
-    protected $_line;
-    protected $_trace;
-    protected $_severity;
-    protected $_log;
-
     /**
      * @var string $message
      * @var int $code
@@ -33,12 +24,5 @@ class APIException extends \Exception
     public function __construct($message, $code = 0)
     {
         parent::__construct($message, $code);
-
-        $this->_message  = $message;
-        $this->_file     = $this->file;
-        $this->_line     = $this->line;
-        $this->_trace    = $this->getTrace();
-        $this->_severity = ($code == 1) ? "Notice" : (($code == 2) ? "Warning" : "Error");
-        $this->_log      = new Library\Logger();
     }
 }
