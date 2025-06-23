@@ -5,3 +5,4 @@
 /junk
 website.code-workspace
 .history/*
+composer.lock
