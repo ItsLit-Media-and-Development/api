@@ -80,7 +80,8 @@ class Authentication
     {
         try
         {
-            $stmt = $this->_db->prepare("SELECT auth_level FROM api_users WHERE name = :name AND token = :token AND active = 1");
+            //$stmt = $this->_db->prepare("SELECT auth_level FROM api_users WHERE name = :name AND token = :token AND active = 1");
+            $stmt = $this->_db->prepare("SELECT level FROM auth_token WHERE name = :name AND token = :token");
             $stmt->execute(
                 [
                     ':name' => $user,

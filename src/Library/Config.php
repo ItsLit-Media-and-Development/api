@@ -85,9 +85,13 @@ class Config
             {
                 throw new \Exception("config::database needs settings, check your config");
             } else {
-                $this->db = new \PDO("mysql:host=" . $this->site['DBHOST'] . ";port=" . $this->site['PORT'] .
-                    ";dbname=" . $this->site['DBNAME'], $this->site['DBUSER'], $this->site['DBPASS']);
-                $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                try {
+                    $this->db = new \PDO("mysql:host=" . $this->site['DBHOST'] . ";port=" . $this->site['PORT'] .
+                        ";dbname=" . $this->site['DBNAME'], $this->site['DBUSER'], $this->site['DBPASS']);
+                    $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+                } catch (\PDOException $e) {
+                    echo $e->getMessage();
+                }
             }
         } else {
             $this->db = new \PDO("mysql:host=" . $override['DBHOST'] . ";port=" . $override['PORT'] .

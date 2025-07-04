@@ -84,7 +84,7 @@ abstract class BaseController
 					$this->_headers['token'] = $auth[1];
 
 					//Lets see if this is a valid token
-					if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
+					if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['level'] < $level)
 					{
 						//They have a lower value token level
 						try {
@@ -121,7 +121,7 @@ abstract class BaseController
 						$this->_headers['token'] = explode("=", $string[1])[1];
 						
 						//Lets see if this is a valid token
-						if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] < $level)
+						if($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['level'] < $level)
 						{
 							//They have a lower value token level
 							return false;
@@ -156,7 +156,7 @@ abstract class BaseController
 				return false;
 			}
 			
-			return ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['auth_level'] >= $level) ? true : false;
+			return ($this->_auth->validate_token($this->_headers['token'], $this->_headers['user'])['level'] >= $level) ? true : false;
 		}
 	}
 
